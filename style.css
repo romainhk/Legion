@@ -1,0 +1,26 @@
+body {
+    background-color:#B7C4FF;
+}
+h1 {
+    text-align:center;
+    font-weight:bolder;
+}
+h3 {
+    margin-top:1.5em;
+}
+/* Tableaux */
+table{
+    margin-top:0.5ex;
+}
+table > caption {
+    font-style:italic;
+}
+th {
+    text-align:center;
+}
+td {
+}
+th, td {
+    padding:8px;
+}
+/* Autre */

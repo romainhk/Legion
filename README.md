@@ -1,4 +1,4 @@
 Legion
 ======
 
-Suivi de cohortre
+Legion est un logiciel de suivi de cohorte pour lycée.

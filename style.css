@@ -24,3 +24,7 @@ th, td {
     padding:8px;
 }
 /* Autre */
+.notification {
+    color: #E6000D;
+    padding: 0.5ex 1ex;
+}

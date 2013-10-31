@@ -25,13 +25,15 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         # TODO : faire une sauvegarde de la base
         super().__init__(request, client, server)
 
+    def dict_from_row(self, row):
+        return dict(zip(row.keys(), row))
+
     def do_GET(self):
         # Analyse de l'url
         params = urlparse(self.path)
-        query = parse_qs(params.query)
-        #logging.warning(params)
-        if params.path == "/test":
-            self.processMyRequest(query)
+        #query = parse_qs(params.query)
+        if params.path == "/requete":
+            self.processRequest(params.query)
         else:
             # Par défaut, on sert l'index 
             http.server.SimpleHTTPRequestHandler.do_GET(self)
@@ -51,18 +53,26 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         http.server.SimpleHTTPRequestHandler.do_GET(self)
         """
 
-    def processMyRequest(self, query):
-        logging.warning(query)
+    def processRequest(self, query):
+        logging.warning("REQUEST : {0}".format(query))
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
-        a = json.dumps(self.fichier)
-        logging.warning(a)
+        a = ''
+        if query == 'liste':
+            data = self.readfromdb()
+            logging.warning(data)
+            a = json.dumps(data)
+        if query == 'importation':
+            logging.warning('Importation du csv...')
+            self.open_csv()
+            logging.warning(self.header)
+            self.writetodb()
+            a = json.dumps(u'Importation réussie')
         self.wfile.write(bytes(a, 'UTF-8'))
         self.wfile.flush()
 
     def log_request(self, code=None, size=None):
-        #print('Request')
         pass
 
     def log_message(self, format, *args):
@@ -82,19 +92,14 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                     except:
                         print('Impossible de trouver la colonne INE')
                         return False
-                    #for h in row:
-                    #    self.enreg[h] = []
                     continue
-                #self.enreg[row.pop(iINE)] = row
                 if row[iINE] not in self.enreg:
                     self.enreg[row[iINE]] = row
                 else:
                     print('Enregistrement en double : {0}').format(row)
-                #for h, v in zip(self.header, row):
-                #    self.enreg[h].append(v)
 
     def writetodb(self):
-        """ Ecrit un enregistrement dans la base
+        """ Écrit un enregistrement dans la base
         """
         try:
             iINE = self.header.index(u'INE')
@@ -102,31 +107,27 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             iPre = self.header.index(u'Prénom')
             iClasse = self.header.index(u'Classe')
         except:
-            print(u"Le fichier csv n'est pas au bon format.")
+            logging.error(u"Le fichier csv n'est pas au bon format.\n{0}".format(self.header))
             return False
         for k,v in self.enreg.items():
             req = u'INSERT INTO Élèves ' \
                 + u'(INE, Nom, Prénom, Classe, Année) VALUES ("%s", "%s", "%s", "%s", %i)' \
                 % (v[iINE], v[iNom], v[iPre], v[iClasse], self.annee)
+            logging.error(req)
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:
-                print(req)
-                print(u"Erreur lors de l'insertion :\n%s" % (e.args[0]))
+                logging.error(u"Erreur lors de l'insertion :\n%s" % (e.args[0]))
             self.conn.commit()
 
     def readfromdb(self):
         """ Lit le contenu de la base
         """
-        for row in self.curs.execute(u'SELECT * FROM Élèves ORDER BY INE'):
-            print(row['INE'])
+        data = []
+        for row in self.curs.execute(u'SELECT * FROM Élèves ORDER BY Nom,Prénom ASC'):
+            data.append(self.dict_from_row(row))
+        return data
         
-    def run(self):
-        self.open_csv()
-        print(self.header)
-        print(self.enreg)
-        #self.writetodb()
-        self.readfromdb()
 
 # defines
 PORT = 5432

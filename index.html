@@ -6,19 +6,48 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <script type="text/javascript" src="jquery.js"></script>
     <script language="javascript" type="text/javascript">
-function test_button() {
-    $.get( "/test", function( data ) {
-        $( "#test_result" ).html( data );
+// TODO : récupérer ca au chargement
+var champs = ['Nom', 'Prénom', 'Classe', 'Année']
+function init(){
+    // Initialisation de l'application
+    var ligne = "";
+    for (var i=0;i<champs.length;i++) {
+        ligne += "<th>"+champs[i]+"</th>\n";
+    }
+    $('#vue').append( "<tr>"+ligne+"</tr>\n" );
+}
+function liste() {
+    // Liste la contenu de la base
+    $.get( "/requete?liste", function( data ) {
+        var ligne = "";
+        $.each( data, function( key, value ) {
+            var vals = "";
+            for (var i=0;i<champs.length;i++) {
+                c = champs[i];
+                vals += "<td>"+value[c]+"</td>";
+            }
+            ligne += "<tr>"+vals+"</tr>\n";
+        });
+        $('#vue').append( ligne );
+    });
+}
+function importation() {
+    // Importation d'un csv
+    // TODO : envoie du fichier
+    $.get( "/requete?importation", function( data ) {
+        $('#notifications').html(data);
     });
 }
     </script>
   </head>
-  <body>
+  <body onLoad="init();">
     <h1>Legion</h1>
     Application de suivi de cohorte.
-    <input type="button" value="Test" onClick="test_button();">
-    <div id="test_result"></div>
+    <input type="button" value="Lister base" onClick="liste();">
+    <div id="notifications" class="notification"></div>
     <h3>Vue (format d'affichage)</h3>
+    <table id="vue" border="1">
+    </table>
     <table border="1">
         <tr>
             <th>Nom</th>
@@ -27,14 +56,6 @@ function test_button() {
             <th>Date entrée / sortie / différence</th>
             <th>Diplômé ?</th>
             <th>Après (3 mois / 1 an)</th>
-        </tr>
-        <tr>
-            <td>Sansterre</td>
-            <td>Jean</td>
-            <td>2nd2, 1erC2, 1erC3, TermC2</td>
-            <td>27/12/1166 ; 18/9/1170 ; 3 ans et 9 mois</td>
-            <td>Oui</td>
-            <td>couronné / banni</td>
         </tr>
     </table>
     <h3>Fonctionnalités</h3>
@@ -46,13 +67,15 @@ function test_button() {
     </select>
     <br>
     <br>
-    <input type="button" value="Importer des données">
+    <input type="file" id="csv">
+    <input type="button" value="Importer des données" onClick="importation();">
     <h3>Statistiques</h3>
     Stats sur une cohorte :
     <table border="1">
         <caption>Pour l'année <select>
                 <option>1168</option>
                 <option>1169</option>
+                <option selected=selected>2013</option>
                 <option>Toutes</option>
             </select></caption>
         <tr>

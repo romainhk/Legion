@@ -1,44 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
     <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
     <title>Legion</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <script type="text/javascript" src="jquery.js"></script>
-    <script language="javascript" type="text/javascript">
-// TODO : récupérer ca au chargement
-var champs = ['Nom', 'Prénom', 'Classe', 'Année']
-function init(){
-    // Initialisation de l'application
-    var ligne = "";
-    for (var i=0;i<champs.length;i++) {
-        ligne += "<th>"+champs[i]+"</th>\n";
-    }
-    $('#vue').append( "<tr>"+ligne+"</tr>\n" );
-}
-function liste() {
-    // Liste la contenu de la base
-    $.get( "/requete?liste", function( data ) {
-        var ligne = "";
-        $.each( data, function( key, value ) {
-            var vals = "";
-            for (var i=0;i<champs.length;i++) {
-                c = champs[i];
-                vals += "<td>"+value[c]+"</td>";
-            }
-            ligne += "<tr>"+vals+"</tr>\n";
-        });
-        $('#vue').append( ligne );
-    });
-}
-function importation() {
-    // Importation d'un csv
-    // TODO : envoie du fichier
-    $.get( "/requete?importation", function( data ) {
-        $('#notifications').html(data);
-    });
-}
-    </script>
+    <script type="text/javascript" src="scripts.js"></script>
   </head>
   <body onLoad="init();">
     <h1>Legion</h1>
@@ -46,8 +13,7 @@ function importation() {
     <input type="button" value="Lister base" onClick="liste();">
     <div id="notifications" class="notification"></div>
     <h3>Vue (format d'affichage)</h3>
-    <table id="vue" border="1">
-    </table>
+    <div id="vue"></div>
     <table border="1">
         <tr>
             <th>Nom</th>
@@ -59,12 +25,14 @@ function importation() {
         </tr>
     </table>
     <h3>Fonctionnalités</h3>
-    Recherche : <input type="text"> / type de recherche : <select>
+    <form id="recherche" onsubmit="rechercher();return false;">
+    Recherche : <input type="text" id="rech-val"> / type de recherche : <select id="rech-type">
         <option>Nom</option>
         <option>Classe</option>
         <option>INE</option>
         <option><i>Tout</i></option>
     </select>
+    </form>
     <br>
     <br>
     <input type="file" id="csv">

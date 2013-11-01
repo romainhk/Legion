@@ -7,6 +7,12 @@ from urllib.parse import urlparse, parse_qs
 
 class Legion(http.server.SimpleHTTPRequestHandler):
     """ Classe Legion
+
+    Nécessite : jquery
+
+    TODO :
+    * vrai format de données
+    * logging des activités
     """
     def __init__(self, request, client, server):
         self.fichier = 'export.csv'
@@ -31,9 +37,29 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         # Analyse de l'url
         params = urlparse(self.path)
-        #query = parse_qs(params.query)
-        if params.path == "/requete":
-            self.processRequest(params.query)
+        query = parse_qs(params.query)
+        logging.warning("REQUEST : {0} ? {1}".format(params, query))
+        if params.path == '/liste':
+            data = self.readfromdb()
+            logging.warning(data)
+            a = json.dumps(data)
+            self.repondre(a)
+        elif params.path == '/importation':
+            logging.warning('Importation du csv...')
+            self.open_csv()
+            logging.warning(self.header)
+            self.writetodb()
+            a = json.dumps(u'Importation réussie')
+            self.repondre(a)
+        elif params.path == '/init':
+            self.open_csv()
+            a = json.dumps(self.header)
+            self.repondre(a)
+        elif params.path == '/recherche':
+            logging.warning('Recherche')
+            res = self.rechercher(query['val'].pop(), query['type'].pop())
+            a = json.dumps(res)
+            self.repondre(a)
         else:
             # Par défaut, on sert l'index 
             http.server.SimpleHTTPRequestHandler.do_GET(self)
@@ -53,23 +79,11 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         http.server.SimpleHTTPRequestHandler.do_GET(self)
         """
 
-    def processRequest(self, query):
-        logging.warning("REQUEST : {0}".format(query))
+    def repondre(self, reponse):
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
-        a = ''
-        if query == 'liste':
-            data = self.readfromdb()
-            logging.warning(data)
-            a = json.dumps(data)
-        if query == 'importation':
-            logging.warning('Importation du csv...')
-            self.open_csv()
-            logging.warning(self.header)
-            self.writetodb()
-            a = json.dumps(u'Importation réussie')
-        self.wfile.write(bytes(a, 'UTF-8'))
+        self.wfile.write(bytes(reponse, 'UTF-8'))
         self.wfile.flush()
 
     def log_request(self, code=None, size=None):
@@ -77,6 +91,17 @@ class Legion(http.server.SimpleHTTPRequestHandler):
 
     def log_message(self, format, *args):
         print('Message')
+
+    def rechercher(self, id, type):
+        # TODO : type=Tout
+        data = []
+        req = u'SELECT * FROM Élèves WHERE "{type}"="{id}" ORDER BY Nom,Prénom ASC'.format(id=id, type=type)
+        logging.warning(req)
+        # TRY
+        for row in self.curs.execute(req):
+            data.append(self.dict_from_row(row))
+        logging.warning(data)
+        return data
 
     def open_csv(self):
         """ Importe le csv

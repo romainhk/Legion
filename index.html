@@ -10,10 +10,20 @@
   <body onLoad="init();">
     <h1>Legion</h1>
     Application de suivi de cohorte.
-    <input type="button" value="Lister base" onClick="liste();">
     <div id="notifications" class="notification"></div>
-    <h3>Vue (format d'affichage)</h3>
+
+    <h3>Données de la base</h3>
+    <input type="button" value="Lire la base" onClick="liste();">
+    <form id="recherche" class="recherche" onsubmit="rechercher();return false;">
+        Rechercher <input type="text" id="rech-val" size="15" maxlength="50"> comme <select id="rech-type">
+            <option selected=selected>Nom</option>
+            <option>Classe</option>
+            <option>INE</option>
+            <option><i>Tout</i></option>
+        </select>
+    </form>
     <div id="vue"></div>
+    <!--
     <table border="1">
         <tr>
             <th>Nom</th>
@@ -24,19 +34,14 @@
             <th>Après (3 mois / 1 an)</th>
         </tr>
     </table>
-    <h3>Fonctionnalités</h3>
-    <form id="recherche" onsubmit="rechercher();return false;">
-    Recherche : <input type="text" id="rech-val"> / type de recherche : <select id="rech-type">
-        <option>Nom</option>
-        <option>Classe</option>
-        <option>INE</option>
-        <option><i>Tout</i></option>
-    </select>
+    -->
+
+    <h3>Importation</h3>
+    <form enctype="multipart/form-data">
+        <input type="file" id="csv">
+        <input type="button" value="Importer" onClick="importation();">
     </form>
-    <br>
-    <br>
-    <input type="file" id="csv">
-    <input type="button" value="Importer des données" onClick="importation();">
+
     <h3>Statistiques</h3>
     Stats sur une cohorte :
     <table border="1">

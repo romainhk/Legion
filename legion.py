@@ -48,7 +48,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             logging.warning('Importation du csv...')
             self.open_csv()
             logging.warning(self.header)
-            self.writetodb()
+            #self.writetodb()
             a = json.dumps(u'Importation réussie')
             self.repondre(a)
         elif params.path == '/init':
@@ -63,6 +63,9 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         else:
             # Par défaut, on sert l'index 
             http.server.SimpleHTTPRequestHandler.do_GET(self)
+
+    def do_POST(self):
+        logging.warning('POST')
 
         """
     def do_POST(self):
@@ -139,6 +142,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 + u'(INE, Nom, Prénom, Classe, Année) VALUES ("%s", "%s", "%s", "%s", %i)' \
                 % (v[iINE], v[iNom], v[iPre], v[iClasse], self.annee)
             logging.error(req)
+            # TODO : gestion des duplicatas
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:

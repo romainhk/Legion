@@ -9,7 +9,7 @@ h3 {
     margin-top:1.5em;
 }
 /* Tableaux */
-table{
+table {
     margin-top:0.5ex;
 }
 table > caption {
@@ -23,8 +23,15 @@ td {
 th, td {
     padding:8px;
 }
-/* Autre */
+/* Classes */
 .notification {
     color: #E6000D;
     padding: 0.5ex 1ex;
+    display:none;
+    border: 1px solid black;
+}
+.recherche {
+    float:right;
+    border:1px dotted black;
+    padding: 0.8ex 1ex;
 }

@@ -1,10 +1,12 @@
-var champs = new Array();
+// Tableau des résultats
 var tableau = $('<table border="1"></table>');
+// Champs de ce tableau
+var champs = new Array();
 
 function init(){
+    // Initialisation de l'application
     $.get( "/init", function( data ) {
         champs = data;
-        // Initialisation de l'application
         var ligne = "";
         for (var i=0;i<champs.length;i++) {
             ligne += "<th>"+champs[i]+"</th>\n";
@@ -17,15 +19,19 @@ function init(){
 function liste() {
     // Liste la contenu de la base
     $.get( "/liste", function( data ) {
-        $('#vue').append( list_to_tab(data) );
+        var tab = tableau.clone();
+        tab.append( list_to_tab(data) );
+        $('#vue').html(tab);
     });
 }
 
+// TODO Validation du champs d'upload
 function importation() {
     // Importation d'un csv
     // TODO : envoie du fichier
     $.get( "/importation", function( data ) {
         $('#notifications').html(data);
+        $('#notifications').show();
     });
 }
 
@@ -42,7 +48,8 @@ function rechercher() {
 }
 
 function list_to_tab(liste) {
-    // Convertie une liste en ligne de tableau tr
+    // Convertie une liste en lignes de tableau tr
+    // TODO : pagination
     var ligne = "";
     $.each( liste, function( key, value ) {
         var vals = "";

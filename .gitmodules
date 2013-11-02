@@ -1,0 +1,3 @@
+[submodule "jGrowl"]
+	path = jGrowl
+	url = https://github.com/stanlemon/jGrowl.git

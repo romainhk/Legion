@@ -4,15 +4,13 @@
     <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
     <title>Legion</title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="jGrowl/jquery.jgrowl.css">
     <script type="text/javascript" src="jquery.js"></script>
     <script type="text/javascript" src="scripts.js"></script>
+    <script type="text/javascript" src="jGrowl/jquery.jgrowl.js"></script>
   </head>
   <body onLoad="init();">
     <h1>Legion</h1>
-    Application de suivi de cohorte.
-    <div id="notifications" class="notification"></div>
-
-    <h3>Données de la base</h3>
     <input type="button" value="Lire la base" onClick="liste();">
     <form id="recherche" class="recherche" onsubmit="rechercher();return false;">
         Rechercher <input type="text" id="rech-val" size="15" maxlength="50"> comme <select id="rech-type">

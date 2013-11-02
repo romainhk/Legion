@@ -22,6 +22,8 @@ function liste() {
         var tab = tableau.clone();
         tab.append( list_to_tab(data) );
         $('#vue').html(tab);
+        //$.jGrowl("Listage\nvoila", { header: 'Important', life : 5000 });
+        $.jGrowl("Listage<br/>voila", { header: 'Important', life : 50000 });
     });
 }
 
@@ -30,8 +32,9 @@ function importation() {
     // Importation d'un csv
     // TODO : envoie du fichier
     $.get( "/importation", function( data ) {
-        $('#notifications').html(data);
-        $('#notifications').show();
+        $.jGrowl(adta, { life : 5000 });
+        //$('#notifications').html(data);
+        //$('#notifications').show();
     });
 }
 

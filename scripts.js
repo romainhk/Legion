@@ -22,8 +22,8 @@ function liste() {
         var tab = tableau.clone();
         tab.append( list_to_tab(data) );
         $('#vue').html(tab);
-        //$.jGrowl("Listage\nvoila", { header: 'Important', life : 5000 });
-        $.jGrowl("Listage<br/>voila", { header: 'Important', life : 50000 });
+        $.jGrowl("Chargement de la liste terminé.", { life : 4000 });
+        //$.jGrowl("Listage<br/>voila", { header: 'Important', life : 50000 });
     });
 }
 
@@ -32,7 +32,7 @@ function importation() {
     // Importation d'un csv
     // TODO : envoie du fichier
     $.get( "/importation", function( data ) {
-        $.jGrowl(adta, { life : 5000 });
+        $.jGrowl(data, { life : 5000 });
         //$('#notifications').html(data);
         //$('#notifications').show();
     });
@@ -63,4 +63,9 @@ function list_to_tab(liste) {
         ligne += "<tr>"+vals+"</tr>\n";
     });
     return(ligne);
+}
+
+function charger_stats() {
+    // TODO : Charge les stats d'une année
+    console.log($('#stats-annee').val());
 }

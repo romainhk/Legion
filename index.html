@@ -41,9 +41,8 @@
     </form>
 
     <h3>Statistiques</h3>
-    Stats sur une cohorte :
     <table border="1">
-        <caption>Pour l'année <select>
+        <caption>Pour l'année <select id="stats-annee" onChange="charger_stats();">
                 <option>1168</option>
                 <option>1169</option>
                 <option selected=selected>2013</option>
@@ -51,7 +50,7 @@
             </select></caption>
         <tr>
             <th>Classe</th>
-            <th>Redoublant</th>
+            <th>Redoublant / Total</th>
             <th>...</th>
         </tr>
         <tr>

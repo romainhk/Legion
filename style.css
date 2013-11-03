@@ -1,5 +1,6 @@
 body {
     background-color:#F2A9B1;
+    padding:0.2ex 2ex;
 }
 h1 {
     text-align:center;
@@ -31,18 +32,13 @@ th, td {
 }
 /* jGrowl */
 .jGrowl-notification {
-    background-color: #FFBF40 !important;
+    background-color: #FFC759 !important;
     color: black;
-    width: 300px !important;
+    width: 32ex !important;
     opacity: 0.85 !important;
     font-size: 2.2ex !important;
     /* Bordure */
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px;
-    /*
-    -webkit-box-shadow: #666 3px 5px 5px;
-    -moz-box-shadow: #666 3px 5px 5px;
-    box-shadow: #666 3px 5px 5px;
-    */
 }

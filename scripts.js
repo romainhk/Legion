@@ -29,31 +29,6 @@ function liste() {
 
 //TODO : envoie du fichier
 // TODO Validation du champs d'upload
-/*
-$(document).ready(function() {
-    $("#progress").hide();
-	$('#importation').on('submit', function() {
-        $.ajax({
-            url: $(this).attr('action'),
-            type: $(this).attr('method'),
-            data: $(this).serialize(),
-            dataType: 'json',
-            beforeSend: function() {
-                $("#progress").show();
-            },
-            success: function(reponse) {
-                $("#progress").hide();
-                //TODO : sleep
-                $.jGrowl(reponse, { life : 5000 });
-            },
-            error: function() {
-                $.jGrowl("Erreur lors de l'envoie du fichier", { life : 5000 });
-            }
-        });
-        return false;
-	});
-});
-*/
 $(document).ready(function() {
     $("#progress").hide();
 });

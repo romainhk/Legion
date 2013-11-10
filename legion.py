@@ -1,9 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
-import csv, sqlite3
+import sqlite3, datetime
 import http.server, socketserver, threading, webbrowser
 import logging, urllib, json
 from urllib.parse import urlparse, parse_qs
+import xml.etree.ElementTree as ET
 
 class Legion(http.server.SimpleHTTPRequestHandler):
     """ Classe Legion
@@ -16,8 +17,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     """
     def __init__(self, request, client, server):
         self.enreg = {}
-        self.header = []
-        self.annee = 2013
+        self.header = [ 'INE', 'Nom', u'Prénom', 'Classe' ]
+        self.annee = datetime.date.today().year
         # DB
         bdd = 'base.sqlite'
         try:
@@ -44,7 +45,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             a = json.dumps(data)
             self.repondre(a)
         elif params.path == '/init':
-            self.header = ['INE','Nom',u'Prénom','Classe']
             a = json.dumps(self.header)
             self.repondre(a)
         elif params.path == '/recherche':
@@ -60,10 +60,11 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         logging.warning('POST')
         length = self.headers['content-length']
         data = self.rfile.read(int(length))
+        parse = parse_qs(data) # { data: , name: }
+        data = parse[b'data'].pop()
         if self.path == '/importation':
             logging.warning('Importation du fichier...')
-            self.lire_xml(data)
-            logging.warning(self.header)
+            self.importer_xml(data)
             #self.writetodb()
             a = json.dumps(u'Importation réussie')
             self.repondre(a)
@@ -92,14 +93,33 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         logging.warning(data)
         return data
 
-    def lire_xml(self, data):
+    def importer_xml(self, data):
         """ Parse le xml
         """
         logging.warning('Parsing du fichier xml')
+        # Écriture de l'xml dans un fichier
+        fichier_tmp = 'importation.xml'
+        f = open(fichier_tmp, 'wb')
+        f.write(data)
+        f.close()
+        # Parsing
+        tree = ET.parse(fichier_tmp)
+        root = tree.getroot()
+        self.annee = root.findtext('.//PARAMETRES/ANNEE_SCOLAIRE')
+        date = root.findtext('.//PARAMETRES/DATE_EXPORT')
+        for eleve in root.iter('ELEVE'):
+            eid = eleve.get('ELEVE_ID')
+            ine = eleve.findtext('ID_NATIONAL')
+            nom = eleve.findtext('NOM')
+            prenom = eleve.findtext('PRENOM')
+            classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE/CODE_STRUCTURE".format(eid))
+            if classe is None:
+                logging.warning('Impossible de trouver la classe pour {0} {1} (id:{2})'.format(prenom, nom, eid))
+            enr = { 'eid': eid, 'ine': ine, 'nom': nom, 'prenom': prenom, 'classe': classe }
+            #self.writetodb(enr)
 
     def open_csv(self):
         """ Importe le csv
-        """
         iINE = 0 # position de l'INE
         fichier = 'export.csv'
         with open(fichier, 'r') as csvfile:
@@ -117,29 +137,22 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                     self.enreg[row[iINE]] = row
                 else:
                     print('Enregistrement en double : {0}').format(row)
+        """
 
-    def writetodb(self):
+    def writetodb(self, enr):
         """ Écrit un enregistrement dans la base
         """
+        # TODO : gestion des duplicatas
+        req = u'INSERT INTO Élèves ' \
+            + u'(INE, Nom, Prénom, Classe, Année) VALUES ("%s", "%s", "%s", "%s", %i)' \
+            % (enr['INE'], enr['Nom'], enr[u'Prénom'], enr['Classe'], self.annee)
+        logging.error(req)
         try:
-            iINE = self.header.index(u'INE')
-            iNom = self.header.index(u'Nom')
-            iPre = self.header.index(u'Prénom')
-            iClasse = self.header.index(u'Classe')
-        except:
-            logging.error(u"Le fichier csv n'est pas au bon format.\n{0}".format(self.header))
-            return False
-        for k,v in self.enreg.items():
-            req = u'INSERT INTO Élèves ' \
-                + u'(INE, Nom, Prénom, Classe, Année) VALUES ("%s", "%s", "%s", "%s", %i)' \
-                % (v[iINE], v[iNom], v[iPre], v[iClasse], self.annee)
-            logging.error(req)
-            # TODO : gestion des duplicatas
-            try:
-                self.curs.execute(req)
-            except sqlite3.Error as e:
-                logging.error(u"Erreur lors de l'insertion :\n%s" % (e.args[0]))
-            self.conn.commit()
+            #self.curs.execute(req)
+            pass
+        except sqlite3.Error as e:
+            logging.error(u"Erreur lors de l'insertion :\n%s" % (e.args[0]))
+        self.conn.commit()
 
     def readfromdb(self):
         """ Lit le contenu de la base

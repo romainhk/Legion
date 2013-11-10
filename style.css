@@ -42,3 +42,8 @@ th, td {
     -moz-border-radius: 10px;
     border-radius: 10px;
 }
+/* upload */
+#progress {
+    margin-left:3ex;
+    vertical-align:middle;
+}

@@ -27,14 +27,51 @@ function liste() {
     });
 }
 
+//TODO : envoie du fichier
 // TODO Validation du champs d'upload
+/*
+$(document).ready(function() {
+    $("#progress").hide();
+	$('#importation').on('submit', function() {
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: $(this).serialize(),
+            dataType: 'json',
+            beforeSend: function() {
+                $("#progress").show();
+            },
+            success: function(reponse) {
+                $("#progress").hide();
+                //TODO : sleep
+                $.jGrowl(reponse, { life : 5000 });
+            },
+            error: function() {
+                $.jGrowl("Erreur lors de l'envoie du fichier", { life : 5000 });
+            }
+        });
+        return false;
+	});
+});
+*/
+$(document).ready(function() {
+    $("#progress").hide();
+});
 function importation() {
-    // Importation d'un csv
-    // TODO : envoie du fichier
-    $.get( "/importation", function( data ) {
-        $.jGrowl(data, { life : 5000 });
-        //$('#notifications').html(data);
-        //$('#notifications').show();
+    // Lecture du fichier à importer
+    var file = document.getElementById('fichier').files[0];
+    var reader = new FileReader();
+    $("#progress").show();
+    reader.readAsText(file, 'UTF-8');
+    reader.onload = envoie_du_fichier;
+}
+function envoie_du_fichier(event) {
+    // Envoie du fichier à importer
+    var result = event.target.result;
+    var fileName = document.getElementById('fichier').files[0].name;
+    $.post('/importation', { data: result, name: fileName }, function(reponse) {
+        $.jGrowl(reponse, { life : 5000 });
+        $("#progress").hide();
     });
 }
 

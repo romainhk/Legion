@@ -35,9 +35,14 @@
     -->
 
     <h3>Importation</h3>
-    <form enctype="multipart/form-data">
-        <input type="file" id="csv">
+    <!--<form id="importation" action="/importation" method="post" enctype="multipart/form-data">-->
+    <!--<form id="importation" enctype="multipart/form-data">-->
+    <form id="importation" enctype="multipart/form-data">
+        <input type="file" id="fichier">
+        <!--<input type="submit" value="Importer">-->
+        <!--<input type="button" value="Importer" onClick="importation();">-->
         <input type="button" value="Importer" onClick="importation();">
+        <img id="progress" src="loading.gif">
     </form>
 
     <h3>Statistiques</h3>

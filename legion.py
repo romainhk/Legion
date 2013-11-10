@@ -15,7 +15,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     * logging des activités
     """
     def __init__(self, request, client, server):
-        self.fichier = 'export.csv'
         self.enreg = {}
         self.header = []
         self.annee = 2013
@@ -44,15 +43,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             logging.warning(data)
             a = json.dumps(data)
             self.repondre(a)
-        elif params.path == '/importation':
-            logging.warning('Importation du csv...')
-            self.open_csv()
-            logging.warning(self.header)
-            #self.writetodb()
-            a = json.dumps(u'Importation réussie')
-            self.repondre(a)
         elif params.path == '/init':
-            self.open_csv()
+            self.header = ['INE','Nom',u'Prénom','Classe']
             a = json.dumps(self.header)
             self.repondre(a)
         elif params.path == '/recherche':
@@ -66,21 +58,15 @@ class Legion(http.server.SimpleHTTPRequestHandler):
 
     def do_POST(self):
         logging.warning('POST')
-
-        """
-    def do_POST(self):
-        #logging.warning(self.headers)
-        form = cgi.FieldStorage(
-            fp=self.rfile,
-            headers=self.headers,
-            environ={'REQUEST_METHOD':'POST',
-                     'CONTENT_TYPE':self.headers['Content-Type'],
-                     })
-        logging.warning("======= POST VALUES =======")
-        for item in form.list:
-            logging.warning(item)
-        http.server.SimpleHTTPRequestHandler.do_GET(self)
-        """
+        length = self.headers['content-length']
+        data = self.rfile.read(int(length))
+        if self.path == '/importation':
+            logging.warning('Importation du fichier...')
+            self.lire_xml(data)
+            logging.warning(self.header)
+            #self.writetodb()
+            a = json.dumps(u'Importation réussie')
+            self.repondre(a)
 
     def repondre(self, reponse):
         self.send_response(200)
@@ -100,17 +86,23 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         data = []
         req = u'SELECT * FROM Élèves WHERE "{type}"="{id}" ORDER BY Nom,Prénom ASC'.format(id=id, type=type)
         logging.warning(req)
-        # TRY
+        # TODO TRY
         for row in self.curs.execute(req):
             data.append(self.dict_from_row(row))
         logging.warning(data)
         return data
 
+    def lire_xml(self, data):
+        """ Parse le xml
+        """
+        logging.warning('Parsing du fichier xml')
+
     def open_csv(self):
         """ Importe le csv
         """
         iINE = 0 # position de l'INE
-        with open(self.fichier, 'r') as csvfile:
+        fichier = 'export.csv'
+        with open(fichier, 'r') as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='"')
             for row in reader:
                 if reader.line_num == 1: # première ligne = entêtes

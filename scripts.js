@@ -22,12 +22,11 @@ function liste() {
         var tab = tableau.clone();
         tab.append( list_to_tab(data) );
         $('#vue').html(tab);
-        $.jGrowl("Chargement de la liste terminé.", { life : 4000 });
+        $.jGrowl("Chargement de la liste réussi", { life : 4000 });
         //$.jGrowl("Listage<br/>voila", { header: 'Important', life : 50000 });
     });
 }
 
-//TODO : envoie du fichier
 // TODO Validation du champs d'upload
 $(document).ready(function() {
     $("#progress").hide();
@@ -45,7 +44,7 @@ function envoie_du_fichier(event) {
     var result = event.target.result;
     var fileName = document.getElementById('fichier').files[0].name;
     $.post('/importation', { data: result, name: fileName }, function(reponse) {
-        $.jGrowl(reponse, { life : 5000 });
+        $.jGrowl(reponse, { life : 6000 });
         $("#progress").hide();
     });
 }
@@ -70,6 +69,13 @@ function list_to_tab(liste) {
         var vals = "";
         for (var i=0;i<champs.length;i++) {
             c = champs[i];
+            if (c == "Doublement") { // Traduction de la colonne doublement
+                if (value[c] == "0") {
+                    value[c] = "Non";
+                } else {
+                    value[c] = "Oui";
+                }
+            }
             vals += "<td>"+value[c]+"</td>";
         }
         ligne += "<tr>"+vals+"</tr>\n";

@@ -17,7 +17,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     """
     def __init__(self, request, client, server):
         self.enreg = {}
-        self.header = [ 'INE', 'Nom', u'Prénom', 'Classe' ]
+        self.header = [ 'INE', 'Nom', u'Prénom', 'Classe', 'Doublement' ]
         self.annee = datetime.date.today().year
         # DB
         bdd = 'base.sqlite'
@@ -96,7 +96,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def importer_xml(self, data):
         """ Parse le xml
         """
-        logging.warning('Parsing du fichier xml')
+        #logging.warning('Parsing du fichier xml')
         # Écriture de l'xml dans un fichier
         fichier_tmp = 'importation.xml'
         f = open(fichier_tmp, 'wb')
@@ -105,54 +105,43 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         # Parsing
         tree = ET.parse(fichier_tmp)
         root = tree.getroot()
-        self.annee = root.findtext('.//PARAMETRES/ANNEE_SCOLAIRE')
+        self.annee = int(root.findtext('.//PARAMETRES/ANNEE_SCOLAIRE'))
         date = root.findtext('.//PARAMETRES/DATE_EXPORT')
         for eleve in root.iter('ELEVE'):
             eid = eleve.get('ELEVE_ID')
             ine = eleve.findtext('ID_NATIONAL')
             nom = eleve.findtext('NOM')
             prenom = eleve.findtext('PRENOM')
+            doublement = eleve.findtext('DOUBLEMENT')
             classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE/CODE_STRUCTURE".format(eid))
             if classe is None:
                 logging.warning('Impossible de trouver la classe pour {0} {1} (id:{2})'.format(prenom, nom, eid))
-            enr = { 'eid': eid, 'ine': ine, 'nom': nom, 'prenom': prenom, 'classe': classe }
-            #self.writetodb(enr)
-
-    def open_csv(self):
-        """ Importe le csv
-        iINE = 0 # position de l'INE
-        fichier = 'export.csv'
-        with open(fichier, 'r') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',', quotechar='"')
-            for row in reader:
-                if reader.line_num == 1: # première ligne = entêtes
-                    self.header = row
-                    try:
-                        iINE = row.index('INE')
-                    except:
-                        print('Impossible de trouver la colonne INE')
-                        return False
-                    continue
-                if row[iINE] not in self.enreg:
-                    self.enreg[row[iINE]] = row
-                else:
-                    print('Enregistrement en double : {0}').format(row)
-        """
+                classe = 'Inconnue'
+            enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, 'doublement': doublement, 'classe': classe }
+            self.writetodb(enr)
 
     def writetodb(self, enr):
-        """ Écrit un enregistrement dans la base
+        """ Écrit un élève dans la bdd
         """
-        # TODO : gestion des duplicatas
-        req = u'INSERT INTO Élèves ' \
-            + u'(INE, Nom, Prénom, Classe, Année) VALUES ("%s", "%s", "%s", "%s", %i)' \
-            % (enr['INE'], enr['Nom'], enr[u'Prénom'], enr['Classe'], self.annee)
-        logging.error(req)
+        # On compte si l'élève est déjà présent dans la bdd pour cette année
+        req = u'SELECT COUNT(*) FROM Élèves WHERE ' \
+            + u'INE="{ine}" AND Année={annee}'.format(ine=enr['ine'], annee=self.annee)
         try:
-            #self.curs.execute(req)
-            pass
+            self.curs.execute(req)
         except sqlite3.Error as e:
-            logging.error(u"Erreur lors de l'insertion :\n%s" % (e.args[0]))
-        self.conn.commit()
+            logging.error(u"Impossible de trouver si l'élève est déjà dans la base :\n%s" % (e.args[0]))
+        r = self.curs.fetchone()
+        if r[0] == 0:
+            # Insertion de l'élève
+            req = u'INSERT INTO Élèves ' \
+                + u'(INE, Nom, Prénom, Classe, Doublement, Année) VALUES ("%s", "%s", "%s", "%s", "%s", %i)' \
+                % (enr['ine'], enr['nom'], enr[u'prénom'], enr['classe'], enr['doublement'], self.annee)
+            try:
+                self.curs.execute(req)
+                pass
+            except sqlite3.Error as e:
+                logging.error(u"Erreur lors de l'insertion :\n%s" % (e.args[0]))
+            self.conn.commit()
 
     def readfromdb(self):
         """ Lit le contenu de la base

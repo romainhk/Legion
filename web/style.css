@@ -9,6 +9,18 @@ h1 {
 h3 {
     margin-top:1.5em;
 }
+input {
+    margin:0.5ex;
+}
+/* structure */
+.gauche {
+    float: left;
+    width:74%;
+}
+.droite {
+    float: right;
+    width:25%;
+}
 /* Tableaux */
 table {
     margin-top:0.5ex;
@@ -26,7 +38,6 @@ th, td {
 }
 /* Classes */
 .recherche {
-    float:right;
     border:1px dotted black;
     padding: 0.8ex 1ex;
 }

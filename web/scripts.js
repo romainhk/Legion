@@ -14,6 +14,7 @@ function init(){
         tableau.append( "<tr>"+ligne+"</tr>\n" );
         $('#vue').html(tableau);
     });
+    liste();
 }
 
 function liste() {
@@ -23,7 +24,6 @@ function liste() {
         tab.append( list_to_tab(data) );
         $('#vue').html(tab);
         $.jGrowl("Chargement de la liste réussi", { life : 3000 });
-        //$.jGrowl("Listage<br/>voila", { header: 'Important', life : 50000 });
     });
 }
 
@@ -44,8 +44,9 @@ function envoie_du_fichier(event) {
     var result = event.target.result;
     var fileName = document.getElementById('fichier').files[0].name;
     $.post('/importation', { data: result, name: fileName }, function(reponse) {
-        $.jGrowl(reponse, { life : 6000 });
+        $.jGrowl(reponse, { header: 'Important', life : 6000 });
         $("#progress").hide();
+        // TODO : rafraichir la page ?
     });
 }
 
@@ -55,10 +56,15 @@ function rechercher() {
     var type = $('#rech-type').val();
     console.log(val);
     console.log(type);
-    $.get( "/recherche?val="+val+"&type="+type, function( data ) {
-        $('#vue').html(tableau);
-        $('#vue table').append( list_to_tab(data) );
-    });
+    if (val.length > 0) {
+        $.get( "/recherche?val="+val+"&type="+type, function( data ) {
+            var tab = tableau.clone();
+            $('#vue').html(tab);
+            $('#vue table').append( list_to_tab(data) );
+        });
+    } else {
+        $.jGrowl("Seigneur, vous désirez ?", { life : 5000 });
+    }
 }
 
 function list_to_tab(liste) {

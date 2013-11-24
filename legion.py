@@ -85,9 +85,12 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         print('Message')
 
     def rechercher(self, id, type):
+        """ Fait une recherche dans la base
+        """
         # TODO : type=Tout
         data = []
-        req = u'SELECT * FROM Élèves WHERE "{type}"="{id}" ORDER BY Nom,Prénom ASC'.format(id=id, type=type)
+        req = u'SELECT * FROM Élèves WHERE "{type}" COLLATE UTF8_GENERAL_CI LIKE "%{id}%" ORDER BY Nom,Prénom ASC'.format(id=id, type=type)
+        # COLLATE UTF8_GENERAL_CI = sans casse
         logging.warning(req)
         # TODO TRY
         for row in self.curs.execute(req):

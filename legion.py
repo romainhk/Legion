@@ -21,6 +21,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.header = [ 'INE', 'Nom', u'Prénom', 'Classe', 'Doublement' ]
         self.annee = datetime.date.today().year
         self.root = root
+        self.nb_import = 0
         # DB
         bdd = self.root+os.sep+'base.sqlite'
         try:
@@ -43,14 +44,12 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         logging.warning("REQUEST : {0} ? {1}".format(params, query))
         if params.path == '/liste':
             data = self.readfromdb()
-            logging.warning(data)
             a = json.dumps(data)
             self.repondre(a)
         elif params.path == '/init':
             a = json.dumps(self.header)
             self.repondre(a)
         elif params.path == '/recherche':
-            logging.warning('Recherche')
             res = self.rechercher(query['val'].pop(), query['type'].pop())
             a = json.dumps(res)
             self.repondre(a)
@@ -62,16 +61,19 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         logging.warning('POST')
         length = self.headers['content-length']
         data = self.rfile.read(int(length))
-        parse = parse_qs(data) # { data: , name: }
-        data = parse[b'data'].pop()
+        parse = parse_qs(data.decode('UTF-8')) # { data: , name: }
+        # le fichier xml est en ISO-8859-15
+        data = parse['data'].pop()
+        logging.warning(self.path)
         if self.path == '/importation':
             logging.warning('Importation du fichier...')
             self.importer_xml(data)
-            #self.writetodb()
-            a = json.dumps(u'Importation réussie')
+            a = json.dumps(u'Importation de {nb} élèves terminée'.format(nb=self.nb_import))
             self.repondre(a)
 
     def repondre(self, reponse):
+        """ Envoie une réponse http [sic]
+        """
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
@@ -99,12 +101,13 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         return data
 
     def importer_xml(self, data):
-        """ Parse le xml
+        """ Parse le xml à importer
         """
         #logging.warning('Parsing du fichier xml')
+        self.nb_import = 0
         # Écriture de l'xml dans un fichier
         fichier_tmp = 'importation.xml'
-        f = open(fichier_tmp, 'wb')
+        f = open(fichier_tmp, 'w', encoding='ISO-8859-15')
         f.write(data)
         f.close()
         # Parsing
@@ -120,7 +123,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             doublement = eleve.findtext('DOUBLEMENT')
             classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE/CODE_STRUCTURE".format(eid))
             if classe is None:
-                logging.warning('Impossible de trouver la classe pour {0} {1} (id:{2})'.format(prenom, nom, eid))
+                logging.info('Impossible de trouver la classe pour {0} {1} (id:{2})'.format(prenom, nom, eid))
                 classe = 'Inconnue'
             enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, 'doublement': doublement, 'classe': classe }
             self.writetodb(enr)
@@ -128,22 +131,21 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def writetodb(self, enr):
         """ Écrit un élève dans la bdd
         """
-        # On compte si l'élève est déjà présent dans la bdd pour cette année
+        # On vérifie si l'élève est déjà présent dans la bdd pour cette année
         req = u'SELECT COUNT(*) FROM Élèves WHERE ' \
             + u'INE="{ine}" AND Année={annee}'.format(ine=enr['ine'], annee=self.annee)
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
-            logging.error(u"Impossible de trouver si l'élève est déjà dans la base :\n%s" % (e.args[0]))
+            logging.error(u"Impossible de savoir si l'élève est déjà dans la base :\n%s" % (e.args[0]))
         r = self.curs.fetchone()
         if r[0] == 0:
-            # Insertion de l'élève
             req = u'INSERT INTO Élèves ' \
                 + u'(INE, Nom, Prénom, Classe, Doublement, Année) VALUES ("%s", "%s", "%s", "%s", "%s", %i)' \
                 % (enr['ine'], enr['nom'], enr[u'prénom'], enr['classe'], enr['doublement'], self.annee)
             try:
                 self.curs.execute(req)
-                pass
+                self.nb_import = self.nb_import + 1
             except sqlite3.Error as e:
                 logging.error(u"Erreur lors de l'insertion :\n%s" % (e.args[0]))
             self.conn.commit()
@@ -151,6 +153,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def readfromdb(self):
         """ Lit le contenu de la base
         """
+        # TODO : Tris
         data = []
         for row in self.curs.execute(u'SELECT * FROM Élèves ORDER BY Nom,Prénom ASC'):
             data.append(self.dict_from_row(row))

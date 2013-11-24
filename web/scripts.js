@@ -23,7 +23,7 @@ function liste() {
         var tab = tableau.clone();
         tab.append( list_to_tab(data) );
         $('#vue').html(tab);
-        $.jGrowl("Chargement de la liste réussi", { life : 3000 });
+        $.jGrowl("Chargement des "+data.length+" élèves de la base terminé.", { life : 3000 });
     });
 }
 
@@ -36,7 +36,7 @@ function importation() {
     var file = document.getElementById('fichier').files[0];
     var reader = new FileReader();
     $("#progress").show();
-    reader.readAsText(file, 'UTF-8');
+    reader.readAsText(file, 'ISO-8859-15');
     reader.onload = envoie_du_fichier;
 }
 function envoie_du_fichier(event) {

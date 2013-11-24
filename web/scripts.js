@@ -22,7 +22,7 @@ function liste() {
         var tab = tableau.clone();
         tab.append( list_to_tab(data) );
         $('#vue').html(tab);
-        $.jGrowl("Chargement de la liste réussi", { life : 4000 });
+        $.jGrowl("Chargement de la liste réussi", { life : 3000 });
         //$.jGrowl("Listage<br/>voila", { header: 'Important', life : 50000 });
     });
 }

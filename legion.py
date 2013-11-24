@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
-import sqlite3, datetime
+import sqlite3, datetime, os
 import http.server, socketserver, threading, webbrowser
 import logging, urllib, json
 from urllib.parse import urlparse, parse_qs
@@ -16,11 +16,13 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     * logging des activités
     """
     def __init__(self, request, client, server):
+        global root
         self.enreg = {}
         self.header = [ 'INE', 'Nom', u'Prénom', 'Classe', 'Doublement' ]
         self.annee = datetime.date.today().year
+        self.root = root
         # DB
-        bdd = 'base.sqlite'
+        bdd = self.root+os.sep+'base.sqlite'
         try:
             self.conn = sqlite3.connect(bdd)
         except:
@@ -167,6 +169,8 @@ if __name__ == "__main__":
     try:
         #open_browser()
         address = ("", PORT)
+        root = os.getcwd()
+        os.chdir(root + os.sep + 'web') # la partie html est dans le dossier web
         server = http.server.HTTPServer(address, Legion)
         print(u'Démarrage du serveur sur le port', PORT)
         server.serve_forever()

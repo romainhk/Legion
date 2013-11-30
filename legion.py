@@ -19,7 +19,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def __init__(self, request, client, server):
         global root
         self.enreg = {}
-        self.header = [ 'INE', 'Nom', u'Prénom', 'Naissance', 'Classe', 'Doublement', u'Entrée' ]
+        # Les colonnes qui seront affichées
+        self.header = [ 'Nom', u'Prénom', 'Naissance', 'Classe', 'Doublement', u'Entrée' ]
         self.annee = datetime.date.today().year
         self.root = root
         self.nb_import = 0
@@ -91,14 +92,15 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         """ Fait une recherche dans la base
         """
         # TODO : type=Tout
+        # TODO : recherche exacte pour la classe
         data = []
         req = u'SELECT * FROM Élèves WHERE "{type}" COLLATE UTF8_GENERAL_CI LIKE "%{id}%" ORDER BY Nom,Prénom ASC'.format(id=id, type=type)
         # COLLATE UTF8_GENERAL_CI = sans casse
-        logging.warning(req)
-        # TODO TRY
-        for row in self.curs.execute(req):
-            data.append(self.dict_from_row(row))
-        logging.warning(data)
+        try:
+            for row in self.curs.execute(req):
+                data.append(self.dict_from_row(row))
+        except:
+            logging.warning('La recherche de {0} comme {1} a échoué.\n{2}'.format(id, type, req))
         return data
 
     def importer_xml(self, data):
@@ -160,7 +162,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         """
         # TODO : Tris
         data = []
-        for row in self.curs.execute(u'SELECT * FROM Élèves ORDER BY Nom,Prénom ASC'):
+        for row in self.curs.execute(u'SELECT {0} FROM Élèves ORDER BY Nom,Prénom ASC'.format(', '.join(self.header))):
             data.append(self.dict_from_row(row))
         return data
         

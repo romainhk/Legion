@@ -13,12 +13,13 @@ class Legion(http.server.SimpleHTTPRequestHandler):
 
     TODO :
     * vrai format de données
-    * logging des activités
+    * logging des activités en txt
+    * L'INE peut manquer !
     """
     def __init__(self, request, client, server):
         global root
         self.enreg = {}
-        self.header = [ 'INE', 'Nom', u'Prénom', 'Classe', 'Doublement' ]
+        self.header = [ 'INE', 'Nom', u'Prénom', 'Naissance', 'Classe', 'Doublement', u'Entrée' ]
         self.annee = datetime.date.today().year
         self.root = root
         self.nb_import = 0
@@ -120,13 +121,17 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             ine = eleve.findtext('ID_NATIONAL')
             nom = eleve.findtext('NOM')
             prenom = eleve.findtext('PRENOM')
+            j, m, naissance = eleve.findtext('DATE_NAISS').split('/')
             doublement = eleve.findtext('DOUBLEMENT')
+            entree = eleve.findtext('DATE_ENTREE')
+            sortie = eleve.findtext('DATE_SORTIE')
             classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE/CODE_STRUCTURE".format(eid))
-            if classe is None:
-                logging.info('Impossible de trouver la classe pour {0} {1} (id:{2})'.format(prenom, nom, eid))
-                classe = 'Inconnue'
-            enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, 'doublement': doublement, 'classe': classe }
-            self.writetodb(enr)
+            if sortie is None:
+                enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, 'naissance': int(naissance), 'doublement': doublement, 'classe': classe, 'entree': entree }
+                self.writetodb(enr)
+            else:
+                # élève sortie de l'établissement
+                logging.error('{0} {1} (id:{2}) est sortie de l\'établissement'.format(prenom, nom, eid))
 
     def writetodb(self, enr):
         """ Écrit un élève dans la bdd
@@ -141,8 +146,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         r = self.curs.fetchone()
         if r[0] == 0:
             req = u'INSERT INTO Élèves ' \
-                + u'(INE, Nom, Prénom, Classe, Doublement, Année) VALUES ("%s", "%s", "%s", "%s", "%s", %i)' \
-                % (enr['ine'], enr['nom'], enr[u'prénom'], enr['classe'], enr['doublement'], self.annee)
+                + u'(INE, Nom, Prénom, Naissance, Classe, Doublement, Année, Entrée) VALUES ("%s", "%s", "%s", %i, "%s", "%s", %i, "%s")' \
+                % (enr['ine'], enr['nom'], enr[u'prénom'], enr['naissance'], enr['classe'], enr['doublement'], self.annee, enr['entree'])
             try:
                 self.curs.execute(req)
                 self.nb_import = self.nb_import + 1

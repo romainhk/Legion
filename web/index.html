@@ -11,7 +11,7 @@
   </head>
   <body onLoad="init();">
     <h1>Legion</h1>
-    <!-- #####  Corps  ##### -->
+    <!-- #####  Corps : résultats et stats  ##### -->
     <div class="gauche">
         <h3>Contenu de la base</h3>
         <div id="vue"></div>
@@ -28,7 +28,7 @@
         <pre>
 TODO :
 * Filtre par classe / par année.
-* Tri des colonnes : nom, classe, entrée
+* Tri des colonnes (au moins : nom, classe, entrée)
         </pre>
         <h3>Statistiques</h3>
         <table border="1">
@@ -50,24 +50,24 @@ TODO :
         <pre>TODO : faire les calculs, filtre par année
         </pre>
     </div>
-    <!-- #####  Menu  ##### -->
+    <!-- #####  Menu : recherche et importation  ##### -->
     <div class="droite">
         <input type="button" value="Rafraîchir la liste" onClick="liste();">
         <h3>Recherche</h3>
         <form id="recherche" class="recherche" onsubmit="rechercher();return false;">
-            Rechercher <input type="text" id="rech-val"><br /> comme <select id="rech-type" onChange="typeDeRecherche();">
+            Trouver <input type="text" id="rech-val"><br /> comme <select id="rech-type" onChange="typeDeRecherche();">
             <option selected=selected>Nom</option>
             <option>Classe</option>
             <option>INE</option>
             <option style="font-style:italic;">Tout</option>
         </select>
-        <input type="submit" value="Ok" style="margin-left:5ex;">
+        <input type="submit" value="Ok" style="margin-left:4ex; font-weight:bold;">
         </form>
         <h3>Importation</h3>
-        Sélectionner une exportation xml de la base SIECLE (<i>ElevesSansAdresses.xml</i>)
+        Sélectionner l'exportation xml de la base SIECLE (<i>ElevesSansAdresses.xml</i>)
         <form id="importation" enctype="multipart/form-data">
             <input type="file" id="fichier">
-            <input type="button" value="Importer" onClick="importation();">
+            <input type="button" value="Importer" onClick="importation();" style="font-weight:bold;">
             <img id="progress" src="loading.gif">
         </form>
     </div>

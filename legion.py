@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
-import sqlite3, datetime, os
+import sqlite3, datetime, os, shutil
 import http.server, socketserver, threading, webbrowser
 import logging, urllib, json
 from urllib.parse import urlparse, parse_qs
@@ -14,7 +14,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     TODO :
     * vrai format de données
     * logging des activités en txt
-    * L'INE peut manquer !
+    * L'INE peut manquer !?
     """
     def __init__(self, request, client, server):
         global root
@@ -28,6 +28,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.nb_import = 0
         # DB
         bdd = self.root+os.sep+'base.sqlite'
+        # Sauvegarde de la base
+        shutil.copy(bdd, bdd+'.'+datetime.date.today().isoformat())
         try:
             self.conn = sqlite3.connect(bdd)
         except:
@@ -36,7 +38,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.conn.row_factory = sqlite3.Row
         self.curs = self.conn.cursor()
 
-        # TODO : faire une sauvegarde de la base
         super().__init__(request, client, server)
 
     def dict_from_row(self, row):
@@ -167,7 +168,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def readfromdb(self):
         """ Lit le contenu de la base
         """
-        # TODO : Tris
         data = []
         for row in self.curs.execute(u'SELECT {0} FROM Élèves ORDER BY Nom,Prénom ASC'.format(', '.join(self.header))):
             data.append(self.dict_from_row(row))

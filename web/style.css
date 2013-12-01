@@ -1,5 +1,5 @@
 body {
-    background-color:#F2A9B1;
+    background-color:#F2B5BC;
     padding:0.2ex 2ex;
 }
 h1 {
@@ -15,11 +15,11 @@ input {
 /* structure */
 .gauche {
     float: left;
-    width:74%;
+    width:79%;
 }
 .droite {
     float: right;
-    width:25%;
+    width:20%;
 }
 /* Tableaux */
 table {

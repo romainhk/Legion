@@ -2,10 +2,10 @@
 var tableau = $('<table border="1"></table>');
 // Champs de ce tableau
 var champs = new Array();
-// Classes
+// Classes connues
 var classes = new Array();
 // Champs de recherche par défaut
-rechVal = $("<input type=\"text\" id=\"rech-val\" size=\"15\" maxlength=\"50\" />");
+rechVal = $('<input type="text" id="rech-val" size="15" maxlength="50" />');
 
 function init(){
     // Initialisation de l'application
@@ -28,8 +28,8 @@ function listeClasses(){
     // Actualise la liste des classes
     $.get( "/liste-classes", function( data ) {
         classes = data;
-        // TODO : select classe dans la recherche
         var lignes = "";
+        // TODO : inclure les statistiques
         $.each(classes, function( i, j ) {
             lignes += "<tr><td>"+j+"</td>\n";
             lignes += "<td>0 (0%)</td>\n<td>50% / 50%</td>\n</tr>\n";
@@ -62,7 +62,6 @@ function typeDeRecherche() {
     }
 }
 
-// TODO Validation du champs d'upload
 $(document).ready(function() {
     $("#progress").hide();
 });
@@ -90,7 +89,6 @@ function rechercher() {
     // Faire une recherche dans la base
     var val = $('#rech-val').val();
     var type = $('#rech-type').val();
-    // TODO : par classe, utiliser une liste déroulante des classes connues
     if (val.length > 0) {
         $.get( "/recherche?val="+val+"&type="+type, function( data ) {
             var tab = tableau.clone();

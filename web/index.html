@@ -32,24 +32,22 @@ TODO :
         </pre>
         <h3>Statistiques</h3>
         <table border="1">
-            <caption>Pour l'année <select id="stats-annee" onChange="charger_stats();">
+            <thead>
+                <caption>Pour l'année <select id="stats-annee" onChange="charger_stats();">
                     <option>1168</option>
                     <option>1169</option>
                     <option selected=selected>2013</option>
                     <option>Toutes</option>
                 </select></caption>
-            <tr>
-                <th>Classe</th>
-                <th>Redoublant / Total</th>
-                <th>...</th>
-            </tr>
-            <tr>
-                <td>1erES1</td>
-                <td>4 / 23</td>
-                <td>...</td>
-            </tr>
+                <tr>
+                    <th>Classe</th>
+                    <th>Redoublants (%)</th>
+                    <th>Garçons / Filles</th>
+                </tr>
+            </thead>
+            <tbody id="stats"></tbody>
         </table>
-        <pre>TODO : commencer cette partie...
+        <pre>TODO : faire les calculs, filtre par année
         </pre>
     </div>
     <!-- #####  Menu  ##### -->
@@ -57,12 +55,13 @@ TODO :
         <input type="button" value="Rafraîchir la liste" onClick="liste();">
         <h3>Recherche</h3>
         <form id="recherche" class="recherche" onsubmit="rechercher();return false;">
-        Rechercher <input type="text" id="rech-val" size="15" maxlength="50"> comme <select id="rech-type">
+            Rechercher <input type="text" id="rech-val"><br /> comme <select id="rech-type" onChange="typeDeRecherche();">
             <option selected=selected>Nom</option>
             <option>Classe</option>
             <option>INE</option>
             <option style="font-style:italic;">Tout</option>
         </select>
+        <input type="submit" value="Ok" style="margin-left:5ex;">
         </form>
         <h3>Importation</h3>
         Sélectionner une exportation xml de la base SIECLE (<i>ElevesSansAdresses.xml</i>)

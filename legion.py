@@ -18,9 +18,11 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     """
     def __init__(self, request, client, server):
         global root
-        self.enreg = {}
         # Les colonnes qui seront affichées
         self.header = [ 'Nom', u'Prénom', 'Naissance', 'Classe', 'Doublement', u'Entrée' ]
+        # La liste des classes connues
+        self.classes = []
+
         self.annee = datetime.date.today().year
         self.root = root
         self.nb_import = 0
@@ -33,6 +35,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             exit(2)
         self.conn.row_factory = sqlite3.Row
         self.curs = self.conn.cursor()
+
         # TODO : faire une sauvegarde de la base
         super().__init__(request, client, server)
 
@@ -50,6 +53,10 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             self.repondre(a)
         elif params.path == '/init':
             a = json.dumps(self.header)
+            self.repondre(a)
+        elif params.path == '/liste-classes':
+            self.liste_classes()
+            a = json.dumps(self.classes)
             self.repondre(a)
         elif params.path == '/recherche':
             res = self.rechercher(query['val'].pop(), query['type'].pop())
@@ -70,6 +77,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         if self.path == '/importation':
             logging.warning('Importation du fichier...')
             self.importer_xml(data)
+            self.liste_classes() # on met à jour la liste des classes
             a = json.dumps(u'Importation de {nb} élèves terminée'.format(nb=self.nb_import))
             self.repondre(a)
 
@@ -92,7 +100,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         """ Fait une recherche dans la base
         """
         # TODO : type=Tout
-        # TODO : recherche exacte pour la classe
         data = []
         req = u'SELECT * FROM Élèves WHERE "{type}" COLLATE UTF8_GENERAL_CI LIKE "%{id}%" ORDER BY Nom,Prénom ASC'.format(id=id, type=type)
         # COLLATE UTF8_GENERAL_CI = sans casse
@@ -166,6 +173,15 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             data.append(self.dict_from_row(row))
         return data
         
+    def liste_classes(self):
+        """ Met à jour la liste des classes connues
+        """
+        req = u'SELECT DISTINCT Classe FROM Élèves ORDER BY Classe ASC'
+        try:
+            self.curs.execute(req)
+        except sqlite3.Error as e:
+            logging.error(u"Erreur lors de la mise à jour de la liste des classes :\n%s" % (e.args[0]))
+        self.classes = [item[0] for item in self.curs.fetchall()]
 
 # defines
 PORT = 5432

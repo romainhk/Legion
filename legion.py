@@ -8,18 +8,22 @@ import xml.etree.ElementTree as ET
 
 class Legion(http.server.SimpleHTTPRequestHandler):
     """ Classe Legion
-
-    Nécessite : jquery
+    Serveur web et interface pour base sqlite
 
     TODO :
-    * vrai format de données
     * logging des activités en txt
     * L'INE peut manquer !?
+    * si aucuns changements à l'extinction -> supprimer la copie de la base
     """
     def __init__(self, request, client, server):
         global root
-        # Les colonnes qui seront affichées
-        self.header = [ 'Nom', u'Prénom', 'Naissance', 'Classe', 'Doublement', u'Entrée' ]
+        # Les colonnes qui seront affichées, dans l'ordre et avec leur tri
+        self.header = [ ['Nom', 'string'], \
+                        [u'Prénom', 'string'], \
+                        ['Naissance', 'int'], \
+                        ['Classe', 'string'], \
+                        ['Doublement', 'string'], \
+                        [u'Entrée', None] ]
         # La liste des classes connues
         self.classes = []
 
@@ -169,7 +173,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         """ Lit le contenu de la base
         """
         data = []
-        for row in self.curs.execute(u'SELECT {0} FROM Élèves ORDER BY Nom,Prénom ASC'.format(', '.join(self.header))):
+        req = u'SELECT {0} FROM Élèves ORDER BY Nom,Prénom ASC'.format(', '.join([c[0] for c in self.header]))
+        for row in self.curs.execute(req):
             data.append(self.dict_from_row(row))
         return data
         
@@ -183,7 +188,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             logging.error(u"Erreur lors de la mise à jour de la liste des classes :\n%s" % (e.args[0]))
         self.classes = [item[0] for item in self.curs.fetchall()]
 
-# defines
+# DEFINES
 PORT = 5432
 FILE = ''
 
@@ -201,8 +206,8 @@ if __name__ == "__main__":
         root = os.getcwd()
         os.chdir(root + os.sep + 'web') # la partie html est dans le dossier web
         server = http.server.HTTPServer(address, Legion)
-        print(u'Démarrage du serveur sur le port', PORT)
+        logging.warning(u'Démarrage du serveur sur le port', PORT)
         server.serve_forever()
     except KeyboardInterrupt:
-        print(u'^C reçu, extinction du serveur')
+        logging.warning(u'^C reçu, extinction du serveur')
         server.socket.close()

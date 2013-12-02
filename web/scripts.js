@@ -1,6 +1,4 @@
-// Tableau des résultats
-var tableau = $('<table border="1"></table>');
-// Champs de ce tableau
+// Champs affichés
 var champs = new Array();
 // Classes connues
 var classes = new Array();
@@ -9,14 +7,29 @@ rechVal = $('<input type="text" id="rech-val" size="15" maxlength="50" />');
 
 function init(){
     // Initialisation de l'application
+
+    // Les résultats sont triables
+    $("#vue").stupidtable();
+    // ... pour la petite flèche
+    $("#vue").on("aftertablesort", function (event, data) {
+        var th = $(this).find("th");
+        th.find(".arrow").remove();
+        var dir = $.fn.stupidtable.dir;
+        var arrow = data.direction === dir.ASC ? "&uarr;" : "&darr;";
+        th.eq(data.column).append('<span class="arrow">' + arrow +'</span>');
+    });
+
     $.get( "/init", function( data ) {
-        champs = data;
         var ligne = "";
-        for (var i=0;i<champs.length;i++) {
-            ligne += "<th>"+champs[i]+"</th>\n";
-        }
-        tableau.append( "<thead>\n<tr>"+ligne+"</tr>\n</head>\n" );
-        $('#vue').html(tableau);
+        $.each(data, function( i, j ) {
+            champ = j[0];
+            champs.push(champ);
+            type = j[1];
+            var sort = '';
+            if (type != null) { sort = 'data-sort="'+type+'"'; }
+            ligne += "<th "+sort+">"+champ+"</th>\n";
+        });
+        $('#vue > thead').html( "<tr>"+ligne+"</tr>\n" );
         // Mise à jour de la liste des classes
         listeClasses();
     });
@@ -41,9 +54,7 @@ function listeClasses(){
 function liste() {
     // Liste la contenu de la base
     $.get( "/liste", function( data ) {
-        var tab = tableau.clone();
-        tab.append( list_to_tab(data) );
-        $('#vue').html(tab);
+        $('#vue > tbody').html( list_to_tab(data) );
         $.jGrowl("Chargement des "+data.length+" élèves de la base terminé.", { life : 3000 });
     });
 }
@@ -91,8 +102,6 @@ function rechercher() {
     var type = $('#rech-type').val();
     if (val.length > 0) {
         $.get( "/recherche?val="+val+"&type="+type, function( data ) {
-            var tab = tableau.clone();
-            $('#vue').html(tab);
             $('#vue table').append( list_to_tab(data) );
         });
     } else {
@@ -102,24 +111,20 @@ function rechercher() {
 
 function list_to_tab(liste) {
     // Convertie une liste en lignes de tableau tr
-    // TODO : pagination ?
-    var ligne = "";
+    var lignes = "";
     $.each( liste, function( key, value ) {
         var vals = "";
-        for (var i=0;i<champs.length;i++) {
-            c = champs[i];
-            if (c == "Doublement") { // Traduction de la colonne doublement
-                if (value[c] == "0") {
-                    value[c] = "Non";
-                } else {
-                    value[c] = "Oui";
-                }
+        $.each( champs, function( i, j ) {
+            v = value[j];
+            if (j == "Doublement") { // Traduction de la colonne doublement
+                if (v == "0") { v = "Non";
+                } else { v = "Oui"; }
             }
-            vals += "<td>"+value[c]+"</td>";
-        }
-        ligne += "<tr>"+vals+"</tr>\n";
+            vals += "<td>"+v+"</td>";
+        });
+        lignes += "<tr>"+vals+"</tr>\n";
     });
-    return("<tbody>\n"+ligne+"</tbody>\n");
+    return(lignes);
 }
 
 function charger_stats() {

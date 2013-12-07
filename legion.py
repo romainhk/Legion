@@ -72,7 +72,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             http.server.SimpleHTTPRequestHandler.do_GET(self)
 
     def do_POST(self):
-        logging.warning('POST')
         length = self.headers['content-length']
         data = self.rfile.read(int(length))
         parse = parse_qs(data.decode('UTF-8')) # { data: , name: }
@@ -112,7 +111,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             for row in self.curs.execute(req):
                 data.append(self.dict_from_row(row))
         except:
-            logging.warning('La recherche de {0} comme {1} a échoué.\n{2}'.format(id, type, req))
+            logging.warning(u'La recherche de {0} comme {1} a échoué.\n{2}'.format(id, type, req))
         return data
 
     def importer_xml(self, data):
@@ -145,10 +144,10 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 self.writetodb(enr)
             else:
                 # élève sortie de l'établissement
-                logging.error('{0} {1} (id:{2}) est sortie de l\'établissement'.format(prenom, nom, eid))
+                logging.error(u'{0} {1} (id:{2}) est sortie de l\'établissement'.format(prenom, nom, eid))
 
     def writetodb(self, enr):
-        """ Écrit un élève dans la bdd
+        """ Ajoute un élève dans la bdd
         """
         # On vérifie si l'élève est déjà présent dans la bdd pour cette année
         req = u'SELECT COUNT(*) FROM Élèves WHERE ' \
@@ -190,12 +189,11 @@ class Legion(http.server.SimpleHTTPRequestHandler):
 
 # DEFINES
 PORT = 5432
-FILE = ''
 
 def open_browser():
     """ Ouvre un navigateur web sur la bonne page """
     def _open_browser():
-        webbrowser.open(u'http://localhost:%s/%s' % (PORT, FILE))
+        webbrowser.open(u'http://localhost:{port}'.format(port=PORT))
     thread = threading.Timer(0.5, _open_browser)
     thread.start()
 
@@ -206,7 +204,7 @@ if __name__ == "__main__":
         root = os.getcwd()
         os.chdir(root + os.sep + 'web') # la partie html est dans le dossier web
         server = http.server.HTTPServer(address, Legion)
-        logging.warning(u'Démarrage du serveur sur le port', PORT)
+        logging.warning(u'Démarrage du serveur sur le port {0}'.format(PORT))
         server.serve_forever()
     except KeyboardInterrupt:
         logging.warning(u'^C reçu, extinction du serveur')

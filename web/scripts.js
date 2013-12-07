@@ -102,7 +102,7 @@ function rechercher() {
     var type = $('#rech-type').val();
     if (val.length > 0) {
         $.get( "/recherche?val="+val+"&type="+type, function( data ) {
-            $('#vue table').append( list_to_tab(data) );
+            $('#vue > tbody').html( list_to_tab(data) );
         });
     } else {
         $.jGrowl("Seigneur, vous désirez ?", { life : 5000 });

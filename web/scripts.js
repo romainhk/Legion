@@ -119,6 +119,9 @@ function list_to_tab(liste) {
             if (j == "Doublement") { // Traduction de la colonne doublement
                 if (v == "0") { v = "Non";
                 } else { v = "Oui"; }
+            } else if (j == "Genre") { // Traduction de la colonne genre
+                if (v == "1") { v = "Garçon";
+                } else if (v == "2") { v = "Fille"; }
             }
             vals += "<td>"+v+"</td>";
         });

@@ -21,6 +21,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.header = [ ['Nom', 'string'], \
                         [u'Prénom', 'string'], \
                         ['Naissance', 'int'], \
+                        ['Genre', 'int'], \
                         ['Classe', 'string'], \
                         ['Doublement', 'string'], \
                         [u'Entrée', None] ]
@@ -135,12 +136,15 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             nom = eleve.findtext('NOM')
             prenom = eleve.findtext('PRENOM')
             j, m, naissance = eleve.findtext('DATE_NAISS').split('/')
+            genre = eleve.findtext('CODE_SEXE')
             doublement = eleve.findtext('DOUBLEMENT')
             entree = eleve.findtext('DATE_ENTREE')
             sortie = eleve.findtext('DATE_SORTIE')
             classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE/CODE_STRUCTURE".format(eid))
             if sortie is None:
-                enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, 'naissance': int(naissance), 'doublement': doublement, 'classe': classe, 'entree': entree }
+                enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, \
+                        'naissance': int(naissance), 'genre': int(genre), \
+                        'doublement': doublement, 'classe': classe, 'entree': entree }
                 self.writetodb(enr)
             else:
                 # élève sortie de l'établissement
@@ -159,8 +163,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         r = self.curs.fetchone()
         if r[0] == 0:
             req = u'INSERT INTO Élèves ' \
-                + u'(INE, Nom, Prénom, Naissance, Classe, Doublement, Année, Entrée) VALUES ("%s", "%s", "%s", %i, "%s", "%s", %i, "%s")' \
-                % (enr['ine'], enr['nom'], enr[u'prénom'], enr['naissance'], enr['classe'], enr['doublement'], self.annee, enr['entree'])
+                + u'(INE, Nom, Prénom, Naissance, Genre, Classe, Doublement, Année, Entrée) VALUES ("%s", "%s", "%s", %i, %i, "%s", "%s", %i, "%s")' \
+                % (enr['ine'], enr['nom'], enr[u'prénom'], enr['naissance'], enr['genre'], enr['classe'], enr['doublement'], self.annee, enr['entree'])
             try:
                 self.curs.execute(req)
                 self.nb_import = self.nb_import + 1

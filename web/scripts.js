@@ -117,11 +117,9 @@ function list_to_tab(liste) {
         $.each( champs, function( i, j ) {
             v = value[j];
             if (j == "Doublement") { // Traduction de la colonne doublement
-                if (v == "0") { v = "Non";
-                } else { v = "Oui"; }
+                if (v == "0") { v = "Non"; } else { v = "Oui"; }
             } else if (j == "Genre") { // Traduction de la colonne genre
-                if (v == "1") { v = "Garçon";
-                } else if (v == "2") { v = "Fille"; }
+                if (v == "1") { v = "Garçon"; } else if (v == "2") { v = "Fille"; }
             }
             vals += "<td>"+v+"</td>";
         });
@@ -133,4 +131,9 @@ function list_to_tab(liste) {
 function charger_stats() {
     // TODO : Charge les stats d'une année
     console.log($('#stats-annee').val());
+}
+
+function exportation() {
+    // Exporte la table vue en csv
+    alert(':P\nNot yet implemented');
 }

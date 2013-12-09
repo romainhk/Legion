@@ -153,30 +153,48 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def writetodb(self, enr):
         """ Ajoute un élève dans la bdd
         """
+        classe = enr['classe']
+        ine = enr['ine']
         # On vérifie si l'élève est déjà présent dans la bdd pour cette année
-        req = u'SELECT COUNT(*) FROM Élèves WHERE ' \
-            + u'INE="{ine}" AND Année={annee}'.format(ine=enr['ine'], annee=self.annee)
+        req = u'SELECT COUNT(*) FROM Affectations WHERE ' \
+            + u'INE="{ine}" AND Année={annee}'.format(ine=ine, annee=self.annee)
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
             logging.error(u"Impossible de savoir si l'élève est déjà dans la base :\n%s" % (e.args[0]))
         r = self.curs.fetchone()
         if r[0] == 0:
+            # Ajout de l'élève
             req = u'INSERT INTO Élèves ' \
-                + u'(INE, Nom, Prénom, Naissance, Genre, Classe, Doublement, Année, Entrée) VALUES ("%s", "%s", "%s", %i, %i, "%s", "%s", %i, "%s")' \
-                % (enr['ine'], enr['nom'], enr[u'prénom'], enr['naissance'], enr['genre'], enr['classe'], enr['doublement'], self.annee, enr['entree'])
+                + u'(INE, Nom, Prénom, Naissance, Genre, Doublement, Entrée) VALUES ("%s", "%s", "%s", %i, %i, "%s", "%s")' \
+                % (ine, enr['nom'], enr[u'prénom'], enr['naissance'], enr['genre'], enr['doublement'], enr['entree'])
             try:
                 self.curs.execute(req)
-                self.nb_import = self.nb_import + 1
             except sqlite3.Error as e:
                 logging.error(u"Erreur lors de l'insertion :\n%s" % (e.args[0]))
+                #return False
+
+            # Affectation à une classe
+            # TODO : gestion des doublons
+            req = u'INSERT INTO Affectations ' \
+                  +  u'(INE, Classe, Année) VALUES ("{0}", "{1}", {2})'.format(ine, classe, self.annee)
+            try:
+                self.curs.execute(req)
+            except sqlite3.Error as e:
+                logging.error(u"Erreur lors de l'affectation de la classe :\n%s" % (e.args[0]))
+
             self.conn.commit()
+            self.nb_import = self.nb_import + 1
+            # TODO : en cas de problème => annulation
+        else:
+            logging.error(u"L'élève {0} est déjà présent dans la base {1}".format(ine, self.annee))
 
     def readfromdb(self):
         """ Lit le contenu de la base
         """
         data = []
-        req = u'SELECT {0} FROM Élèves ORDER BY Nom,Prénom ASC'.format(', '.join([c[0] for c in self.header]))
+        req = u'SELECT {0} FROM Élèves NATURAL JOIN Affectations WHERE Année="{1}" ORDER BY Nom,Prénom ASC'.format(', '.join([c[0] for c in self.header]), self.annee)
+        print(req)
         for row in self.curs.execute(req):
             data.append(self.dict_from_row(row))
         return data
@@ -184,7 +202,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def liste_classes(self):
         """ Met à jour la liste des classes connues
         """
-        req = u'SELECT DISTINCT Classe FROM Élèves ORDER BY Classe ASC'
+        req = u'SELECT DISTINCT Classe FROM Affectations ORDER BY Classe ASC'
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:

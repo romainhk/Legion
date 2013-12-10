@@ -14,6 +14,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     * logging des activités en txt
     * L'INE peut manquer !?
     * si aucuns changements à l'extinction -> supprimer la copie de la base
+    * générer la base sqlite vide si elle manque
     """
     def __init__(self, request, client, server):
         global root

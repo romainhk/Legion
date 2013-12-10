@@ -177,7 +177,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 self.curs.execute(req)
             except sqlite3.Error as e:
                 logging.error(u"Erreur lors de l'insertion :\n%s" % (e.args[0]))
-                #return False
+                return False
 
             # Affectation à une classe
             # TODO : gestion des doublons
@@ -187,6 +187,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 self.curs.execute(req)
             except sqlite3.Error as e:
                 logging.error(u"Erreur lors de l'affectation de la classe :\n%s" % (e.args[0]))
+                self.conn.rollback()
+                return False
 
             self.conn.commit()
             self.nb_import = self.nb_import + 1

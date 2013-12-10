@@ -12,13 +12,12 @@ class Legion(http.server.SimpleHTTPRequestHandler):
 
     TODO :
     * logging des activités en txt
-    * L'INE peut manquer !?
     * si aucuns changements à l'extinction -> supprimer la copie de la base
     * générer la base sqlite vide si elle manque
     """
     def __init__(self, request, client, server):
         global root
-        # Les colonnes qui seront affichées, dans l'ordre et avec leur tri
+        # Les colonnes qui seront affichées, dans l'ordre et avec leur tri (Stupid-Table-Plugin)
         self.header = [ ['Nom', 'string'], \
                         [u'Prénom', 'string'], \
                         ['Naissance', 'int'], \
@@ -34,8 +33,11 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.nb_import = 0
         # DB
         bdd = self.root+os.sep+'base.sqlite'
-        # Sauvegarde de la base
-        shutil.copy(bdd, bdd+'.'+datetime.date.today().isoformat())
+        if os.path.isfile(bdd):
+            self.old_db = bdd+'.'+datetime.date.today().isoformat()
+            # Sauvegarde de la base
+            shutil.copy(bdd, self.old_db)
+
         try:
             self.conn = sqlite3.connect(bdd)
         except:
@@ -105,7 +107,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def rechercher(self, id, type):
         """ Fait une recherche dans la base
         """
-        # TODO : type=Tout
         data = []
         req = u'SELECT * FROM Élèves WHERE "{type}" COLLATE UTF8_GENERAL_CI LIKE "%{id}%" ORDER BY Nom,Prénom ASC'.format(id=id, type=type)
         # COLLATE UTF8_GENERAL_CI = sans casse
@@ -134,6 +135,9 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         for eleve in root.iter('ELEVE'):
             eid = eleve.get('ELEVE_ID')
             ine = eleve.findtext('ID_NATIONAL')
+            if ine is None:
+                logging.error(u"Impossible d'importer l'élève muni de l'ID {0}, données insuffisantes".format(eid))
+                continue
             nom = eleve.findtext('NOM')
             prenom = eleve.findtext('PRENOM')
             j, m, naissance = eleve.findtext('DATE_NAISS').split('/')
@@ -148,8 +152,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                         'doublement': doublement, 'classe': classe, 'entree': entree }
                 self.writetodb(enr)
             else:
-                # élève sortie de l'établissement
-                logging.error(u'{0} {1} (id:{2}) est sortie de l\'établissement'.format(prenom, nom, eid))
+                #logging.warning(u'{0} {1} (id:{2}) est sortie de l\'établissement'.format(prenom, nom, eid))
+                pass
 
     def writetodb(self, enr):
         """ Ajoute un élève dans la bdd
@@ -188,7 +192,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             self.nb_import = self.nb_import + 1
             # TODO : en cas de problème => annulation
         else:
-            logging.error(u"L'élève {0} est déjà présent dans la base {1}".format(ine, self.annee))
+            #logging.warning(u"L'élève {0} est déjà présent dans la base {1}".format(ine, self.annee))
+            pass
 
     def readfromdb(self):
         """ Lit le contenu de la base

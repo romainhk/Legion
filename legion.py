@@ -14,17 +14,22 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     * logging des activités en txt
     * si aucuns changements à l'extinction -> supprimer la copie de la base
     * générer la base sqlite vide si elle manque
+    * dates au jour près (et non à l'année près)
     """
     def __init__(self, request, client, server):
         global root
         # Les colonnes qui seront affichées, dans l'ordre et avec leur tri (Stupid-Table-Plugin)
         self.header = [ ['Nom', 'string'], \
                         [u'Prénom', 'string'], \
-                        ['Naissance', 'int'], \
+                        [U'Âge', 'int'], \
                         ['Genre', 'int'], \
                         ['Parcours', 'string'], \
                         ['Doublement', 'string'], \
-                        [u'Entrée', None] ]
+                        [u'Entrée', 'int'], \
+                        [u'Durée', 'int'], \
+                        [u'Diplômé', 'string'], \
+                        [u'Après', None] \
+                        ]
         # La liste des classes connues
         self.classes = []
 
@@ -120,6 +125,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def importer_xml(self, data):
         """ Parse le xml à importer
         """
+        ### TODO : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ?
         #logging.warning('Parsing du fichier xml')
         self.nb_import = 0
         # Écriture de l'xml dans un fichier
@@ -143,13 +149,14 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             j, m, naissance = eleve.findtext('DATE_NAISS').split('/')
             genre = eleve.findtext('CODE_SEXE')
             doublement = eleve.findtext('DOUBLEMENT')
-            entree = eleve.findtext('DATE_ENTREE')
+            j, m, entree = eleve.findtext('DATE_ENTREE').split('/')
             sortie = eleve.findtext('DATE_SORTIE')
             classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE/CODE_STRUCTURE".format(eid))
             if sortie is None:
                 enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, \
                         'naissance': int(naissance), 'genre': int(genre), \
-                        'doublement': doublement, 'classe': classe, 'entree': entree }
+                        'doublement': doublement, 'classe': classe, 'entree': int(entree) \
+                        }
                 self.writetodb(enr)
             else:
                 #logging.warning(u'{0} {1} (id:{2}) est sortie de l\'établissement'.format(prenom, nom, eid))
@@ -160,6 +167,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         """
         classe = enr['classe']
         ine = enr['ine']
+        enr[u'Diplômé'] = enr[u'Après'] = '?'
         # On vérifie si l'élève est déjà présent dans la bdd pour cette année
         req = u'SELECT COUNT(*) FROM Affectations WHERE ' \
             + u'INE="{ine}" AND Année={annee}'.format(ine=ine, annee=self.annee)
@@ -171,8 +179,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         if r[0] == 0:
             # Ajout de l'élève
             req = u'INSERT INTO Élèves ' \
-                + u'(INE, Nom, Prénom, Naissance, Genre, Doublement, Entrée) VALUES ("%s", "%s", "%s", %i, %i, "%s", "%s")' \
-                % (ine, enr['nom'], enr[u'prénom'], enr['naissance'], enr['genre'], enr['doublement'], enr['entree'])
+                + u'(INE, Nom, Prénom, Naissance, Genre, Doublement, Entrée, Diplômé, Après) VALUES ("%s", "%s", "%s", %i, %i, "%s", %i, "%s", "%s")' \
+                % (ine, enr['nom'], enr[u'prénom'], enr['naissance'], enr['genre'], enr['doublement'], enr['entree'], enr[u'Diplômé'], enr[u'Après'])
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:
@@ -201,9 +209,11 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         """ Lit le contenu de la base
         """
         data = []
-        req = u'SELECT * FROM Élèves NATURAL JOIN Affectations WHERE Année="{0}" ORDER BY Nom,Prénom ASC'.format(self.annee)
+        #req = u'SELECT * FROM Élèves NATURAL JOIN Affectations WHERE Année="{0}" ORDER BY Nom,Prénom ASC'.format(self.annee)
+        req = u'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC'.format(self.annee)
         for row in self.curs.execute(req).fetchall():
             d = self.dict_from_row(row)
+            # Génération de la colonne 'Parcours'
             parcours = []
             ine = d['INE']
             req = u'SELECT Classe FROM Affectations WHERE INE="{0}" ORDER BY Année ASC'.format(ine)
@@ -214,6 +224,17 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 logging.error(u"Erreur lors de la génération du parcours de {0}:\n{1}".format(ine, e.args[0]))
                 continue
             d['Parcours'] = ', '.join(parcours)
+            # Calcul de la durée de scolarisation
+            req = u'SELECT Année FROM Affectations WHERE INE="{0}" ORDER BY Année DESC'.format(ine)
+            try:
+                sortie = self.curs.execute(req).fetchone()[u'Année']
+            except sqlite3.Error as e:
+                logging.info(u"Impossible de trouver la dernière affectation dede {0}:\n{1}".format(ine, e.args[0]))
+                sortie = self.annee
+            d[u'Durée'] = sortie - d[u'Entrée'] + 1
+            # Calcul de l'âge actuel
+            d[u'Âge'] = self.annee - d['Naissance']
+
             data.append(d)
         return data
         

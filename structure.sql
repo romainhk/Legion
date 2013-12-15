@@ -3,9 +3,11 @@ CREATE TABLE "Élèves" (
     "Nom" TEXT,
     "Prénom" TEXT,
     "Doublement" TEXT NOT NULL  DEFAULT (0) ,
-    "Naissance" NUMERIC,
+    "Naissance" INTEGER DEFAULT (null) ,
     "Genre" INTEGER NOT NULL  DEFAULT (0) ,
-    "Entrée" TEXT
+    "Entrée" INTEGER DEFAULT (null) ,
+    "Diplômé" TEXT DEFAULT (null) ,
+    "Après" TEXT
 )
 CREATE TABLE "Affectations"(
     Classe TEXT, 

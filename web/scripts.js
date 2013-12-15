@@ -55,7 +55,7 @@ function liste() {
     // Liste la contenu de la base
     $.get( "/liste", function( data ) {
         $('#vue > tbody').html( list_to_tab(data) );
-        $.jGrowl("Chargement des "+data.length+" élèves de la base terminé.", { life : 3000 });
+        $.jGrowl("Chargement des "+data.length+" élèves terminé.", { life : 3000 });
     });
 }
 
@@ -93,6 +93,7 @@ function envoie_du_fichier(event) {
         $("#progress").hide();
         // Mise à jour de la liste des classes
         listeClasses();
+        liste();
     });
 }
 

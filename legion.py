@@ -22,7 +22,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                         [u'Prénom', 'string'], \
                         ['Naissance', 'int'], \
                         ['Genre', 'int'], \
-                        ['Classe', 'string'], \
+                        ['Parcours', 'string'], \
                         ['Doublement', 'string'], \
                         [u'Entrée', None] ]
         # La liste des classes connues
@@ -86,7 +86,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             logging.warning('Importation du fichier...')
             self.importer_xml(data)
             self.liste_classes() # on met à jour la liste des classes
-            a = json.dumps(u'Importation de {nb} élèves terminée'.format(nb=self.nb_import))
+            a = json.dumps(u'Importation de {nb} élèves terminée.'.format(nb=self.nb_import))
             self.repondre(a)
 
     def repondre(self, reponse):
@@ -179,32 +179,42 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 logging.error(u"Erreur lors de l'insertion :\n%s" % (e.args[0]))
                 return False
 
-            # Affectation à une classe
-            # TODO : gestion des doublons
-            req = u'INSERT INTO Affectations ' \
-                  +  u'(INE, Classe, Année) VALUES ("{0}", "{1}", {2})'.format(ine, classe, self.annee)
-            try:
-                self.curs.execute(req)
-            except sqlite3.Error as e:
-                logging.error(u"Erreur lors de l'affectation de la classe :\n%s" % (e.args[0]))
-                self.conn.rollback()
-                return False
-
-            self.conn.commit()
-            self.nb_import = self.nb_import + 1
-            # TODO : en cas de problème => annulation
         else:
             #logging.warning(u"L'élève {0} est déjà présent dans la base {1}".format(ine, self.annee))
             pass
+
+        # Affectation à une classe cette année
+        req = u'INSERT INTO Affectations ' \
+              +  u'(INE, Classe, Année) VALUES ("{0}", "{1}", {2})'.format(ine, classe, self.annee)
+        try:
+            self.curs.execute(req)
+        except sqlite3.Error as e:
+            logging.warning(u"Erreur lors de l'affectation de la classe pour {0}:\n{1}".format(ine, e.args[0]))
+            # au cas où, annulation de l'insert précédent
+            self.conn.rollback()
+            return False
+
+        self.conn.commit()
+        self.nb_import = self.nb_import + 1
 
     def readfromdb(self):
         """ Lit le contenu de la base
         """
         data = []
-        req = u'SELECT {0} FROM Élèves NATURAL JOIN Affectations WHERE Année="{1}" ORDER BY Nom,Prénom ASC'.format(', '.join([c[0] for c in self.header]), self.annee)
-        print(req)
-        for row in self.curs.execute(req):
-            data.append(self.dict_from_row(row))
+        req = u'SELECT * FROM Élèves NATURAL JOIN Affectations WHERE Année="{0}" ORDER BY Nom,Prénom ASC'.format(self.annee)
+        for row in self.curs.execute(req).fetchall():
+            d = self.dict_from_row(row)
+            parcours = []
+            ine = d['INE']
+            req = u'SELECT Classe FROM Affectations WHERE INE="{0}" ORDER BY Année ASC'.format(ine)
+            try:
+                for r in self.curs.execute(req):
+                    parcours.append(r['Classe'])
+            except sqlite3.Error as e:
+                logging.error(u"Erreur lors de la génération du parcours de {0}:\n{1}".format(ine, e.args[0]))
+                continue
+            d['Parcours'] = ', '.join(parcours)
+            data.append(d)
         return data
         
     def liste_classes(self):

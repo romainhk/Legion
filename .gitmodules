@@ -1,6 +1,0 @@
-[submodule "web/jGrowl"]
-	path = web/jGrowl
-	url = https://github.com/stanlemon/jGrowl.git
-[submodule "web/Stupid-Table-Plugin"]
-	path = web/Stupid-Table-Plugin
-	url = https://github.com/joequery/Stupid-Table-Plugin.git

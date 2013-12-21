@@ -130,7 +130,6 @@ function list_to_tab(liste) {
 }
 
 function charger_stats() {
-    // TODO : Charge les stats d'une année
     console.log($('#stats-annee').val());
 }
 

@@ -9,12 +9,6 @@ import xml.etree.ElementTree as ET
 class Legion(http.server.SimpleHTTPRequestHandler):
     """ Classe Legion
     Serveur web et interface pour base sqlite
-
-    TODO :
-    * logging des activités en txt
-    * si aucuns changements à l'extinction -> supprimer la copie de la base
-    * générer la base sqlite vide si elle manque
-    * dates au jour près (et non à l'année près)
     """
     def __init__(self, request, client, server):
         global root

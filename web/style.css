@@ -46,7 +46,6 @@ th, td {
     padding: 0.8ex 1ex;
 }
 /* jGrowl */
-/* TODO : fadein/out */
 .jGrowl-notification {
     background-color: #FFC759 !important;
     color: black;

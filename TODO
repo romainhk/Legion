@@ -1,0 +1,15 @@
+### Python
+* logging des activités en txt
+* si aucuns changements à l'extinction -> supprimer la copie de la base
+* générer la base sqlite vide si elle est absente
+* dates au jour près (et non à l'année près)
+
+### HTML : Vue
+* Filtre par classe / par année.
+* Colonnes editables.
+* Filtre de tri rapide
+* Impression
+* jGrowl : afficher les messages en fadein/out css
+
+### HTML : Statistiques
+* faire les calculs, et les filtrer par année

@@ -5,10 +5,12 @@
     <title>Legion</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="lib/jquery.jgrowl.css">
+    <link rel="stylesheet" type="text/css" href="lib/tablesorter/theme.blue.css">
     <script type="text/javascript" src="lib/jquery.js"></script>
     <script type="text/javascript" src="scripts.js"></script>
     <script type="text/javascript" src="lib/jquery.jgrowl.js"></script>
-    <script type="text/javascript" src="lib/stupidtable.js"></script>
+    <script type="text/javascript" src="lib/tablesorter/jquery.tablesorter.js"></script>
+    <script type="text/javascript" src="lib/tablesorter/jquery.tablesorter.widgets.js"></script>
   </head>
   <body onLoad="init();">
     <h1>Legion</h1>
@@ -16,7 +18,7 @@
     <div class="gauche">
         <div id="Liste">
             <h3>Listing</h3>
-            <table id="vue" border="1">
+            <table id="vue" border="1" class="tablesorter">
                 <thead></thead>
                 <tbody></tbody>
             </table>
@@ -48,15 +50,6 @@
             <li onClick="charger_page('Statistiques');">Statistiques</li>
         </ul>
         <div style="clear:both;"></div>
-        <h3>Recherche</h3>
-        <form id="recherche" class="recherche" onsubmit="rechercher();return false;">
-            Trouver <input type="text" id="rech-val"><br /> comme <select id="rech-type" onChange="typeDeRecherche();">
-            <option selected=selected>Nom</option>
-            <option>Classe</option>
-            <option>INE</option>
-        </select>
-        <input type="submit" value="Ok" style="margin-left:4ex; font-weight:bold;">
-        </form>
         <h3>Importation</h3>
         Sélectionner l'exportation xml de la base SIECLE (<i>ElevesSansAdresses.xml</i>)
         <form id="importation" enctype="multipart/form-data">

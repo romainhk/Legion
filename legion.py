@@ -13,16 +13,16 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def __init__(self, request, client, server):
         global root
         # Les colonnes qui seront affichées, dans l'ordre et avec leur tri (Stupid-Table-Plugin)
-        self.header = [ ['Nom', 'string'], \
-                        [u'Prénom', 'string'], \
-                        [U'Âge', 'int'], \
-                        ['Genre', 'int'], \
-                        ['Parcours', 'string'], \
-                        ['Doublement', 'string'], \
-                        [u'Entrée', 'int'], \
-                        [u'Durée', 'int'], \
-                        [u'Diplômé', 'string'], \
-                        [u'Après', None] \
+        self.header = [ ['Nom', 'A-z'], \
+                        [u'Prénom', 'A-z'], \
+                        [U'Âge', '0-9'], \
+                        ['Genre', 'G/F'], \
+                        ['Parcours', 'Classes'], \
+                        ['Doublement', 'Oui/Non'], \
+                        [u'Entrée', 'Date'], \
+                        [u'Durée', '0-9'], \
+                        [u'Diplômé', 'A-z'], \
+                        [u'Après', 'A-z'] \
                         ]
         # La liste des classes connues
         self.classes = []
@@ -70,10 +70,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             self.liste_classes()
             a = json.dumps(self.classes)
             self.repondre(a)
-        elif params.path == '/recherche':
-            res = self.rechercher(query['val'].pop(), query['type'].pop())
-            a = json.dumps(res)
-            self.repondre(a)
         else:
             # Par défaut, on sert l'index 
             http.server.SimpleHTTPRequestHandler.do_GET(self)
@@ -106,19 +102,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
 
     def log_message(self, format, *args):
         print('Message')
-
-    def rechercher(self, id, type):
-        """ Fait une recherche dans la base
-        """
-        data = []
-        req = u'SELECT * FROM Élèves WHERE "{type}" COLLATE UTF8_GENERAL_CI LIKE "%{id}%" ORDER BY Nom,Prénom ASC'.format(id=id, type=type)
-        # COLLATE UTF8_GENERAL_CI = sans casse
-        try:
-            for row in self.curs.execute(req):
-                data.append(self.dict_from_row(row))
-        except:
-            logging.warning(u'La recherche de {0} comme {1} a échoué.\n{2}'.format(id, type, req))
-        return data
 
     def generer_stats(self, annee):
         """ Génère des statistiques sur la base

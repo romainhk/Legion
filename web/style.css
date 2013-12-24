@@ -32,11 +32,6 @@ table > caption {
 th {
     text-align:center;
 }
-th[data-sort]{
-    cursor:pointer;
-}
-td {
-}
 th, td {
     padding:8px;
 }

@@ -7,18 +7,6 @@ rechVal = $('<input type="text" id="rech-val" size="15" maxlength="50" />');
 
 function init(){
     // Initialisation de l'application
-
-    // Les résultats sont triables
-    $("#vue").stupidtable();
-    // ... pour la petite flèche
-    $("#vue").on("aftertablesort", function (event, data) {
-        var th = $(this).find("th");
-        th.find(".arrow").remove();
-        var dir = $.fn.stupidtable.dir;
-        var arrow = data.direction === dir.ASC ? "&uarr;" : "&darr;";
-        th.eq(data.column).append('<span class="arrow">' + arrow +'</span>');
-    });
-
     $.get( "/init", function( data ) {
         var entete = "";
         var filtres = "";
@@ -26,13 +14,9 @@ function init(){
             champ = j[0];
             champs_vue.push(champ);
             type = j[1];
-            var sort = '';
-            if (type != null) { sort = 'data-sort="'+type+'"'; }
-            entete += "<th "+sort+">"+champ+"</th>\n";
-            input = "<input id=\""+champ+"\">";
-            filtres += "<td class=\"filtre\">"+input+"</td>\n";
+            entete += "<th data-placeholder=\""+type+"\">"+champ+"</th>\n";
         });
-        $('#vue > thead').html( "<tr>"+filtres+"</tr>\n<tr>"+entete+"</tr>\n" );
+        $('#vue > thead').html( "<tr>"+entete+"</tr>\n" );
         // Mise à jour de la liste des classes
         listeClasses();
     });
@@ -85,19 +69,6 @@ function envoie_du_fichier(event) {
     });
 }
 
-function rechercher() {
-    // Faire une recherche dans la base
-    var val = $('#rech-val').val();
-    var type = $('#rech-type').val();
-    if (val.length > 0) {
-        $.get( "/recherche?val="+val+"&type="+type, function( data ) {
-            $('#vue > tbody').html( list_to_tab(data, champs_vue) );
-        });
-    } else {
-        $.jGrowl("Seigneur, vous désirez ?", { life : 5000 });
-    }
-}
-
 function list_to_tab(liste, champs) {
     // Convertie une liste en lignes de tableau tr
     var lignes = "";
@@ -135,6 +106,10 @@ function charger_page(nom) {
             $("#Liste").show();
             $('#vue > tbody').html( list_to_tab(data, champs_vue) );
             $.jGrowl("Chargement des "+data.length+" élèves terminé.", { life : 3000 });
+            $("#vue").tablesorter({
+                theme:'blue',
+                widgets: ["zebra", "filter"]
+            });
         });
     } else if (nom == 'Statistiques') {
         $("#Liste").hide();
@@ -142,6 +117,12 @@ function charger_page(nom) {
         $.get( "/stats", function( data ) {
             $("#Statistiques").show();
             $('#stats > tbody').html( list_to_tab(data, [0, 1, 2]) );
+            $("#stats").tablesorter({
+                theme:'blue',
+                headers: {
+                    1: { sorter: false },
+                    2: { sorter: false }
+            }});
         });
     }
 }

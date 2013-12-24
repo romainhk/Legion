@@ -43,7 +43,34 @@ th, td {
 /* Classes */
 .recherche {
     border:1px dotted black;
-    padding: 0.8ex 1ex;
+    padding:0.8ex 1ex;
+}
+.filtre {
+    text-align:center;
+    border-top:none;
+    border-left:none;
+    border-right:none;
+}
+.filtre input {
+    width:8ex;
+}
+/* Onglets */
+.onglet {
+    list-style-type: none;
+    padding-bottom: 0.5ex;
+}
+.onglet li {
+    background-color:#ECECFE;
+    float: left;
+    margin: 2px 2px 0 2px !important;
+    border: 1px solid #9EA0A1;
+    padding: 1ex;
+}
+.onglet a {
+    display: block;
+}
+.onglet li:hover {
+    background-color:#D0D0FE;
 }
 /* jGrowl */
 .jGrowl-notification {

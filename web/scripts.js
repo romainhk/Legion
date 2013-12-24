@@ -1,5 +1,5 @@
 // Champs affichés
-var champs = new Array();
+var champs_vue = new Array();
 // Classes connues
 var classes = new Array();
 // Champs de recherche par défaut
@@ -20,20 +20,23 @@ function init(){
     });
 
     $.get( "/init", function( data ) {
-        var ligne = "";
+        var entete = "";
+        var filtres = "";
         $.each(data, function( i, j ) {
             champ = j[0];
-            champs.push(champ);
+            champs_vue.push(champ);
             type = j[1];
             var sort = '';
             if (type != null) { sort = 'data-sort="'+type+'"'; }
-            ligne += "<th "+sort+">"+champ+"</th>\n";
+            entete += "<th "+sort+">"+champ+"</th>\n";
+            input = "<input id=\""+champ+"\">";
+            filtres += "<td class=\"filtre\">"+input+"</td>\n";
         });
-        $('#vue > thead').html( "<tr>"+ligne+"</tr>\n" );
+        $('#vue > thead').html( "<tr>"+filtres+"</tr>\n<tr>"+entete+"</tr>\n" );
         // Mise à jour de la liste des classes
         listeClasses();
     });
-    liste();
+    charger_page('Liste');
     typeDeRecherche();
 }
 
@@ -41,21 +44,6 @@ function listeClasses(){
     // Actualise la liste des classes
     $.get( "/liste-classes", function( data ) {
         classes = data;
-        var lignes = "";
-        // TODO : inclure les statistiques
-        $.each(classes, function( i, j ) {
-            lignes += "<tr><td>"+j+"</td>\n";
-            lignes += "<td>0 (0%)</td>\n<td>50% / 50%</td>\n</tr>\n";
-        });
-        $("#stats").html(lignes);
-    });
-}
-
-function liste() {
-    // Liste la contenu de la base
-    $.get( "/liste", function( data ) {
-        $('#vue > tbody').html( list_to_tab(data) );
-        $.jGrowl("Chargement des "+data.length+" élèves terminé.", { life : 3000 });
     });
 }
 
@@ -93,7 +81,7 @@ function envoie_du_fichier(event) {
         $("#progress").hide();
         // Mise à jour de la liste des classes
         listeClasses();
-        liste();
+        charger_page('Liste');
     });
 }
 
@@ -103,14 +91,14 @@ function rechercher() {
     var type = $('#rech-type').val();
     if (val.length > 0) {
         $.get( "/recherche?val="+val+"&type="+type, function( data ) {
-            $('#vue > tbody').html( list_to_tab(data) );
+            $('#vue > tbody').html( list_to_tab(data, champs_vue) );
         });
     } else {
         $.jGrowl("Seigneur, vous désirez ?", { life : 5000 });
     }
 }
 
-function list_to_tab(liste) {
+function list_to_tab(liste, champs) {
     // Convertie une liste en lignes de tableau tr
     var lignes = "";
     $.each( liste, function( key, value ) {
@@ -136,4 +124,24 @@ function charger_stats() {
 function exportation() {
     // Exporte la table vue en csv
     alert(':P\nNot yet implemented');
+}
+
+function charger_page(nom) {
+    // Change la page courante
+    if (nom == 'Liste') {
+        $("#Statistiques").hide();
+        // Liste la contenu de la base
+        $.get( "/liste", function( data ) {
+            $("#Liste").show();
+            $('#vue > tbody').html( list_to_tab(data, champs_vue) );
+            $.jGrowl("Chargement des "+data.length+" élèves terminé.", { life : 3000 });
+        });
+    } else if (nom == 'Statistiques') {
+        $("#Liste").hide();
+        // Page des statistiques
+        $.get( "/stats", function( data ) {
+            $("#Statistiques").show();
+            $('#stats > tbody').html( list_to_tab(data, [0, 1, 2]) );
+        });
+    }
 }

@@ -4,12 +4,11 @@
 * générer la base sqlite vide si elle est absente
 * dates au jour près (et non à l'année près)
 
-### HTML : Vue
+### HTML
 * Filtre par classe / par année.
 * Colonnes editables.
 * Filtre de tri rapide
+* Exportation CSV
 * Impression
 * jGrowl : afficher les messages en fadein/out css
-
-### HTML : Statistiques
-* faire les calculs, et les filtrer par année
+* STATS : filtre par année

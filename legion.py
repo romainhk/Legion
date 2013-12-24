@@ -59,6 +59,10 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             data = self.readfromdb()
             a = json.dumps(data)
             self.repondre(a)
+        elif params.path == '/stats':
+            data = self.generer_stats(self.annee)
+            a = json.dumps(data)
+            self.repondre(a)
         elif params.path == '/init':
             a = json.dumps(self.header)
             self.repondre(a)
@@ -115,6 +119,36 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         except:
             logging.warning(u'La recherche de {0} comme {1} a échoué.\n{2}'.format(id, type, req))
         return data
+
+    def generer_stats(self, annee):
+        """ Génère des statistiques sur la base
+        """
+        # Récupération des infos : classes, effectif...
+        data = {}
+        req = u'SELECT * FROM Élèves NATURAL JOIN Affectations WHERE Année={0}'.format(annee)
+        for row in self.curs.execute(req).fetchall():
+            d = self.dict_from_row(row)
+            if d['Genre'] == 1:
+                h = (0,1)
+            else:
+                h = (1,0)
+            t = [ h[0], h[1], int(d['Doublement']) ] # Nb : garçon, fille, doublant
+            classe = d['Classe']
+            if classe in data:
+                data[classe] = [sum(x) for x in zip(data[classe], t)] # data[classe] += t
+            else:
+                data[classe] = t
+        self.liste_classes()
+
+        # On génère maintenant le tableau de statistiques
+        rep = []
+        for cla in self.classes:
+            g, f, doub = data[cla]
+            r = ( "{classe}".format(classe=cla), \
+                  "{0} ({1} %)".format(doub, round(100*doub/(g+f), 1)), \
+                  "{0} %".format( round(100*g/(g+f), 1) ) )
+            rep.append(r)
+        return rep
 
     def importer_xml(self, data):
         """ Parse le xml à importer

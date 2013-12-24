@@ -14,32 +14,40 @@
     <h1>Legion</h1>
     <!-- #####  Corps : résultats et stats  ##### -->
     <div class="gauche">
-        <h3>Contenu de la base</h3>
-        <table id="vue" border="1">
-            <thead></thead>
-            <tbody></tbody>
-        </table>
-        <h3>Statistiques</h3>
-        <table border="1">
-            <thead>
+        <div id="Liste">
+            <h3>Listing</h3>
+            <table id="vue" border="1">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="Statistiques">
+            <h3>Statistiques</h3>
+            <table id="stats" border="1">
                 <caption>Pour l'année <select id="stats-annee" onChange="charger_stats();">
                     <option>1168</option>
                     <option>1169</option>
                     <option selected=selected>2013</option>
                     <option>Toutes</option>
                 </select></caption>
-                <tr>
-                    <th>Classe</th>
-                    <th>Redoublants (%)</th>
-                    <th>Garçons / Filles</th>
-                </tr>
-            </thead>
-            <tbody id="stats"></tbody>
-        </table>
+                <thead>
+                    <tr>
+                        <th>Classe</th>
+                        <th>Redoublants (%)</th>
+                        <th>Répartition<br />% de garçons</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
     <!-- #####  Menu : recherche et importation  ##### -->
     <div class="droite">
-        <input type="button" value="Rafraîchir la liste" onClick="liste();">
+        <ul class="onglet">
+            <li onClick="charger_page('Liste');">Liste</li>
+            <li onClick="charger_page('Statistiques');">Statistiques</li>
+        </ul>
+        <div style="clear:both;"></div>
         <h3>Recherche</h3>
         <form id="recherche" class="recherche" onsubmit="rechercher();return false;">
             Trouver <input type="text" id="rech-val"><br /> comme <select id="rech-type" onChange="typeDeRecherche();">

@@ -116,13 +116,17 @@ function charger_page(nom) {
         // Page des statistiques
         $.get( "/stats", function( data ) {
             $("#Statistiques").show();
-            $('#stats > tbody').html( list_to_tab(data, [0, 1, 2]) );
+            $('#stats > tbody').html( list_to_tab(data, [0, 1, 2, 3]) );
             $("#stats").tablesorter({
                 theme:'blue',
+                widgets: ["zebra"],
+                sortList: [ [0,0] ],
                 headers: {
                     1: { sorter: false },
-                    2: { sorter: false }
-            }});
+                    2: { sorter: false },
+                    3: { sorter: false }
+                }
+            });
         });
     }
 }

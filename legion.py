@@ -128,6 +128,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         for cla in self.classes:
             g, f, doub = data[cla]
             r = ( "{classe}".format(classe=cla), \
+                  "{effectif}".format(effectif=g+f), \
                   "{0} ({1} %)".format(doub, round(100*doub/(g+f), 1)), \
                   "{0} %".format( round(100*g/(g+f), 1) ) )
             rep.append(r)

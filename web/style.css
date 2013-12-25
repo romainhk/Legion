@@ -1,5 +1,5 @@
 body {
-    padding:0.2ex 2ex;
+    padding:0 1ex;
     background: #febbbb;
     /*background: linear-gradient(135deg, #febbbb 0%,#fe9090 45%,#ff5c5c 100%);*/
     background: linear-gradient(135deg, #fec9e4 0%,#fe90C7 45%,#FFABD5 100%);
@@ -11,17 +11,20 @@ h1 {
 h3 {
     margin-top:1.5em;
 }
+h4 {
+    text-align:center;
+}
 input {
     margin:0.5ex;
 }
 /* Structure */
 .gauche {
     float: left;
-    width:79%;
+    width:82%;
 }
 .droite {
     float: right;
-    width:20%;
+    width:17%;
 }
 /* Tableaux */
 table {
@@ -49,6 +52,19 @@ th, td {
 }
 .filtre input {
     width:8ex;
+}
+a.export, a.export:visited {
+    font-weight:bold;
+    font-family: sans-serif;
+    text-decoration: none;
+    padding:5px 8px;
+    color:#000;
+    /* Apparence d'un bouton */
+    appearance:button;
+    -webkit-appearance:button;
+    -moz-appearance:button;
+    -o-appearance:button;
+    -ms-appearance:button;
 }
 /* Onglets */
 .onglet {

@@ -16,7 +16,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.header = [ ['Nom', 'A-z'], \
                         [u'Prénom', 'A-z'], \
                         [U'Âge', '0-9'], \
-                        ['Genre', 'G/F'], \
+                        ['Genre', 'H/F'], \
                         ['Parcours', 'Classes'], \
                         ['Doublement', 'Oui/Non'], \
                         [u'Entrée', 'Date'], \

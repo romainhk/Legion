@@ -37,7 +37,7 @@
                         <th>Classe</th>
                         <th>Effectif</th>
                         <th>Redoublants (%)</th>
-                        <th>Répartition<br />% de garçons</th>
+                        <th>Répartition<br />% d'hommes</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -51,15 +51,15 @@
             <li onClick="charger_page('Statistiques');">Statistiques</li>
         </ul>
         <div style="clear:both;"></div>
-        <h3>Importation</h3>
+        <h4>Importation</h4>
         Sélectionner l'exportation xml de la base SIECLE (<i>ElevesSansAdresses.xml</i>)
         <form id="importation" enctype="multipart/form-data">
             <input type="file" id="fichier">
             <input type="button" value="Importer" onClick="importation();" style="font-weight:bold;">
             <img id="progress" src="loading.gif">
         </form>
-        <h3>Exportation</h3>
-        <input type="button" value="Exporter la vue" onClick="exportation();" style="font-weight:bold;">
+        <h4>Exportation</h4>
+        <a href="#" class="export">Exporter la vue</a>
     </div>
   </body>
 </html>

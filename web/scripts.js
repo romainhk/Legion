@@ -4,23 +4,6 @@ var champs_vue = new Array();
 var page_active = "";
 var les_pages = [ 'Liste', 'Statistiques' ];
 
-/* Initialisation */
-function init(){
-    // Initialisation de l'application
-    $.get( "/init", function( data ) {
-        var entete = "";
-        var filtres = "";
-        $.each(data, function( i, j ) {
-            champ = j[0];
-            champs_vue.push(champ);
-            type = j[1];
-            entete += "<th data-placeholder=\""+type+"\">"+champ+"</th>\n";
-        });
-        $('#vue > thead').html( "<tr>"+entete+"</tr>\n" );
-    });
-    charger_page('Liste');
-}
-
 /* Importation */
 function importation() {
     // Lecture du fichier à importer
@@ -41,8 +24,8 @@ function envoie_du_fichier(event) {
     });
 }
 
+/* Convertir une liste en lignes de tableau (tr) */
 function list_to_tab(liste, champs) {
-    // Convertie une liste en lignes de tableau tr
     var lignes = "";
     $.each( liste, function( key, value ) {
         var vals = "";
@@ -60,10 +43,7 @@ function list_to_tab(liste, champs) {
     return(lignes);
 }
 
-function charger_stats() {
-    console.log($('#stats-annee').val());
-}
-
+/* Le switch de page */
 function charger_page(nom) {
     // Change la page courante
     $.each(les_pages, function( i, p ) { $("#"+p).hide(); });
@@ -95,6 +75,11 @@ function charger_page(nom) {
         });
     }
     $("#"+page_active).show();
+}
+
+/* Change les statistiques selon l'année désirée */
+function charger_stats(anne) {
+    console.log($('#stats-annee').val());
 }
 
 /* Conversion d'une table html en fichier CSV
@@ -147,4 +132,18 @@ $(document).ready(function() {
         // IF CSV, don't do event.preventDefault() or return false
         // We actually need this to be a typical hyperlink
     });
+
+    // Initialisation de l'application
+    $.get( "/init", function( data ) {
+        var entete = "";
+        var filtres = "";
+        $.each(data, function( i, j ) {
+            champ = j[0];
+            champs_vue.push(champ);
+            type = j[1];
+            entete += "<th data-placeholder=\""+type+"\">"+champ+"</th>\n";
+        });
+        $('#vue > thead').html( "<tr>"+entete+"</tr>\n" );
+    });
+    charger_page('Liste');
 });

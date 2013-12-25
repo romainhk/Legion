@@ -1,10 +1,11 @@
 // Champs affichés
 var champs_vue = new Array();
+// Page affichée
+var page_active = "";
+var les_pages = [ 'Liste', 'Statistiques' ];
 
 /* Initialisation */
 function init(){
-    $("#Liste").hide();
-    $("#Statistiques").hide();
     // Initialisation de l'application
     $.get( "/init", function( data ) {
         var entete = "";
@@ -65,11 +66,10 @@ function charger_stats() {
 
 function charger_page(nom) {
     // Change la page courante
+    $.each(les_pages, function( i, p ) { $("#"+p).hide(); });
     if (nom == 'Liste') {
-        $("#Statistiques").hide();
-        // Liste la contenu de la base
+        page_active = 'Liste';
         $.get( "/liste", function( data ) {
-            $("#Liste").show();
             $('#vue > tbody').html( list_to_tab(data, champs_vue) );
             $.jGrowl("Chargement des "+data.length+" élèves terminé.", { life : 3000 });
             $("#vue").tablesorter({
@@ -79,10 +79,8 @@ function charger_page(nom) {
             });
         });
     } else if (nom == 'Statistiques') {
-        $("#Liste").hide();
-        // Page des statistiques
+        page_active = 'Statistiques';
         $.get( "/stats", function( data ) {
-            $("#Statistiques").show();
             $('#stats > tbody').html( list_to_tab(data, [0, 1, 2, 3]) );
             $("#stats").tablesorter({
                 theme:'blue',
@@ -96,6 +94,7 @@ function charger_page(nom) {
             });
         });
     }
+    $("#"+page_active).show();
 }
 
 /* Conversion d'une table html en fichier CSV
@@ -142,9 +141,12 @@ function exportTableToCSV($table, filename) {
 
 $(document).ready(function() {
     $("#progress").hide();
-    // This must be a hyperlink
+    // On cache toutes les pages
+    $.each(les_pages, function( i, p ) { $("#"+p).hide(); });
+
+    // Lien d'exportation
     $(".export").on('click', function (event) {
-        exportTableToCSV.apply(this, [$('#vue'), 'export.csv']);
+        exportTableToCSV.apply(this, [$('#'+page_active), 'export_'+page_active+'.csv']);
         // IF CSV, don't do event.preventDefault() or return false
         // We actually need this to be a typical hyperlink
     });

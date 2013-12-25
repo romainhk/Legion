@@ -6,7 +6,7 @@
 
 ### HTML
 * Colonnes editables.
-* Exportation CSV : uniquement la partie visible
+* Exportation CSV : uniquement la partie visible, ajouter les entetes
 * Impression
 * jGrowl : afficher les messages en fadein/out css
 * STATS : filtre par année

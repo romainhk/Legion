@@ -66,10 +66,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         elif params.path == '/init':
             a = json.dumps(self.header)
             self.repondre(a)
-        elif params.path == '/liste-classes':
-            self.liste_classes()
-            a = json.dumps(self.classes)
-            self.repondre(a)
         else:
             # Par défaut, on sert l'index 
             http.server.SimpleHTTPRequestHandler.do_GET(self)

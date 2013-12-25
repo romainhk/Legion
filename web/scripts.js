@@ -1,9 +1,10 @@
 // Champs affichés
 var champs_vue = new Array();
-// Classes connues
-var classes = new Array();
 
+/* Initialisation */
 function init(){
+    $("#Liste").hide();
+    $("#Statistiques").hide();
     // Initialisation de l'application
     $.get( "/init", function( data ) {
         var entete = "";
@@ -15,19 +16,11 @@ function init(){
             entete += "<th data-placeholder=\""+type+"\">"+champ+"</th>\n";
         });
         $('#vue > thead').html( "<tr>"+entete+"</tr>\n" );
-        // Mise à jour de la liste des classes
-        listeClasses();
     });
     charger_page('Liste');
 }
 
-function listeClasses(){
-    // Actualise la liste des classes
-    $.get( "/liste-classes", function( data ) {
-        classes = data;
-    });
-}
-
+/* Importation */
 function importation() {
     // Lecture du fichier à importer
     var file = document.getElementById('fichier').files[0];
@@ -43,8 +36,6 @@ function envoie_du_fichier(event) {
     $.post('/importation', { data: result, name: fileName }, function(reponse) {
         $.jGrowl(reponse, { header: 'Important', life : 6000 });
         $("#progress").hide();
-        // Mise à jour de la liste des classes
-        listeClasses();
         charger_page('Liste');
     });
 }
@@ -83,6 +74,7 @@ function charger_page(nom) {
             $.jGrowl("Chargement des "+data.length+" élèves terminé.", { life : 3000 });
             $("#vue").tablesorter({
                 theme:'blue',
+                sortList: [ [0,0] ],
                 widgets: ["zebra", "filter"]
             });
         });
@@ -106,10 +98,10 @@ function charger_page(nom) {
     }
 }
 
+/* Conversion d'une table html en fichier CSV
+ * FROM http://jsfiddle.net/terryyounghk/KPEGU/
+*/
 function exportTableToCSV($table, filename) {
-    // Conversion d'une table html en fichier CSV
-    // FROM http://jsfiddle.net/terryyounghk/KPEGU/
-
     var $rows = $table.find('tr:has(td)'),
 
     // Temporary delimiter characters unlikely to be typed by keyboard
@@ -152,7 +144,6 @@ $(document).ready(function() {
     $("#progress").hide();
     // This must be a hyperlink
     $(".export").on('click', function (event) {
-        // CSV
         exportTableToCSV.apply(this, [$('#vue'), 'export.csv']);
         // IF CSV, don't do event.preventDefault() or return false
         // We actually need this to be a typical hyperlink

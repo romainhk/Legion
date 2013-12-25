@@ -101,7 +101,7 @@ function charger_page(nom) {
  * FROM http://jsfiddle.net/terryyounghk/KPEGU/
 */
 function exportTableToCSV($table, filename) {
-    var $rows = $table.find('tr:has(td)'),
+    var $rows = $table.find('tr:visible:has(td,th):not(".tablesorter-filter-row")'),
 
     // Temporary delimiter characters unlikely to be typed by keyboard
     // This is to avoid accidentally splitting the actual contents
@@ -115,14 +115,12 @@ function exportTableToCSV($table, filename) {
     // Grab text from table into CSV formatted string
     csv = '"' + $rows.map(function (i, row) {
         var $row = $(row),
-            $cols = $row.find('td');
+            $cols = $row.find('th,td');
 
         return $cols.map(function (j, col) {
             var $col = $(col),
                 text = $col.text();
-
             return text.replace('"', '""'); // escape double quotes
-
         }).get().join(tmpColDelim);
 
     }).get().join(tmpRowDelim)
@@ -131,7 +129,6 @@ function exportTableToCSV($table, filename) {
 
     // Data URI
     csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
-
     $(this).attr({
         'download': filename,
         'href': csvData,

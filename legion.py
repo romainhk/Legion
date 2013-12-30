@@ -230,12 +230,12 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             if [el['INE'] for el in data].count(ine) == 0: # => L'INE est inconnu pour le moment
                 # Génération de la colonne 'Parcours'
                 parcours = []
+                # Année de sortie
                 sortie = self.annee
                 req = u'SELECT Classe,Année FROM Affectations WHERE INE="{0}" ORDER BY Année ASC'.format(ine)
                 try:
                     for r in self.curs.execute(req):
                         parcours.append(r['Classe'])
-                        # Année de sortie
                         a = int(r['Année'])
                         if a > sortie : sortie = a
                 except sqlite3.Error as e:

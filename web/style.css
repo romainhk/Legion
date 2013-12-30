@@ -2,7 +2,7 @@ body {
     padding:0 1ex;
     background: #febbbb;
     /*background: linear-gradient(135deg, #febbbb 0%,#fe9090 45%,#ff5c5c 100%);*/
-    background: linear-gradient(135deg, #fec9e4 0%,#fe90C7 45%,#FFABD5 100%);
+    background: linear-gradient(90deg, #fec9e4 0%,#fe90C7 50%,#FFABD5 100%);
 }
 h1 {
     text-align:center;
@@ -93,7 +93,8 @@ a.export, a.export:visited {
     opacity: 0.85 !important;
     font-size: 2.2ex !important;
     /* Bordure */
-    border-radius: 9px;
+    border: 5px solid #FFA900 !important;
+    border-radius: 12px;
 }
 /* upload */
 #progress {

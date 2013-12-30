@@ -8,6 +8,10 @@ var les_pages = [ 'Liste', 'Statistiques' ];
 function importation() {
     // Lecture du fichier à importer
     var file = document.getElementById('fichier').files[0];
+    if (file == undefined) {
+        $.jGrowl("Veuillez selectionner un fichier pour lancer l'importation.", {life : 5000 });
+        return false;
+    }
     var reader = new FileReader();
     $("#progress").show();
     reader.readAsText(file, 'ISO-8859-15');

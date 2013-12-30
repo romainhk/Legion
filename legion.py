@@ -223,33 +223,31 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         """ Lit le contenu de la base
         """
         data = []
-        #req = u'SELECT * FROM Élèves NATURAL JOIN Affectations WHERE Année="{0}" ORDER BY Nom,Prénom ASC'.format(self.annee)
         req = u'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC'.format(self.annee)
         for row in self.curs.execute(req).fetchall():
             d = self.dict_from_row(row)
-            # Génération de la colonne 'Parcours'
-            parcours = []
             ine = d['INE']
-            req = u'SELECT Classe FROM Affectations WHERE INE="{0}" ORDER BY Année ASC'.format(ine)
-            try:
-                for r in self.curs.execute(req):
-                    parcours.append(r['Classe'])
-            except sqlite3.Error as e:
-                logging.error(u"Erreur lors de la génération du parcours de {0}:\n{1}".format(ine, e.args[0]))
-                continue
-            d['Parcours'] = ', '.join(parcours)
-            # Calcul de la durée de scolarisation
-            req = u'SELECT Année FROM Affectations WHERE INE="{0}" ORDER BY Année DESC'.format(ine)
-            try:
-                sortie = self.curs.execute(req).fetchone()[u'Année']
-            except sqlite3.Error as e:
-                logging.info(u"Impossible de trouver la dernière affectation dede {0}:\n{1}".format(ine, e.args[0]))
+            if [el['INE'] for el in data].count(ine) == 0: # => L'INE est inconnu pour le moment
+                # Génération de la colonne 'Parcours'
+                parcours = []
                 sortie = self.annee
-            d[u'Durée'] = sortie - d[u'Entrée'] + 1
-            # Calcul de l'âge actuel
-            d[u'Âge'] = self.annee - d['Naissance']
+                req = u'SELECT Classe,Année FROM Affectations WHERE INE="{0}" ORDER BY Année ASC'.format(ine)
+                try:
+                    for r in self.curs.execute(req):
+                        parcours.append(r['Classe'])
+                        # Année de sortie
+                        a = int(r['Année'])
+                        if a > sortie : sortie = a
+                except sqlite3.Error as e:
+                    logging.error(u"Erreur lors de la génération du parcours de {0}:\n{1}".format(ine, e.args[0]))
+                    continue
+                d['Parcours'] = ', '.join(parcours)
+                # Calcul de la durée de scolarisation
+                d[u'Durée'] = sortie - d[u'Entrée'] + 1
+                # Calcul de l'âge actuel
+                d[u'Âge'] = self.annee - d['Naissance']
 
-            data.append(d)
+                data.append(d)
         return data
         
 # DEFINES

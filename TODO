@@ -3,7 +3,9 @@
 * si aucuns changements à l'extinction -> supprimer la copie de la base
 * générer la base sqlite vide si elle est absente
 * dates au jour près (et non à l'année près)
+* Doublement : déplacer dans affectations
 
 ### HTML
 * Colonnes editables.
 * jGrowl : afficher les messages en fadein/out css
+* importation : lever une erreur si pas de fichiers sélectionné

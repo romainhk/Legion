@@ -24,9 +24,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                         [u'Diplômé', 'A-z'], \
                         [u'Après', 'A-z'] \
                         ]
-        # La liste des classes connues
-        self.classes = []
-
         self.annee = datetime.date.today().year
         self.root = root
         self.nb_import = 0
@@ -57,15 +54,17 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         logging.warning("REQUEST : {0} ? {1}".format(params, query))
         if params.path == '/liste':
             data = self.readfromdb()
-            a = json.dumps(data)
-            self.repondre(a)
+            self.repondre(data)
         elif params.path == '/stats':
-            data = self.generer_stats(self.annee)
-            a = json.dumps(data)
-            self.repondre(a)
+            annee = query['annee'].pop()
+            if annee == 'null': annee = self.annee
+            data = self.generer_stats(annee)
+            self.repondre(data)
+        elif params.path == '/liste-annees':
+            annees = self.lister('Année')
+            self.repondre(annees)
         elif params.path == '/init':
-            a = json.dumps(self.header)
-            self.repondre(a)
+            self.repondre(self.header)
         else:
             # Par défaut, on sert l'index 
             http.server.SimpleHTTPRequestHandler.do_GET(self)
@@ -80,9 +79,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         if self.path == '/importation':
             logging.warning('Importation du fichier...')
             self.importer_xml(data)
-            self.liste_classes() # on met à jour la liste des classes
-            a = json.dumps(u'Importation de {nb} élèves terminée.'.format(nb=self.nb_import))
-            self.repondre(a)
+            self.repondre(u'Importation de {nb} élèves terminée.'.format(nb=self.nb_import))
 
     def repondre(self, reponse):
         """ Envoie une réponse http [sic]
@@ -90,7 +87,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
-        self.wfile.write(bytes(reponse, 'UTF-8'))
+        self.wfile.write(bytes(json.dumps(reponse), 'UTF-8'))
         self.wfile.flush()
 
     def log_request(self, code=None, size=None):
@@ -117,18 +114,27 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 data[classe] = [sum(x) for x in zip(data[classe], t)] # data[classe] += t
             else:
                 data[classe] = t
-        self.liste_classes()
 
         # On génère maintenant le tableau de statistiques
         rep = []
-        for cla in self.classes:
-            g, f, doub = data[cla]
+        for cla, val in sorted(data.items()):
+            g, f, doub = val
             r = ( "{classe}".format(classe=cla), \
                   "{effectif}".format(effectif=g+f), \
                   "{0} ({1} %)".format(doub, round(100*doub/(g+f), 1)), \
                   "{0} %".format( round(100*g/(g+f), 1) ) )
             rep.append(r)
         return rep
+
+    def lister(self, info):
+        """ Fait une liste des INE, des classes ou des années connues
+        """
+        req = u'SELECT DISTINCT {0} FROM Affectations ORDER BY {0} ASC'.format(info)
+        try:
+            self.curs.execute(req)
+        except sqlite3.Error as e:
+            logging.error(u"Erreur lors du listage '{0}' :\n{1}".format(info, e.args[0]))
+        return [item[0] for item in self.curs.fetchall()]
 
     def importer_xml(self, data):
         """ Parse le xml à importer
@@ -246,16 +252,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             data.append(d)
         return data
         
-    def liste_classes(self):
-        """ Met à jour la liste des classes connues
-        """
-        req = u'SELECT DISTINCT Classe FROM Affectations ORDER BY Classe ASC'
-        try:
-            self.curs.execute(req)
-        except sqlite3.Error as e:
-            logging.error(u"Erreur lors de la mise à jour de la liste des classes :\n%s" % (e.args[0]))
-        self.classes = [item[0] for item in self.curs.fetchall()]
-
 # DEFINES
 PORT = 5432
 

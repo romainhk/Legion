@@ -21,6 +21,7 @@ function envoie_du_fichier(event) {
         $.jGrowl(reponse, { header: 'Important', life : 6000 });
         $("#progress").hide();
         charger_page('Liste');
+        stats_annees(); // Une nouvelle année est peut-être disponible...
     });
 }
 
@@ -60,12 +61,14 @@ function charger_page(nom) {
         });
     } else if (nom == 'Statistiques') {
         page_active = 'Statistiques';
-        $.get( "/stats", function( data ) {
+        annee = $('#stats-annee').val();
+        $.get( "/stats?annee="+annee, function( data ) {
+            //console.log(data);
             $('#stats > tbody').html( list_to_tab(data, [0, 1, 2, 3]) );
             $("#stats").tablesorter({
                 theme:'blue',
-                widgets: ["zebra"],
                 sortList: [ [0,0] ],
+                widgets: ["zebra"],
                 headers: {
                     1: { sorter: false },
                     2: { sorter: false },
@@ -77,14 +80,22 @@ function charger_page(nom) {
     $("#"+page_active).show();
 }
 
-/* Change les statistiques selon l'année désirée */
-function charger_stats(anne) {
-    console.log($('#stats-annee').val());
+/* Mets à jour la liste des années connues sur la page de stats
+ */
+function stats_annees() {
+    $.get( "/liste-annees", function( data ) {
+        var options = "";
+        $.each(data, function( i, an ) {
+            options += "<option>"+an+"</option>\n";
+        });
+        $('#stats-annee').html( options );
+        $('#stats-annee option:last').attr("selected","selected");
+    });
 }
 
 /* Conversion d'une table html en fichier CSV
  * FROM http://jsfiddle.net/terryyounghk/KPEGU/
-*/
+ */
 function exportTableToCSV($table, filename) {
     var $rows = $table.find('tr:visible:has(td,th):not(".tablesorter-filter-row")'),
 
@@ -145,5 +156,6 @@ $(document).ready(function() {
         });
         $('#vue > thead').html( "<tr>"+entete+"</tr>\n" );
     });
+    stats_annees();
     charger_page('Liste');
 });

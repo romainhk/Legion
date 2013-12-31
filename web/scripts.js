@@ -22,7 +22,7 @@ function envoie_du_fichier(event) {
     var result = event.target.result;
     var fileName = document.getElementById('fichier').files[0].name;
     $.post('/importation', { data: result, name: fileName }, function(reponse) {
-        $.jGrowl(reponse, { header: 'Important', life : 6000 });
+        $.jGrowl(reponse, { header: 'Importation', life : 6000 });
         $("#progress").hide();
         charger_page('Liste');
         stats_annees(); // Une nouvelle année est peut-être disponible...

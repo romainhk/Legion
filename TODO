@@ -1,5 +1,4 @@
 ### Python
-* logging des activités en txt
 * si aucuns changements à l'extinction -> supprimer la copie de la base
 * dates au jour près (et non à l'année près)
 

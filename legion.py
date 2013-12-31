@@ -1,8 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
-import sqlite3, datetime, os, shutil
+import os
+import sqlite3
+import datetime
+import logging
+import shutil
 import http.server, socketserver, threading, webbrowser
-import logging, urllib, json
+import json
+import urllib
 from urllib.parse import urlparse, parse_qs
 import xml.etree.ElementTree as ET
 
@@ -53,7 +58,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         # Analyse de l'url
         params = urlparse(self.path)
         query = parse_qs(params.query)
-        logging.warning("REQUEST : {0} ? {1}".format(params, query))
+        logging.debug("GET {0} ? {1}".format(params, query))
         if params.path == '/liste':
             data = self.readfromdb()
             self.repondre(data)
@@ -77,11 +82,10 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         parse = parse_qs(data.decode('UTF-8')) # { data: , name: }
         # le fichier xml est en ISO-8859-15
         data = parse['data'].pop()
-        logging.warning(self.path)
         if self.path == '/importation':
-            logging.warning('Importation du fichier...')
+            logging.info('Importation du fichier...')
             self.importer_xml(data)
-            self.repondre(u'Importation de {nb} élèves terminée.'.format(nb=self.nb_import))
+            self.repondre(u"L'importation de {nb} élèves s'est bien terminée.".format(nb=self.nb_import))
 
     def repondre(self, reponse):
         """ Envoie une réponse http [sic]
@@ -142,7 +146,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         """ Parse le xml à importer
         """
         ### TODO : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ?
-        #logging.warning('Parsing du fichier xml')
         self.nb_import = 0
         # Écriture de l'xml dans un fichier
         fichier_tmp = 'importation.xml'
@@ -269,13 +272,19 @@ def open_browser():
     thread.start()
 
 if __name__ == "__main__":
+    """
+    logging.basicConfig(
+        filename='legion.log',
+        level=logging.DEBUG,
+        format='%(asctime)s;%(levelname)s;%(message)s')
+    """
+    address = ("", PORT)
+    root = os.getcwd()
     try:
         #open_browser()
-        address = ("", PORT)
-        root = os.getcwd()
         os.chdir(root + os.sep + 'web') # la partie html est dans le dossier web
         server = http.server.HTTPServer(address, Legion)
-        logging.warning(u'Démarrage du serveur sur le port {0}'.format(PORT))
+        logging.info(u'Démarrage du serveur sur le port {0}'.format(PORT))
         server.serve_forever()
     except KeyboardInterrupt:
         logging.warning(u'^C reçu, extinction du serveur')

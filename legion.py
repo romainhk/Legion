@@ -33,12 +33,15 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             self.old_db = bdd+'.'+datetime.date.today().isoformat()
             # Sauvegarde de la base
             shutil.copy(bdd, self.old_db)
+        else:
+            logging.error("La base sqlite ({0}) n'est pas accessible. Impossible de continuer.".format(bdd))
+            exit(2)
 
         try:
             self.conn = sqlite3.connect(bdd)
         except:
-            pywikibot.output("Impossible d'ouvrir la base sqlite {0}".format(bdd))
-            exit(2)
+            logging.error("Impossible de se connecter à la base de données ({0})".format(bdd))
+            exit(3)
         self.conn.row_factory = sqlite3.Row
         self.curs = self.conn.cursor()
 

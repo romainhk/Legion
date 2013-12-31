@@ -18,7 +18,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                         [U'Âge', '0-9'], \
                         ['Genre', 'H/F'], \
                         ['Parcours', 'Classes'], \
-                        ['Doublement', 'Oui/Non'], \
                         [u'Entrée', 'Date'], \
                         [u'Durée', '0-9'], \
                         [u'Diplômé', 'A-z'], \
@@ -172,7 +171,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             if sortie is None:
                 enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, \
                         'naissance': int(naissance), 'genre': int(genre), \
-                        'doublement': doublement, 'classe': classe, 'entree': int(entree) \
+                        'doublement': int(doublement), 'classe': classe, 'entree': int(entree) \
                         }
                 self.writetodb(enr)
             else:
@@ -196,8 +195,11 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         if r[0] == 0:
             # Ajout de l'élève
             req = u'INSERT INTO Élèves ' \
-                + u'(INE, Nom, Prénom, Naissance, Genre, Doublement, Entrée, Diplômé, Après) VALUES ("%s", "%s", "%s", %i, %i, "%s", %i, "%s", "%s")' \
-                % (ine, enr['nom'], enr[u'prénom'], enr['naissance'], enr['genre'], enr['doublement'], enr['entree'], enr[u'Diplômé'], enr[u'Après'])
+                + u'(INE, Nom, Prénom, Naissance, Genre, Entrée, Diplômé, Après) ' \
+                + 'VALUES ("{0}", "{1}", "{2}", {3}, {4}, {5}, "{6}", "{7}")'.format(
+                        ine,    enr['nom'],     enr[u'prénom'],
+                        enr['naissance'],   enr['genre'],   enr['entree'],
+                        enr[u'Diplômé'],    enr[u'Après'])
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:
@@ -208,9 +210,11 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             #logging.warning(u"L'élève {0} est déjà présent dans la base {1}".format(ine, self.annee))
             pass
 
-        # Affectation à une classe cette année
+        # Affectation à une classe
         req = u'INSERT INTO Affectations ' \
-              +  u'(INE, Classe, Année) VALUES ("{0}", "{1}", {2})'.format(ine, classe, self.annee)
+              +  u'(INE, Classe, Année, Doublement) ' \
+              + 'VALUES ("{0}", "{1}", {2}, {3})'.format(
+                      ine, classe, self.annee, enr['doublement'])
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
@@ -223,8 +227,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.nb_import = self.nb_import + 1
 
     def readfromdb(self):
-        """ Lit le contenu de la base
-        """
+        """ Lit le contenu de la base """
         data = []
         req = u'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC'.format(self.annee)
         for row in self.curs.execute(req).fetchall():
@@ -235,10 +238,12 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 parcours = []
                 # Année de sortie
                 sortie = self.annee
-                req = u'SELECT Classe,Année FROM Affectations WHERE INE="{0}" ORDER BY Année ASC'.format(ine)
+                req = u'SELECT Classe,Année,Doublement FROM Affectations WHERE INE="{0}" ORDER BY Année ASC'.format(ine)
                 try:
                     for r in self.curs.execute(req):
-                        parcours.append(r['Classe'])
+                        classe = r['Classe']
+                        if r['Doublement'] == 1: classe = classe+'*'
+                        parcours.append(classe)
                         a = int(r['Année'])
                         if a > sortie : sortie = a
                 except sqlite3.Error as e:

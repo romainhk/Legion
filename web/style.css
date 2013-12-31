@@ -69,6 +69,10 @@ a.export, a.export:visited {
     -o-appearance:button;
     -ms-appearance:button;
 }
+.doublement {
+    color:green;
+    text-decoration: underline;
+}
 /* Onglets */
 .onglet {
     list-style-type: none;

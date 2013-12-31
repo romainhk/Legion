@@ -36,8 +36,8 @@ function list_to_tab(liste, champs) {
         var vals = "";
         $.each( champs, function( i, j ) {
             v = value[j];
-            if (j == "Doublement") { // Traduction de la colonne doublement
-                if (v == "0") { v = "Non"; } else { v = "Oui"; }
+            if (j == "Parcours") { // Traduction des doublements
+                v = v.replace(/([^, ]+)\*/g, '<span class="doublement">$1</span>');
             } else if (j == "Genre") { // Traduction de la colonne genre
                 if (v == "1") { v = "Homme"; } else if (v == "2") { v = "Femme"; }
             }

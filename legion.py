@@ -17,7 +17,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     """
     def __init__(self, request, client, server):
         global root
-        # Les colonnes qui seront affichées, dans l'ordre et avec leur tri (Stupid-Table-Plugin)
+        # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
                         [u'Prénom', 'A-z'], \
                         [U'Âge', '0-9'], \
@@ -52,9 +52,11 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         super().__init__(request, client, server)
 
     def dict_from_row(self, row):
+        """ Converti un sqlite.Row en dictionnaire """
         return dict(zip(row.keys(), row))
 
     def do_GET(self):
+        """ Traitement des GET """
         # Analyse de l'url
         params = urlparse(self.path)
         query = parse_qs(params.query)
@@ -77,6 +79,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             http.server.SimpleHTTPRequestHandler.do_GET(self)
 
     def do_POST(self):
+        """ Traitement des POST """
         length = self.headers['content-length']
         data = self.rfile.read(int(length))
         parse = parse_qs(data.decode('UTF-8')) # { data: , name: }
@@ -88,23 +91,15 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             self.repondre(u"L'importation de {nb} élèves s'est bien terminée.".format(nb=self.nb_import))
 
     def repondre(self, reponse):
-        """ Envoie une réponse http [sic]
-        """
+        """ Envoie une réponse http [sic] """
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
         self.wfile.write(bytes(json.dumps(reponse), 'UTF-8'))
         self.wfile.flush()
 
-    def log_request(self, code=None, size=None):
-        pass
-
-    def log_message(self, format, *args):
-        print('Message')
-
     def generer_stats(self, annee):
-        """ Génère des statistiques sur la base
-        """
+        """ Génère des statistiques sur la base """
         # Récupération des infos : classes, effectif...
         data = {}
         req = u'SELECT * FROM Élèves NATURAL JOIN Affectations WHERE Année={0}'.format(annee)
@@ -133,8 +128,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         return rep
 
     def lister(self, info):
-        """ Fait une liste des INE, des classes ou des années connues
-        """
+        """ Génère une liste des INE, des classes ou des années connues """
         req = u'SELECT DISTINCT {0} FROM Affectations ORDER BY {0} ASC'.format(info)
         try:
             self.curs.execute(req)
@@ -143,9 +137,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         return [item[0] for item in self.curs.fetchall()]
 
     def importer_xml(self, data):
-        """ Parse le xml à importer
-        """
-        ### TODO : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ?
+        """ Parse le xml à importer """
         self.nb_import = 0
         # Écriture de l'xml dans un fichier
         fichier_tmp = 'importation.xml'
@@ -182,8 +174,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 pass
 
     def writetodb(self, enr):
-        """ Ajoute un élève dans la bdd
-        """
+        """ Ajoute les informations d'un élève à la bdd """
         classe = enr['classe']
         ine = enr['ine']
         enr[u'Diplômé'] = enr[u'Après'] = '?'

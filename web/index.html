@@ -15,7 +15,7 @@
   </head>
   <body>
     <h1>Legion</h1>
-    <!-- #####  Corps : résultats et stats  ##### -->
+    <!-- #####  Corps  ##### -->
     <div class="gauche">
         <div id="Liste">
             <h3>Listing</h3>
@@ -41,7 +41,7 @@
             </table>
         </div>
     </div>
-    <!-- #####  Menu : recherche et importation  ##### -->
+    <!-- #####  Menu  ##### -->
     <div class="droite">
         <ul class="onglet">
             <li onClick="charger_page('Liste');">Liste</li>
@@ -53,14 +53,14 @@
             <li><span class="doublement">Redoublement</span></li>
         </ul>
         <h4>Importation</h4>
-        Sélectionner l'exportation xml de la base SIECLE (<i>ElevesSansAdresses.xml</i>)
+        Sélectionner l'exportation xml de la base SIÈCLE (<i>ElevesSansAdresses.xml</i>)
         <form id="importation" enctype="multipart/form-data">
             <input type="file" id="fichier">
             <input type="button" value="Importer" onClick="importation();" style="font-weight:bold;">
             <img id="progress" src="loading.gif">
         </form>
-        <h4>Exportation</h4>
-        <a href="#" class="export">Exporter la vue</a>
+        <h4>Exportation CSV</h4>
+        <a href="#" class="export">Exporter ce tableau</a>
     </div>
   </body>
 </html>

@@ -1,10 +1,11 @@
-// Champs affichés
+// Champs affichés dans la vue
 var champs_vue = new Array();
 // Page affichée
 var page_active = "";
 var les_pages = [ 'Liste', 'Statistiques' ];
 
-/* Importation */
+/* Importation
+ */
 function importation() {
     // Lecture du fichier à importer
     var file = document.getElementById('fichier').files[0];
@@ -18,7 +19,7 @@ function importation() {
     reader.onload = envoie_du_fichier;
 }
 function envoie_du_fichier(event) {
-    // Envoie du fichier à importer
+    // Envoie du fichier au serveur
     var result = event.target.result;
     var fileName = document.getElementById('fichier').files[0].name;
     $.post('/importation', { data: result, name: fileName }, function(reponse) {
@@ -29,7 +30,8 @@ function envoie_du_fichier(event) {
     });
 }
 
-/* Convertir une liste en lignes de tableau (tr) */
+/* Convertir une liste en lignes de tableau (tr)
+ */
 function list_to_tab(liste, champs) {
     var lignes = "";
     $.each( liste, function( key, value ) {
@@ -48,9 +50,9 @@ function list_to_tab(liste, champs) {
     return(lignes);
 }
 
-/* Le switch de page */
+/* Le switch de page
+ */
 function charger_page(nom) {
-    // Change la page courante
     $.each(les_pages, function( i, p ) { $("#"+p).hide(); });
     if (nom == 'Liste') {
         page_active = 'Liste';
@@ -67,14 +69,12 @@ function charger_page(nom) {
         page_active = 'Statistiques';
         annee = $('#stats-annee').val();
         $.get( "/stats?annee="+annee, function( data ) {
-            //console.log(data);
             $('#stats > tbody').html( list_to_tab(data, [0, 1, 2, 3]) );
             $("#stats").tablesorter({
                 theme:'blue',
                 sortList: [ [0,0] ],
                 widgets: ["zebra"],
                 headers: {
-                    1: { sorter: false },
                     2: { sorter: false },
                     3: { sorter: false }
                 }
@@ -97,7 +97,7 @@ function stats_annees() {
     });
 }
 
-/* Conversion d'une table html en fichier CSV
+/* Conversion d'un tableau html en fichier CSV
  * FROM http://jsfiddle.net/terryyounghk/KPEGU/
  */
 function exportTableToCSV($table, filename) {
@@ -138,10 +138,7 @@ function exportTableToCSV($table, filename) {
 
 $(document).ready(function() {
     $("#progress").hide();
-    // On cache toutes les pages
-    $.each(les_pages, function( i, p ) { $("#"+p).hide(); });
-
-    // Lien d'exportation
+    // Création du lien d'exportation
     $(".export").on('click', function (event) {
         exportTableToCSV.apply(this, [$('#'+page_active), 'export_'+page_active+'.csv']);
         // IF CSV, don't do event.preventDefault() or return false

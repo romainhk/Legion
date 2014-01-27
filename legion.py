@@ -69,6 +69,12 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             if annee == 'null': annee = self.annee
             data = self.generer_stats(annee)
             self.repondre(data)
+        elif params.path == '/maj':
+            ine = query['ine'].pop()
+            champ = query['champ'].pop()
+            donnee = query['d'].pop()
+            data = self.maj_champ(ine, champ, donnee)
+            self.repondre(data)
         elif params.path == '/liste-annees':
             annees = self.lister('Année')
             self.repondre(annees)
@@ -126,6 +132,18 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                   "{0} %".format( round(100*g/(g+f), 1) ) )
             rep.append(r)
         return rep
+
+    def maj_champ(self, ine, champ, donnee):
+        """ Mets à jour un champ de la base """
+        req = u'UPDATE Élèves SET {champ}="{d}" WHERE INE="{ine}"'.format(ine=ine, champ=champ, d=donnee)
+        print(req)
+        try:
+            self.curs.execute(req)
+        except sqlite3.Error as e:
+            logging.error(u"Erreur lors de l'insertion de '{0}' :\n{1}".format(ine, e.args[0]))
+            return 'Non'
+        self.conn.commit()
+        return 'Oui'
 
     def lister(self, info):
         """ Génère une liste des INE, des classes ou des années connues """

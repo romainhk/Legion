@@ -4,7 +4,8 @@
 * Cohérente d importation : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ?
 
 ### HTML
-* saisie d'informations (colonnes Diplômé & Après)
+* Diplômé & Après : adapter l'outil de recherche
+* Diplômé & Après : adapter l'exportation CSV
 * stats des absences (-> recoupement avec pronote) ?
 * Colonnes editables.
 * jGrowl : afficher les messages en fadein/out css

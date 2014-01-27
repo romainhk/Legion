@@ -30,18 +30,38 @@ function envoie_du_fichier(event) {
     });
 }
 
-/* Convertir une liste en lignes de tableau (tr)
+/*
+ * Mets à jour un champ de la base
+ */
+function maj_champ(ine, champ) {
+    input = $("#"+champ[0]+"--"+ine);
+    if (input.val() != '?') {
+        params = "ine="+ine+"&champ="+champ+"&d="+input.val();
+        $.get( "/maj?"+params, function( data ) {
+            if (data == 'Oui') { input.addClass("maj_oui"); }
+            else if (data == 'Non') { input.addClass("maj_non"); }
+        });
+    }
+}
+function maj_raz(id) { $("#"+id).removeClass('maj_oui maj_non'); }
+
+/* 
+ * Convertir une liste en lignes de tableau (tr)
  */
 function list_to_tab(liste, champs) {
     var lignes = "";
     $.each( liste, function( key, value ) {
         var vals = "";
+        ine = value['INE'];
         $.each( champs, function( i, j ) {
             v = value[j];
             if (j == "Parcours") { // Traduction des doublements
                 v = v.replace(/([^, ]+)\*/g, '<span class="doublement">$1</span>');
             } else if (j == "Genre") { // Traduction de la colonne genre
                 if (v == "1") { v = "Homme"; } else if (v == "2") { v = "Femme"; }
+            } else if (j == "Diplômé" || j == "Après") { // Ajout d'input
+                id = j[0] + '--' + ine;
+                v = "<input id='"+id+"' type='text' value='"+v+"' onblur=\"maj_champ('"+ine+"', '"+j+"');\" onfocus=\"maj_raz('"+id+"');\"></input>";
             }
             vals += "<td>"+v+"</td>";
         });

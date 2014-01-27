@@ -107,3 +107,10 @@ a.export, a.export:visited {
     margin-left:3ex;
     vertical-align:middle;
 }
+/* input */
+.maj_oui {
+    background-color: #B3FFB3;
+}
+.maj_non {
+    background-color: #FFB3B3;
+}

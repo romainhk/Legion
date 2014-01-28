@@ -61,7 +61,7 @@ function list_to_tab(liste, champs) {
                 if (v == "1") { v = "Homme"; } else if (v == "2") { v = "Femme"; }
             } else if (j == "Diplômé" || j == "Après") { // Ajout d'input
                 id = j[0] + '--' + ine;
-                v = "<input id='"+id+"' type='text' value='"+v+"' onblur=\"maj_champ('"+ine+"', '"+j+"');\" onfocus=\"maj_raz('"+id+"');\"></input>";
+                v = "<input id='"+id+"' type='text' value='"+v+"' onblur=\"maj_champ('"+ine+"', '"+j+"');\" onfocus=\"maj_raz('"+id+"');\" size='10'></input>";
             }
             vals += "<td>"+v+"</td>";
         });

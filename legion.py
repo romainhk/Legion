@@ -11,6 +11,18 @@ import urllib
 from urllib.parse import urlparse, parse_qs
 import xml.etree.ElementTree as ET
 
+# Fonctions globales
+def xstr(s):
+    """ Converti un None en chaine vide """
+    if s is None:
+        return ''
+    return str(s)
+
+def dict_from_row(row):
+    """ Converti un sqlite.Row en dictionnaire """
+    return dict(zip(row.keys(), row))
+
+# Classe maîtresse : serveur web et traitement des requêtes
 class Legion(http.server.SimpleHTTPRequestHandler):
     """ Classe Legion
     Serveur web et interface pour base sqlite
@@ -20,11 +32,14 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
                         [u'Prénom', 'A-z'], \
-                        [U'Âge', '0-9'], \
+                        [u'Âge', '0-9'], \
+                        ['Mail', 'A-z'], \
                         ['Genre', 'H/F'], \
                         ['Parcours', 'Classes'], \
                         [u'Entrée', 'Date'], \
                         [u'Durée', '0-9'], \
+                        [u'SAD_etab', 'A-z'], \
+                        [u'SAD_classe', 'A-z'], \
                         [u'Diplômé', 'A-z'], \
                         [u'Après', 'A-z'] \
                         ]
@@ -50,10 +65,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.curs = self.conn.cursor()
 
         super().__init__(request, client, server)
-
-    def dict_from_row(self, row):
-        """ Converti un sqlite.Row en dictionnaire """
-        return dict(zip(row.keys(), row))
 
     def do_GET(self):
         """ Traitement des GET """
@@ -110,7 +121,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         data = {}
         req = u'SELECT * FROM Élèves NATURAL JOIN Affectations WHERE Année={0}'.format(annee)
         for row in self.curs.execute(req).fetchall():
-            d = self.dict_from_row(row)
+            d = dict_from_row(row)
             if d['Genre'] == 1:
                 h = (0,1)
             else:
@@ -136,7 +147,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def maj_champ(self, ine, champ, donnee):
         """ Mets à jour un champ de la base """
         req = u'UPDATE Élèves SET {champ}="{d}" WHERE INE="{ine}"'.format(ine=ine, champ=champ, d=donnee)
-        print(req)
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
@@ -177,14 +187,18 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             prenom = eleve.findtext('PRENOM')
             j, m, naissance = eleve.findtext('DATE_NAISS').split('/')
             genre = eleve.findtext('CODE_SEXE')
+            mail = xstr(eleve.findtext('MEL'))
             doublement = eleve.findtext('DOUBLEMENT')
             j, m, entree = eleve.findtext('DATE_ENTREE').split('/')
             sortie = eleve.findtext('DATE_SORTIE')
             classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE/CODE_STRUCTURE".format(eid))
+            sad_etab = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/DENOM_COMPL'))
+            sad_classe = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_STRUCTURE')).strip(' ')
             if sortie is None:
                 enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, \
-                        'naissance': int(naissance), 'genre': int(genre), \
-                        'doublement': int(doublement), 'classe': classe, 'entree': int(entree) \
+                        'naissance': int(naissance), 'genre': int(genre), 'mail': mail, \
+                        'doublement': int(doublement), 'classe': classe, 'entree': int(entree), \
+                        'sad_etab': sad_etab,   'sad_classe': sad_classe \
                         }
                 self.writetodb(enr)
             else:
@@ -207,10 +221,11 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         if r[0] == 0:
             # Ajout de l'élève
             req = u'INSERT INTO Élèves ' \
-                + u'(INE, Nom, Prénom, Naissance, Genre, Entrée, Diplômé, Après) ' \
-                + 'VALUES ("{0}", "{1}", "{2}", {3}, {4}, {5}, "{6}", "{7}")'.format(
-                        ine,    enr['nom'],     enr[u'prénom'],
-                        enr['naissance'],   enr['genre'],   enr['entree'],
+                + u'(INE, Nom, Prénom, Naissance, Genre, Entrée, Mail, SAD_etab, SAD_classe, Diplômé, Après) ' \
+                + 'VALUES ("{0}", "{1}", "{2}", {3}, {4}, {5}, "{6}", "{7}", "{8}", "{9}", "{10}")'.format(
+                        ine,                enr['nom'],         enr[u'prénom'],
+                        enr['naissance'],   enr['genre'],       enr['entree'],
+                        enr['mail'],      enr['sad_etab'],    enr['sad_classe'],
                         enr[u'Diplômé'],    enr[u'Après'])
             try:
                 self.curs.execute(req)
@@ -243,7 +258,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         data = []
         req = u'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC'.format(self.annee)
         for row in self.curs.execute(req).fetchall():
-            d = self.dict_from_row(row)
+            d = dict_from_row(row)
             ine = d['INE']
             if [el['INE'] for el in data].count(ine) == 0: # => L'INE est inconnu pour le moment
                 # Génération de la colonne 'Parcours'
@@ -263,7 +278,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                     continue
                 d['Parcours'] = ', '.join(parcours)
                 # Calcul de la durée de scolarisation
-                d[u'Durée'] = sortie - d[u'Entrée'] + 1
+                d[u'Durée'] = sortie - d[u'Entrée']
                 # Calcul de l'âge actuel
                 d[u'Âge'] = self.annee - d['Naissance']
 

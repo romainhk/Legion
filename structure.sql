@@ -4,7 +4,10 @@ CREATE TABLE "Élèves" (
     "Prénom" TEXT,
     "Naissance" INTEGER DEFAULT (null) ,
     "Genre" INTEGER NOT NULL  DEFAULT (0) ,
+    "Mail" TEXT DEFAULT (null) ,
     "Entrée" INTEGER DEFAULT (null) ,
+    "SAD_etab" TEXT DEFAULT (null) ,
+    "SAD_classe" TEXT DEFAULT (null) ,
     "Diplômé" TEXT DEFAULT (null) ,
     "Après" TEXT
 );

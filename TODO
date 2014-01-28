@@ -1,7 +1,10 @@
 ### Python
 * si aucuns changements à l'extinction -> supprimer la copie de la base
 * dates au jour près (et non à l'année près)
-* Cohérente d importation : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ?
+* Cohérente d importation : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ? supposer une sortie en fin d'année ?
+* date de sortie plutôt de durée ?
+* colonne Diplômé : importation automatisée depuis ...
+* importation : mettre de côté les importations foireuses pour validation manuelle
 
 ### HTML
 * Diplômé & Après : adapter l'outil de recherche
@@ -10,3 +13,6 @@
 * Colonnes editables.
 * jGrowl : afficher les messages en fadein/out css
 * laisser tomber jGrowl ?
+* avec l'établissement précédent : stats sur les classe d'origine
+* avec mail : mailing auto
+* stat "poids dans l'établissement" : classe / niveau & établissement

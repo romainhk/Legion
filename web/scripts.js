@@ -89,14 +89,14 @@ function charger_page(nom) {
         page_active = 'Statistiques';
         annee = $('#stats-annee').val();
         $.get( "/stats?annee="+annee, function( data ) {
-            $('#stats > tbody').html( list_to_tab(data, [0, 1, 2, 3]) );
+            $('#stats > tbody').html( list_to_tab(data, [0, 1, 2, 3, 4]) );
             $("#stats").tablesorter({
                 theme:'blue',
                 sortList: [ [0,0] ],
                 widgets: ["zebra"],
                 headers: {
-                    2: { sorter: false },
-                    3: { sorter: false }
+                    3: { sorter: false },
+                    4: { sorter: false }
                 }
             });
         });

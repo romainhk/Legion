@@ -135,12 +135,15 @@ class Legion(http.server.SimpleHTTPRequestHandler):
 
         # On génère maintenant le tableau de statistiques
         rep = []
+        eff_total = sum([sum(x[:2]) for x in data.values()]) # Effectif total
         for cla, val in sorted(data.items()):
             g, f, doub = val
+            eff = g + f
             r = ( "{classe}".format(classe=cla), \
-                  "{effectif}".format(effectif=g+f), \
-                  "{0} ({1} %)".format(doub, round(100*doub/(g+f), 1)), \
-                  "{0} %".format( round(100*g/(g+f), 1) ) )
+                  "{effectif}".format(effectif=eff), \
+                  "{0} %".format(round(100*eff/eff_total,1)), \
+                  "{0} ({1} %)".format(doub, round(100*doub/eff, 1)), \
+                  "{0} %".format( round(100*g/eff, 1) ) )
             rep.append(r)
         return rep
 

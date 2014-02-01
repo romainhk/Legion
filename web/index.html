@@ -27,7 +27,7 @@
         <div id="Statistiques">
             <h3>Statistiques</h3>
             <table id="stats" border="1">
-                <caption>Pour l'année <select id="stats-annee" onChange="charger_page('Statistiques');">
+                <caption>Pour l'année <select id="stats-annee" onChange="function(){$('#onglets li:last-child').trigger('click');};">
                 </select></caption>
                 <thead>
                     <tr>

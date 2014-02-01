@@ -114,8 +114,12 @@ a.export, a.export:visited {
 }
 /* input */
 .maj_oui {
-    background-color: #B3FFB3;
+    background-color: #B3FFB3 !important;
 }
 .maj_non {
-    background-color: #FFB3B3;
+    background-color: #FFB3B3 !important;
+}
+td input {
+    margin: 0;
+    padding: 0;
 }

@@ -7,14 +7,12 @@
 * colonne Diplômé : importation automatisée depuis ...
 
 ### HTML
-* Diplômé & Après : adapter l'outil de recherche
-* Diplômé & Après : adapter l'exportation CSV
 * stats des absences (-> recoupement avec pronote) ?
 * Colonnes editables.
-* jGrowl : afficher les messages en fadein/out css
 * laisser tomber jGrowl ?
+** jGrowl : afficher les messages en fadein/out css
 * avec l'établissement précédent : stats sur les classe d'origine
 * avec mail : mailing auto
 * stat "poids dans l'établissement" : classe / niveau
-* tablesorter ne se lance pas toujours au premier chargement
+* les widgets de tablesorter ne se lancent pas toujours (notamment au premier chargement)
 * menu à droite rétractable ?

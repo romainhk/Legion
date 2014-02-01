@@ -2,9 +2,9 @@
 * si aucuns changements à l'extinction -> supprimer la copie de la base
 * dates au jour près (et non à l'année près)
 * Cohérente d importation : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ? ou supposer à l'importation une sortie en fin d'année ?
+* importation : mettre de côté les importations foireuses pour validation manuelle
 * date de sortie plutôt qu'une durée ?
 * colonne Diplômé : importation automatisée depuis ...
-* importation : mettre de côté les importations foireuses pour validation manuelle
 
 ### HTML
 * Diplômé & Après : adapter l'outil de recherche
@@ -17,3 +17,4 @@
 * avec mail : mailing auto
 * stat "poids dans l'établissement" : classe / niveau
 * tablesorter ne se lance pas toujours au premier chargement
+* menu à droite rétractable ?

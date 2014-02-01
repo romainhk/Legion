@@ -84,12 +84,17 @@ a.export, a.export:visited {
     margin: 2px 2px 0 2px !important;
     border: 1px solid #9EA0A1;
     padding: 1ex;
+    cursor: pointer;
 }
 .onglet a {
     display: block;
 }
 .onglet li:hover {
     background-color:#99BFE6;
+}
+.onglet_actif {
+    background-color:#99BFE6 !important;
+    cursor: default !important;
 }
 /* jGrowl */
 .jGrowl-notification {

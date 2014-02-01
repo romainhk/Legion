@@ -2,7 +2,7 @@
 var champs_vue = new Array();
 // Page affichée
 var page_active = "";
-var les_pages = [ 'Liste', 'Statistiques' ];
+var les_pages = new Array();
 
 /* Importation
  */
@@ -165,6 +165,15 @@ $(document).ready(function() {
         // We actually need this to be a typical hyperlink
     });
 
+    // Préparation du menu
+    $("#onglets").children().each(function() { les_pages.push($(this).html()) });
+    $("#onglets li").click(function(event) {
+        target = $(event.target);
+        $("#onglets").children().removeClass('onglet_actif');
+        target.addClass('onglet_actif');
+        charger_page(target.html());
+    });
+
     // Initialisation de l'application
     $.get( "/init", function( data ) {
         var entete = "";
@@ -178,5 +187,6 @@ $(document).ready(function() {
         $('#vue > thead').html( "<tr>"+entete+"</tr>\n" );
     });
     stats_annees();
-    charger_page('Liste');
+    // Chargement de la première page
+    $( "#onglets li:first-child" ).trigger( "click" );
 });

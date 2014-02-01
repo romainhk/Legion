@@ -38,7 +38,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                         ['Parcours', 'Classes'], \
                         [u'Entrée', 'Date'], \
                         [u'Durée', '0-9'], \
-                        [u'SAD_etab', 'A-z'], \
+                        [u'SAD_etablissement', 'A-z'], \
                         [u'SAD_classe', 'A-z'], \
                         [u'Diplômé', 'A-z'], \
                         [u'Après', 'A-z'] \
@@ -195,13 +195,13 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             j, m, entree = eleve.findtext('DATE_ENTREE').split('/')
             sortie = eleve.findtext('DATE_SORTIE')
             classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE/CODE_STRUCTURE".format(eid))
-            sad_etab = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/DENOM_COMPL'))
+            sad_etab = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/DENOM_COMPL')).title()
             sad_classe = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_STRUCTURE')).strip(' ')
             if sortie is None:
                 enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, \
                         'naissance': int(naissance), 'genre': int(genre), 'mail': mail, \
                         'doublement': int(doublement), 'classe': classe, 'entree': int(entree), \
-                        'sad_etab': sad_etab,   'sad_classe': sad_classe \
+                        'sad_etablissement': sad_etab,   'sad_classe': sad_classe \
                         }
                 self.writetodb(enr)
             else:
@@ -224,11 +224,11 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         if r[0] == 0:
             # Ajout de l'élève
             req = u'INSERT INTO Élèves ' \
-                + u'(INE, Nom, Prénom, Naissance, Genre, Entrée, Mail, SAD_etab, SAD_classe, Diplômé, Après) ' \
+                + u'(INE, Nom, Prénom, Naissance, Genre, Entrée, Mail, SAD_etablissement, SAD_classe, Diplômé, Après) ' \
                 + 'VALUES ("{0}", "{1}", "{2}", {3}, {4}, {5}, "{6}", "{7}", "{8}", "{9}", "{10}")'.format(
                         ine,                enr['nom'],         enr[u'prénom'],
                         enr['naissance'],   enr['genre'],       enr['entree'],
-                        enr['mail'],      enr['sad_etab'],    enr['sad_classe'],
+                        enr['mail'],        enr['sad_etablissement'],    enr['sad_classe'],
                         enr[u'Diplômé'],    enr[u'Après'])
             try:
                 self.curs.execute(req)

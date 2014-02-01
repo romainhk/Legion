@@ -108,6 +108,7 @@ function charger_page(nom) {
                 sortList: [ [0,0] ],
                 widgets: ["zebra", "filter"]
             });
+            $("#vue").trigger('update');
         });
     } else if (nom == 'Statistiques') {
         page_active = 'Statistiques';
@@ -123,6 +124,7 @@ function charger_page(nom) {
                     4: { sorter: false }
                 }
             });
+            $("#stats").trigger('update');
         });
     }
     $("#"+page_active).show();

@@ -5,24 +5,15 @@ import sqlite3
 import datetime
 import logging
 import shutil
-import http.server, socketserver, threading, webbrowser
+#web
+import http.server, socketserver
 import json
 import urllib
 from urllib.parse import urlparse, parse_qs
 import xml.etree.ElementTree as ET
+#lib spécifique
+from liblegion import *
 
-# Fonctions globales
-def xstr(s):
-    """ Converti un None en chaine vide """
-    if s is None:
-        return ''
-    return str(s)
-
-def dict_from_row(row):
-    """ Converti un sqlite.Row en dictionnaire """
-    return dict(zip(row.keys(), row))
-
-# Classe maîtresse : serveur web et traitement des requêtes
 class Legion(http.server.SimpleHTTPRequestHandler):
     """ Classe Legion
     Serveur web et interface pour base sqlite
@@ -288,17 +279,9 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 data.append(d)
         return data
         
-# DEFINES
-PORT = 5432
-
-def open_browser():
-    """ Ouvre un navigateur web sur la bonne page """
-    def _open_browser():
-        webbrowser.open(u'http://localhost:{port}'.format(port=PORT))
-    thread = threading.Timer(0.5, _open_browser)
-    thread.start()
-
 if __name__ == "__main__":
+    # DEFINES
+    PORT = 5432
     """
     logging.basicConfig(
         filename='legion.log',
@@ -308,7 +291,7 @@ if __name__ == "__main__":
     address = ("", PORT)
     root = os.getcwd()
     try:
-        #open_browser()
+        #open_browser(PORT)
         os.chdir(root + os.sep + 'web') # la partie html est dans le dossier web
         server = http.server.HTTPServer(address, Legion)
         logging.info(u'Démarrage du serveur sur le port {0}'.format(PORT))

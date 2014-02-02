@@ -130,7 +130,8 @@ function charger_page(nom) {
     $("#"+page_active).show();
 }
 
-/* Mets à jour la liste des années connues sur la page de stats
+/*
+ *Mets à jour la liste des années connues sur la page de stats
  */
 function stats_annees() {
     $.get( "/liste-annees", function( data ) {
@@ -143,7 +144,8 @@ function stats_annees() {
     });
 }
 
-/* Conversion d'un tableau html en fichier CSV
+/*
+ * Conversion d'un tableau html en fichier CSV
  * FROM http://jsfiddle.net/terryyounghk/KPEGU/
  */
 function exportTableToCSV($table, filename) {
@@ -214,5 +216,5 @@ $(document).ready(function() {
     });
     stats_annees();
     // Chargement de la première page
-    $( "#onglets li:first-child" ).trigger( "click" );
+    $("#onglets li:first-child").trigger("click");
 });

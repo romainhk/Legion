@@ -24,7 +24,7 @@ def open_browser(port):
     thread.start()
 
 def datefr(chaine):
-    """ Converti une date au format français en objet
+    """ Converti une date au format français en objet Date
     """
     return datetime.datetime.strptime(chaine, "%d/%m/%Y")
 
@@ -51,6 +51,6 @@ def nb_annees(begin, end=None):
         return nb_annees
 
 def debut_AS(annee):
-    """ Converti une année en objet date le jour de la rentrée scolaire
+    """ Converti une année en objet Date le jour de la rentrée scolaire
     """
     return datetime.date(year=annee, month=9, day=1)

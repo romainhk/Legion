@@ -4,6 +4,9 @@ var champs_vue = new Array();
 var page_active = "";
 var les_pages = new Array();
 
+/* Placeholder */
+function nyi(message) { alert ('Not yet implemented :)\n'+message); }
+
 /* Importation
  */
 function importation() {

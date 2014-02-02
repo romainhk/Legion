@@ -77,6 +77,8 @@ function list_to_tab(liste, champs) {
                 v = v.replace(/([^, ]+)\*/g, '<span class="doublement">$1</span>');
             } else if (j == "Genre") { // Traduction de la colonne genre
                 if (v == "1") { v = "Homme"; } else if (v == "2") { v = "Femme"; }
+            } else if (j == "Mail") { // Mise en page des mails
+                if (v != "") { v = '<a href="mailto:'+v+'">@</a>'; }
             }
             vals += "<td>"+v+"</td>";
         });
@@ -108,9 +110,12 @@ function charger_page(nom) {
             $("#vue").tablesorter({
                 theme:'blue',
                 sortList: [ [0,0] ],
+                headers: {
+                    3: { sorter: false }
+                },
                 widgets: ["zebra", "filter"]
             });
-            $("#stats").trigger('update');
+            $("#vue").trigger('update');
         });
     } else if (nom == 'Statistiques') {
         page_active = 'Statistiques';

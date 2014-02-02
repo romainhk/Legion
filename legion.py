@@ -24,17 +24,17 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.header = [ ['Nom', 'A-z'], \
                         [u'Prénom', 'A-z'], \
                         [u'Âge', '0-9'], \
-                        ['Mail', 'A-z'], \
+                        ['Mail', ''], \
                         ['Genre', 'H/F'], \
                         ['Parcours', 'Classes'], \
                         [u'Entrée', 'Date'], \
                         [u'Durée', '0-9'], \
-                        [u'SAD_etablissement', 'A-z'], \
+                        [u'SAD_établissement', 'A-z'], \
                         [u'SAD_classe', 'A-z'], \
                         [u'Diplômé', 'A-z'], \
                         [u'Après', 'A-z'] \
                         ]
-        self.annee = datetime.date.today().year
+        self.date = datetime.date.today()
         self.root = root
         self.nb_import = 0
         # DB
@@ -68,7 +68,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             self.repondre(data)
         elif params.path == '/stats':
             annee = query['annee'].pop()
-            if annee == 'null': annee = self.annee
+            if annee == 'null': annee = self.date.year
             data = self.generer_stats(annee)
             self.repondre(data)
         elif params.path == '/maj':
@@ -169,7 +169,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         # Parsing
         tree = ET.parse(fichier_tmp)
         root = tree.getroot()
-        self.annee = int(root.findtext('.//PARAMETRES/ANNEE_SCOLAIRE'))
+        self.date = debut_AS( int(root.findtext('.//PARAMETRES/ANNEE_SCOLAIRE')) )
         date = root.findtext('.//PARAMETRES/DATE_EXPORT')
         for eleve in root.iter('ELEVE'):
             eid = eleve.get('ELEVE_ID')
@@ -179,7 +179,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 continue
             nom = eleve.findtext('NOM')
             prenom = eleve.findtext('PRENOM')
-            j, m, naissance = eleve.findtext('DATE_NAISS').split('/')
+            naissance = eleve.findtext('DATE_NAISS')
             genre = eleve.findtext('CODE_SEXE')
             mail = xstr(eleve.findtext('MEL'))
             doublement = eleve.findtext('DOUBLEMENT')
@@ -190,7 +190,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             sad_classe = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_STRUCTURE')).strip(' ')
             if sortie is None:
                 enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, \
-                        'naissance': int(naissance), 'genre': int(genre), 'mail': mail, \
+                        'naissance': naissance, 'genre': int(genre), 'mail': mail, \
                         'doublement': int(doublement), 'classe': classe, 'entree': int(entree), \
                         'sad_etablissement': sad_etab,   'sad_classe': sad_classe \
                         }
@@ -206,7 +206,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         enr[u'Diplômé'] = enr[u'Après'] = '?'
         # On vérifie si l'élève est déjà présent dans la bdd pour cette année
         req = u'SELECT COUNT(*) FROM Affectations WHERE ' \
-            + u'INE="{ine}" AND Année={annee}'.format(ine=ine, annee=self.annee)
+            + u'INE="{ine}" AND Année={annee}'.format(ine=ine, annee=self.date.year)
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
@@ -215,8 +215,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         if r[0] == 0:
             # Ajout de l'élève
             req = u'INSERT INTO Élèves ' \
-                + u'(INE, Nom, Prénom, Naissance, Genre, Entrée, Mail, SAD_etablissement, SAD_classe, Diplômé, Après) ' \
-                + 'VALUES ("{0}", "{1}", "{2}", {3}, {4}, {5}, "{6}", "{7}", "{8}", "{9}", "{10}")'.format(
+                + u'(INE, Nom, Prénom, Naissance, Genre, Entrée, Mail, SAD_établissement, SAD_classe, Diplômé, Après) ' \
+                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, {5}, "{6}", "{7}", "{8}", "{9}", "{10}")'.format(
                         ine,                enr['nom'],         enr[u'prénom'],
                         enr['naissance'],   enr['genre'],       enr['entree'],
                         enr['mail'],        enr['sad_etablissement'],    enr['sad_classe'],
@@ -228,14 +228,14 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 return False
 
         else:
-            #logging.warning(u"L'élève {0} est déjà présent dans la base {1}".format(ine, self.annee))
+            #logging.warning(u"L'élève {0} est déjà présent dans la base {1}".format(ine, self.date.year))
             pass
 
         # Affectation à une classe
         req = u'INSERT INTO Affectations ' \
               +  u'(INE, Classe, Année, Doublement) ' \
               + 'VALUES ("{0}", "{1}", {2}, {3})'.format(
-                      ine, classe, self.annee, enr['doublement'])
+                      ine, classe, self.date.year, enr['doublement'])
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
@@ -250,7 +250,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def readfromdb(self):
         """ Lit le contenu de la base """
         data = []
-        req = u'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC'.format(self.annee)
+        req = u'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             ine = d['INE']
@@ -258,23 +258,24 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 # Génération de la colonne 'Parcours'
                 parcours = []
                 # Année de sortie
-                sortie = self.annee
+                sortie = self.date
                 req = u'SELECT Classe,Année,Doublement FROM Affectations WHERE INE="{0}" ORDER BY Année ASC'.format(ine)
                 try:
                     for r in self.curs.execute(req):
                         classe = r['Classe']
                         if r['Doublement'] == 1: classe = classe+'*'
                         parcours.append(classe)
-                        a = int(r['Année'])
+                        a = debut_AS( int(r['Année']) )
                         if a > sortie : sortie = a
                 except sqlite3.Error as e:
                     logging.error(u"Erreur lors de la génération du parcours de {0}:\n{1}".format(ine, e.args[0]))
                     continue
                 d['Parcours'] = ', '.join(parcours)
                 # Calcul de la durée de scolarisation
-                d[u'Durée'] = sortie - d[u'Entrée']
+                entree = debut_AS( d['Entrée'] )
+                d[u'Durée'] = nb_annees(entree, sortie) + 1
                 # Calcul de l'âge actuel
-                d[u'Âge'] = self.annee - d['Naissance']
+                d[u'Âge'] = nb_annees(datefr(d['Naissance']))
 
                 data.append(d)
         return data

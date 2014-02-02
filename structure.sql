@@ -2,11 +2,11 @@ CREATE TABLE "Élèves" (
     "INE" TEXT PRIMARY KEY  DEFAULT (null) ,
     "Nom" TEXT,
     "Prénom" TEXT,
-    "Naissance" INTEGER DEFAULT (null) ,
+    "Naissance" TEXT,
     "Genre" INTEGER NOT NULL  DEFAULT (0) ,
     "Mail" TEXT DEFAULT (null) ,
     "Entrée" INTEGER DEFAULT (null) ,
-    "SAD_etablissement" TEXT DEFAULT (null) ,
+    "SAD_établissement" TEXT DEFAULT (null) ,
     "SAD_classe" TEXT DEFAULT (null) ,
     "Diplômé" TEXT DEFAULT (null) ,
     "Après" TEXT

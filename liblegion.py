@@ -1,5 +1,6 @@
 import webbrowser
 import threading
+import datetime
 
 """
     Librairies contenant les fonctions générales
@@ -22,3 +23,34 @@ def open_browser(port):
     thread = threading.Timer(0.5, _open_browser)
     thread.start()
 
+def datefr(chaine):
+    """ Converti une date au format français en objet
+    """
+    return datetime.datetime.strptime(chaine, "%d/%m/%Y")
+
+def yearsago(years, from_date=None):
+    """ La date d'il y a quelques années
+    """
+    if from_date is None:
+        from_date = datetime.datetime.now()
+    try:
+        return from_date.replace(year=from_date.year - years)
+    except:
+        # Must be 2/29!
+        return from_date.replace(month=2, day=28, year=from_date.year-years)
+
+def nb_annees(begin, end=None):
+    """ Nombre d'années depuis ...
+    """
+    if end is None:
+        end = datetime.datetime.now()
+    nb_annees = int((end - begin).days / 365.25)
+    if begin > yearsago(nb_annees, end):
+        return nb_annees - 1
+    else:
+        return nb_annees
+
+def debut_AS(annee):
+    """ Converti une année en objet date le jour de la rentrée scolaire
+    """
+    return datetime.date(year=annee, month=9, day=1)

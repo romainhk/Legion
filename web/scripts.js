@@ -3,6 +3,8 @@ var champs_vue = new Array();
 // Page affichée
 var page_active = "";
 var les_pages = new Array();
+// Nombre d'élèves dans la base
+var nb_eleves = 0;
 
 /* Importation
  */
@@ -10,7 +12,7 @@ function importation() {
     // Lecture du fichier à importer
     var file = document.getElementById('fichier').files[0];
     if (file == undefined) {
-        $.jGrowl("Veuillez selectionner un fichier pour lancer l'importation.", {life : 5000 });
+        alert("Veuillez selectionner un fichier pour lancer l'importation.");
         return false;
     }
     var reader = new FileReader();
@@ -23,7 +25,6 @@ function envoie_du_fichier(event) {
     var result = event.target.result;
     var fileName = document.getElementById('fichier').files[0].name;
     $.post('/importation', { data: result, name: fileName }, function(reponse) {
-        $.jGrowl(reponse, { header: 'Importation', life : 6000 });
         $("#progress").hide();
         $( "#onglets li:first-child" ).trigger( "click" );
         stats_annees(); // Une nouvelle année est peut-être disponible...
@@ -91,6 +92,7 @@ function list_to_tab(liste, champs) {
  */
 function charger_page(nom) {
     $.each(les_pages, function( i, p ) { $("#"+p).hide(); });
+
     if (nom == 'Liste') {
         page_active = 'Liste';
         $.get( "/liste", function( data ) {
@@ -102,13 +104,14 @@ function charger_page(nom) {
             col_apres.on('click', add_input);
             col_apres.on('focusout', push_input);
 
-            $.jGrowl("Chargement des "+data.length+" élèves terminé.", { life : 3000 });
+            if ( data.length > 0 ) {
+                $("#nb_eleves").html("Il y a " + data.length + " élèves dans la base.");
+            }
             $("#vue").tablesorter({
                 theme:'blue',
                 sortList: [ [0,0] ],
                 widgets: ["zebra", "filter"]
             });
-            $("#vue").trigger('update');
         });
     } else if (nom == 'Statistiques') {
         page_active = 'Statistiques';
@@ -124,9 +127,9 @@ function charger_page(nom) {
                     4: { sorter: false }
                 }
             });
-            $("#stats").trigger('update');
         });
     }
+    $("#stats").trigger('update');
     $("#"+page_active).show();
 }
 

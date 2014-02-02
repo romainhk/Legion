@@ -8,9 +8,7 @@
 
 ### HTML
 * stats des absences (-> recoupement avec pronote) ?
-* Colonnes editables.
-* laisser tomber jGrowl ?
-** jGrowl : afficher les messages en fadein/out css
+* Colonnes editables ?
 * avec l'établissement précédent : stats sur les classe d'origine
 * avec mail : mailing auto
 * stat "poids dans l'établissement" : classe / niveau

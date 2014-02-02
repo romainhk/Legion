@@ -3,8 +3,6 @@ var champs_vue = new Array();
 // Page affichée
 var page_active = "";
 var les_pages = new Array();
-// Nombre d'élèves dans la base
-var nb_eleves = 0;
 
 /* Importation
  */
@@ -41,7 +39,7 @@ function add_input() {
     if ( td.children().first().prop("tagName") != "INPUT" ) { // S'il n'y a pas encore d'input
         var val = td.html();
         if (val == "?") { val = ""; }
-        td.html("<input type='text' value='"+val+"' size='12'></input>");
+        td.html("<input type='text' value='"+val+"' size='10'></input>");
         td.children().first().focus(); // Focus auto sur ce nouvel input
     }
 }
@@ -112,6 +110,7 @@ function charger_page(nom) {
                 sortList: [ [0,0] ],
                 widgets: ["zebra", "filter"]
             });
+            $("#stats").trigger('update');
         });
     } else if (nom == 'Statistiques') {
         page_active = 'Statistiques';
@@ -127,9 +126,9 @@ function charger_page(nom) {
                     4: { sorter: false }
                 }
             });
+            $("#stats").trigger('update');
         });
     }
-    $("#stats").trigger('update');
     $("#"+page_active).show();
 }
 

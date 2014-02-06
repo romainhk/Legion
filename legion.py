@@ -292,7 +292,7 @@ if __name__ == "__main__":
     address = ("", PORT)
     root = os.getcwd()
     try:
-        #open_browser(PORT)
+        open_browser(PORT)
         os.chdir(root + os.sep + 'web') # la partie html est dans le dossier web
         server = http.server.HTTPServer(address, Legion)
         logging.info(u'Démarrage du serveur sur le port {0}'.format(PORT))

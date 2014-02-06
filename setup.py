@@ -34,7 +34,7 @@ executables = [ Executable(
 build_exe_options = { "optimize": 1, 'include_files':includefiles }
 
 setup(name='legion',
-      version='0.3',
+      version='0.5',
       description='Legion',
       author='Romain Hennuyer',
       author_email='romain.hennuyer@ac-lille.fr',

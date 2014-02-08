@@ -113,9 +113,9 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         req = u'SELECT * FROM Élèves NATURAL JOIN Affectations WHERE Année={0}'.format(annee)
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
-            if d['Genre'] == 1:
+            if d['Genre'] == 2:
                 h = (0,1)
-            else:
+            else: # = 1
                 h = (1,0)
             t = [ h[0], h[1], int(d['Doublement']) ] # Nb : garçon, fille, doublant
             classe = d['Classe']

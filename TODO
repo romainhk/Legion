@@ -23,7 +23,6 @@
         - hors BTS, en section Pro
 * Proportion d'étudiants issus de section pro / globale, par section, par filière
 * Représentation graphique des données
-* Le % de répartition hommes/femmes est inversé !
 
 ### Python
 * si aucuns changements à l'extinction -> supprimer la copie de la base

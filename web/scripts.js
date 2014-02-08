@@ -57,7 +57,8 @@ function push_input() {
         old = input.attr('value');
         if (val != "" && val != old) {
             var ine = td.parent().attr('id');
-            var champ = "Après";
+            index_x = td.parent().children().index(td);
+            var champ = champs_vue[index_x];
             params = "ine="+ine+"&champ="+champ+"&d="+val;
             $.get( "/maj?"+params, function( data ) {
                 if (data == 'Oui') { td.addClass("maj_oui"); }
@@ -112,11 +113,13 @@ function charger_page(nom) {
         $.get( "/liste", function( data ) {
             // Construction du tableau
             $('#vue > tbody').html( list_to_tab(data, champs_vue) );
-            // Ajout des input auto sur la colonne 'Après'
-            index = $.inArray('Après', champs_vue);
-            var col_apres = $('#vue > tbody td:nth-child('+(index+1)+')');
-            col_apres.on('click', add_input);
-            col_apres.on('focusout', push_input);
+            // Ajout des input auto sur les colonnes
+            $.each(['Situation', 'Lieu'], function( i, col ) {
+                index = $.inArray(col, champs_vue);
+                var col_apres = $('#vue > tbody td:nth-child('+(index+1)+')');
+                col_apres.on('click', add_input);
+                col_apres.on('focusout', push_input);
+            });
 
             nb_eleves = data.length;
             $("#vue").tablesorter({
@@ -151,7 +154,7 @@ function charger_page(nom) {
 }
 
 /*
- *Mets à jour la liste des années connues sur la page de stats
+ * Mets à jour la liste des années connues sur la page de stats
  */
 function stats_annees() {
     $.get( "/liste-annees", function( data ) {

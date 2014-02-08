@@ -32,7 +32,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                         [u'SAD_établissement', 'A-z'], \
                         [u'SAD_classe', 'A-z'], \
                         [u'Diplômé', 'A-z'], \
-                        [u'Après', 'A-z'] \
+                        [u'Situation', 'A-z'], \
+                        [u'Lieu', 'A-z'] \
                         ]
         self.date = datetime.date.today()
         self.root = root
@@ -203,7 +204,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         """ Ajoute les informations d'un élève à la bdd """
         classe = enr['classe']
         ine = enr['ine']
-        enr[u'Diplômé'] = enr[u'Après'] = '?'
+        enr[u'Diplômé'] = enr[u'Situation'] = enr['Lieu'] = '?'
         # On vérifie si l'élève est déjà présent dans la bdd pour cette année
         req = u'SELECT COUNT(*) FROM Affectations WHERE ' \
             + u'INE="{ine}" AND Année={annee}'.format(ine=ine, annee=self.date.year)
@@ -215,12 +216,12 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         if r[0] == 0:
             # Ajout de l'élève
             req = u'INSERT INTO Élèves ' \
-                + u'(INE, Nom, Prénom, Naissance, Genre, Entrée, Mail, SAD_établissement, SAD_classe, Diplômé, Après) ' \
-                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, {5}, "{6}", "{7}", "{8}", "{9}", "{10}")'.format(
+                + u'(INE, Nom, Prénom, Naissance, Genre, Entrée, Mail, SAD_établissement, SAD_classe, Diplômé, Situation, Lieu) ' \
+                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, {5}, "{6}", "{7}", "{8}", "{9}", "{10}", "{11}")'.format(
                         ine,                enr['nom'],         enr[u'prénom'],
                         enr['naissance'],   enr['genre'],       enr['entree'],
                         enr['mail'],        enr['sad_etablissement'],    enr['sad_classe'],
-                        enr[u'Diplômé'],    enr[u'Après'])
+                        enr[u'Diplômé'],    enr['Situation'],   enr['Lieu'])
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:

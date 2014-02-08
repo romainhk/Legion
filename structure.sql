@@ -9,7 +9,8 @@ CREATE TABLE "Élèves" (
     "SAD_établissement" TEXT DEFAULT (null) ,
     "SAD_classe" TEXT DEFAULT (null) ,
     "Diplômé" TEXT DEFAULT (null) ,
-    "Après" TEXT
+    "Situation" TEXT DEFAULT (null) ,
+    "Lieu" TEXT DEFAULT (null)
 );
 CREATE TABLE "Affectations"(
     "Classe" TEXT, 

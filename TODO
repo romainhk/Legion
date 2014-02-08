@@ -3,8 +3,8 @@
         - par élève : donnes administratives
             - pour l'année année : établissement, classe
             - pour l'année année-1 ...
-* Découper la colonne "Après" : Situation (liste déroulante) + Lieu
 * SAD à mettre avec les affectations (c'est une donnée annuelle)
+* Situation : faire une liste déroulante avec des situation de ref
 
 ### Statistiques à intégrer
 * Statistiques plus par classe mais sur plusieurs niveaux : 

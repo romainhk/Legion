@@ -1,3 +1,30 @@
+* revoir le classement des résultats sur plusieurs niveaux :
+    - par classe
+        - par élève : donnes administratives
+            - pour l'année année : établissement, classe
+            - pour l'année année-1 ...
+* Découper la colonne "Après" : Situation (liste déroulante) + Lieu
+* À chaque recherche, afficher le total de résultats
+* SAD à mettre avec les affectations (c'est une donnée annuelle)
+
+### Statistiques à intégrer
+* Statistiques plus par classe mais sur plusieurs niveaux : 
+    - Par Niveau (1er, 2nd,...) -> Générale, Pro -> Filière (GA, ST2S,...)
+    - Par Section (ex: toutes les classe de GA qqs le niveau)
+-> Écran pour affecter les classes aux sections et aux niveaux
+* Moyenne annuelle / élève / an (-> importation depuis pronote ?)
+* Pouvoir répondre à : "Pour une année X, il y a Y élèves en BTS provenant de la section Z"
+* Taux de passage d'une année à l'autre (ex: % d'élève en 1GA passant en TGA)
+* Stats de décrochages (sortie en cours de formation) (-> contacter le cial)
+* Absentéisme : ratio du nombre d'heures de cours non suivi / nombre total d'heures de la section (-> cpe)
+* Taux de réussite au BAC, au BTS
+* Statistiques sur l'établissement:
+    - proportion garçon/fille
+        - hors BTS, en section Pro
+* Proportion d'étudiants issus de section pro / globale, par section, par filière
+* Représentation graphique des données
+* Le % de répartition hommes/femmes est inversé !
+
 ### Python
 * si aucuns changements à l'extinction -> supprimer la copie de la base
 ** bouton "quitter"
@@ -14,3 +41,4 @@
 * stat "poids dans l'établissement" : classe / niveau
 * menu à droite rétractable ?
 * favicon
+* logo du lycée

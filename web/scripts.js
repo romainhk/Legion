@@ -3,6 +3,8 @@ var champs_vue = new Array();
 // Page affichée
 var page_active = "";
 var les_pages = new Array();
+// Total d'élèves dans la base
+var nb_eleves = 0;
 
 /* Placeholder */
 function nyi(message) { alert ('Not yet implemented :)\n'+message); }
@@ -90,6 +92,15 @@ function list_to_tab(liste, champs) {
     return(lignes);
 }
 
+/*
+ * Mise à jour de l'affiche du nombre  total de résultats lors d'une recherche
+ */
+function total_resultats(e, filter){
+    a = $(this).find('tr:visible:not(".tablesorter-filter-row")').length - 1; // - le header
+    t = 'Résultats : ' + a + ' / ' + nb_eleves + ' élèves.';
+    $("#filter_end").html(t);
+}
+
 /* 
  * Le switch de page
  */
@@ -107,9 +118,7 @@ function charger_page(nom) {
             col_apres.on('click', add_input);
             col_apres.on('focusout', push_input);
 
-            if ( data.length > 0 ) {
-                $("#nb_eleves").html("Il y a " + data.length + " élèves dans la base.");
-            }
+            nb_eleves = data.length;
             $("#vue").tablesorter({
                 theme:'blue',
                 sortList: [ [0,0] ],
@@ -117,8 +126,9 @@ function charger_page(nom) {
                     3: { sorter: false }
                 },
                 widgets: ["zebra", "filter"]
-            });
-            $("#vue").trigger('update');
+            }).bind('filterEnd', total_resultats);
+            $("#vue").trigger('update'); // Mise à jour des widgets
+            $("#vue").trigger('filterEnd'); // Mise à jour du total
         });
     } else if (nom == 'Statistiques') {
         page_active = 'Statistiques';

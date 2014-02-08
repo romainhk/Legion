@@ -4,7 +4,6 @@
             - pour l'année année : établissement, classe
             - pour l'année année-1 ...
 * Découper la colonne "Après" : Situation (liste déroulante) + Lieu
-* À chaque recherche, afficher le total de résultats
 * SAD à mettre avec les affectations (c'est une donnée annuelle)
 
 ### Statistiques à intégrer
@@ -41,3 +40,4 @@
 * menu à droite rétractable ?
 * favicon
 * logo du lycée
+* bouton reset pour les filtres de recherche (option filter_reset)

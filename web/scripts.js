@@ -124,11 +124,16 @@ function charger_page(nom) {
             nb_eleves = data.length;
             $("#vue").tablesorter({
                 theme:'blue',
+                showProcessing: true,
                 sortList: [ [0,0] ],
                 headers: {
                     3: { sorter: false }
                 },
-                widgets: ["zebra", "filter"]
+                widgets: ["zebra", "filter", "cssStickyHeaders"],
+                widgetOptions: {
+                    cssStickyHeaders_offset     : 4,
+                    cssStickyHeaders_attachTo   : null
+                }
             }).bind('filterEnd', total_resultats);
             $("#vue").trigger('update'); // Mise à jour des widgets
             $("#vue").trigger('filterEnd'); // Mise à jour du total
@@ -141,10 +146,14 @@ function charger_page(nom) {
             $("#stats").tablesorter({
                 theme:'blue',
                 sortList: [ [0,0] ],
-                widgets: ["zebra"],
                 headers: {
                     3: { sorter: false },
                     4: { sorter: false }
+                },
+                widgets: ["zebra", "cssStickyHeaders"],
+                widgetOptions: {
+                    cssStickyHeaders_offset     : 4,
+                    cssStickyHeaders_attachTo   : null
                 }
             });
             $("#stats").trigger('update');

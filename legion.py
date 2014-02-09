@@ -24,7 +24,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.header = [ ['Nom', 'A-z'], \
                         [u'Prénom', 'A-z'], \
                         [u'Âge', '0-9'], \
-                        ['Mail', ''], \
+                        ['Mail', '@'], \
                         ['Genre', 'H/F'], \
                         ['Parcours', 'Classes'], \
                         [u'Entrée', 'Date'], \
@@ -112,9 +112,9 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         req = u'SELECT * FROM Élèves NATURAL JOIN Affectations WHERE Année={0}'.format(annee)
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
-            if d['Genre'] == 2:
+            if d['Genre'] == 2: # une femme
                 h = (0,1)
-            else: # = 1
+            else: # == 1
                 h = (1,0)
             t = [ h[0], h[1], int(d['Doublement']) ] # Nb : garçon, fille, doublant
             classe = d['Classe']
@@ -197,20 +197,21 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 #logging.warning(u'{0} {1} (id:{2}) est sortie de l\'établissement'.format(prenom, nom, eid))
                 pass
 
-    def db_inserer_affectation(self, ine, annee, classe, etab, doublement=0):
+    def db_inserer_affectation(self, ine, annee, classe, etab, doublement):
         """ Ajoute une affectations (un élève, dans une classe, dans un établissement) """
         if classe == "" or etab == "":
             logging.info("Erreur lors de l'affectation : classe ou établissement en défaut")
             return False
         req = u'INSERT INTO Affectations ' \
-              +  u'(INE, Année, Classe, Établissement) ' \
-              + 'VALUES ("{0}", {1}, "{2}", "{3}")'.format( ine, annee, classe, etab )
+              +  u'(INE, Année, Classe, Établissement, Doublement) ' \
+              + 'VALUES ("{0}", {1}, "{2}", "{3}", {4})'.format( ine, annee, classe, etab, doublement )
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
             logging.warning(u"Erreur lors de l'affectation de la classe pour {0}:\n{1}".format(ine, e.args[0]))
-            # En cas de redoublement, une erreur d'insertion indique que l'élève est déjà connu -> on l'ignore
-            if doublement == 0:
+            # En cas de redoublement, une erreur d'insertion sur l'année précédente (code 9)
+            # indique que l'élève est déjà connu -> on l'ignore
+            if doublement != 9:
                 return False
         return True
 
@@ -244,14 +245,14 @@ class Legion(http.server.SimpleHTTPRequestHandler):
 
             annee = self.date.year
             x = self.db_inserer_affectation(
-                    ine,    annee,     classe,  'Jean Moulin')
+                    ine,    annee,     classe,  'Jean Moulin',  enr['doublement'])
             etab = enr['sad_établissement']
             classe_pre = enr['sad_classe']
-            if enr['doublement']:
+            if enr['doublement']: # Parfois, ces informations ne sont pas redonnées dans SIECLE
                 classe_pre = classe
                 etab = 'Jean Moulin'
             y = self.db_inserer_affectation(
-                    ine,    annee-1,   classe_pre,  etab,   enr['doublement'])
+                    ine,    annee-1,   classe_pre,  etab,   9)
             # En cas de problème, annulation des modifications précédentes
             if not x or not y:
                 self.conn.rollback()
@@ -278,7 +279,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 parcours = []
                 # Année de sortie
                 sortie = self.date
-                req = u'SELECT Classe,Année FROM Affectations WHERE INE="{0}" ORDER BY Année ASC'.format(ine)
+                req = u'SELECT Classe,Année,Doublement FROM Affectations WHERE INE="{0}" ORDER BY Année ASC'.format(ine)
                 try:
                     for r in self.curs.execute(req):
                         classe = r['Classe']

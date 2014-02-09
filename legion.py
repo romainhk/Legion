@@ -184,7 +184,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             doublement = eleve.findtext('DOUBLEMENT')
             j, m, entree = eleve.findtext('DATE_ENTREE').split('/')
             sortie = eleve.findtext('DATE_SORTIE')
-            classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE/CODE_STRUCTURE".format(eid))
+            classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE[TYPE_STRUCTURE='D']/CODE_STRUCTURE".format(eid))
             sad_etab = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/DENOM_COMPL')).title()
             sad_classe = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_STRUCTURE')).strip(' ')
             if sortie is None:

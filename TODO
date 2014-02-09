@@ -6,7 +6,6 @@
     -> Retire la colonne 'Durée'
 * Situation : faire une liste déroulante avec des situation de ref
 * Stocker les option dans la base sqlite ? (Nom de l'étab, liste des situations...)
-* TYPE_STRUCTURE = D : certains élèves sont importés par leur groupe d'option et non leur classe (1ALL1GR1)
 
 ### Statistiques à intégrer
 * Statistiques plus par classe mais sur plusieurs niveaux : 

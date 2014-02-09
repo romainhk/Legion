@@ -21,11 +21,11 @@ input {
 /* Structure */
 .gauche {
     float: left;
-    width:82%;
+    width:80%;
 }
 .droite {
     float: right;
-    width:17%;
+    width:19%;
 }
 /* Tableaux */
 table {
@@ -95,17 +95,6 @@ a.export, a.export:visited {
 .onglet_actif {
     background-color:#99BFE6 !important;
     cursor: default !important;
-}
-/* jGrowl */
-.jGrowl-notification {
-    background-color: #FFC759 !important;
-    color: black;
-    width: 32ex !important;
-    opacity: 0.85 !important;
-    font-size: 2.2ex !important;
-    /* Bordure */
-    border: 5px solid #FFA900 !important;
-    border-radius: 12px;
 }
 /* upload */
 #progress {

@@ -5,6 +5,8 @@ var page_active = "";
 var les_pages = new Array();
 // Total d'élèves dans la base
 var nb_eleves = 0;
+// Champs du pending (tous)
+var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Genre", "Mail", "Entrée", "Diplômé", "Situation", "Lieu", "Année", "Classe", "Établissement", "Doublement" ];
 
 /* Placeholder */
 function nyi(message) { alert ('Not yet implemented :)\n'+message); }
@@ -160,6 +162,16 @@ function charger_page(nom) {
             });
             $("#stats").trigger('update');
         });
+    } else if (nom == 'Pending') {
+        page_active = 'Pending';
+        $.get( "/pending", function( data ) {
+            $('#pending > tbody').html( list_to_tab(data, champs_pending) );
+            $("#pending").tablesorter({
+                theme:'blue',
+                widgets: ["zebra", "cssStickyHeaders"],
+            });
+            $("#pending").trigger('update');
+        });
     }
     $("#"+page_active).show();
 }
@@ -183,7 +195,7 @@ function stats_annees() {
  * FROM http://jsfiddle.net/terryyounghk/KPEGU/
  */
 function exportTableToCSV($table, filename) {
-    var $rows = $table.find('tr:visible:has(td,th):not(".tablesorter-filter-row")'),
+    var $rows = $table.find('tr:visible:has(td,th):not(".tablesorter-filter-row"):not(".remove-me")'),
 
     // Temporary delimiter characters unlikely to be typed by keyboard
     // This is to avoid accidentally splitting the actual contents
@@ -247,6 +259,11 @@ $(document).ready(function() {
             entete += "<th data-placeholder=\""+type+"\">"+champ+"</th>\n";
         });
         $('#vue > thead').html( "<tr>"+entete+"</tr>\n" );
+        entete = ""
+        $.each(champs_pending, function( i, j ) {
+            entete += "<th>"+j+"</th>\n";
+        });
+        $('#pending > thead').html( "<tr>"+entete+"</tr>\n" );
     });
     stats_annees();
     // Chargement de la première page

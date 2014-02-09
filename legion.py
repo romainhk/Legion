@@ -63,7 +63,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         query = parse_qs(params.query)
         logging.debug("GET {0} ? {1}".format(params, query))
         if params.path == '/liste':
-            data = self.db_lire()
+            data = self.db_lire(u'Élèves NATURAL JOIN Affectations')
             self.repondre(data)
         elif params.path == '/stats':
             annee = query['annee'].pop()
@@ -75,6 +75,9 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             champ = query['champ'].pop()
             donnee = query['d'].pop()
             data = self.maj_champ(ine, champ, donnee)
+            self.repondre(data)
+        elif params.path == '/pending':
+            data = self.db_lire('Pending')
             self.repondre(data)
         elif params.path == '/liste-annees':
             annees = self.lister('Année')
@@ -174,7 +177,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             eid = eleve.get('ELEVE_ID')
             ine = eleve.findtext('ID_NATIONAL')
             if ine is None:
-                logging.error(u"Impossible d'importer l'élève muni de l'ID {0}, données insuffisantes".format(eid))
+                #logging.error(u"Impossible d'importer l'élève muni de l'ID {0}, données insuffisantes".format(eid))
                 continue
             nom = eleve.findtext('NOM')
             prenom = eleve.findtext('PRENOM')
@@ -182,20 +185,16 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             genre = eleve.findtext('CODE_SEXE')
             mail = xstr(eleve.findtext('MEL'))
             doublement = eleve.findtext('DOUBLEMENT')
-            j, m, entree = eleve.findtext('DATE_ENTREE').split('/')
+            j, m, entrée = eleve.findtext('DATE_ENTREE').split('/')
             sortie = eleve.findtext('DATE_SORTIE')
             classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE[TYPE_STRUCTURE='D']/CODE_STRUCTURE".format(eid))
             sad_etab = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/DENOM_COMPL')).title()
             sad_classe = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_STRUCTURE')).strip(' ')
-            if sortie is None:
-                enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, \
-                        'naissance': naissance, 'genre': int(genre), 'mail': mail, \
-                        'doublement': int(doublement), 'classe': classe, 'entree': int(entree), \
-                        'sad_établissement': sad_etab,   'sad_classe': sad_classe }
-                self.db_ecrire(enr)
-            else:
-                #logging.warning(u'{0} {1} (id:{2}) est sortie de l\'établissement'.format(prenom, nom, eid))
-                pass
+            enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, \
+                    'naissance': naissance, 'genre': int(genre), 'mail': mail, \
+                    'doublement': int(doublement), 'classe': classe, 'entrée': int(entrée), \
+                    'sad_établissement': sad_etab,   'sad_classe': sad_classe }
+            self.db_ecrire(enr)
 
     def db_inserer_affectation(self, ine, annee, classe, etab, doublement):
         """ Ajoute une affectations (un élève, dans une classe, dans un établissement) """
@@ -215,11 +214,29 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 return False
         return True
 
+    def db_in_pending(self, enr, annee):
+        """ Mise en attente de donnes incomplètes pour validation """
+        req = u'INSERT INTO Pending ' \
+            + u'(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu, Année, CLasse, Établissement, Doublement) ' \
+            + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}", {10}, "{11}", "{12}", {13})'.format(
+                    enr['ine'],         enr['nom'],         enr[u'prénom'],
+                    enr['naissance'],   enr['genre'],       enr['mail'],
+                    enr['entrée'],      enr[u'Diplômé'],  enr['Situation'],
+                    enr['Lieu'],        annee,              enr['classe'],
+                    enr['sad_établissement'],   enr['doublement'] )
+        try:
+            self.curs.execute(req)
+        except sqlite3.Error as e:
+            logging.error(u"Erreur lors de la mise en pending :\n%s" % (e.args[0]))
+
     def db_ecrire(self, enr):
         """ Ajoute les informations d'un élève à la bdd """
-        classe = enr['classe']
         ine = enr['ine']
+        classe = enr['classe']
         enr[u'Diplômé'] = enr[u'Situation'] = enr['Lieu'] = '?'
+        if ine is None or classe is None:
+            self.db_in_pending(enr, self.date.year)
+            return True
         # On vérifie si l'élève est déjà présent dans la bdd pour cette année
         req = u'SELECT COUNT(*) FROM Affectations WHERE ' \
             + u'INE="{ine}" AND Année={annee}'.format(ine=ine, annee=self.date.year)
@@ -231,11 +248,11 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         if r[0] == 0:
             # Ajout de l'élève
             req = u'INSERT INTO Élèves ' \
-                + u'(INE, Nom, Prénom, Naissance, Genre, Entrée, Mail, Diplômé, Situation, Lieu) ' \
-                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, {5}, "{6}", "{7}", "{8}", "{9}")'.format(
+                + u'(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu) ' \
+                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}")'.format(
                         ine,                enr['nom'],         enr[u'prénom'],
-                        enr['naissance'],   enr['genre'],       enr['entree'],
-                        enr['mail'],        enr[u'Diplômé'],    enr['Situation'],
+                        enr['naissance'],   enr['genre'],       enr['mail'],
+                        enr['entrée'],        enr[u'Diplômé'],    enr['Situation'],
                         enr['Lieu'])
             try:
                 self.curs.execute(req)
@@ -256,8 +273,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             # En cas de problème, annulation des modifications précédentes
             if not x or not y:
                 self.conn.rollback()
-                logging.warning(u"Rollback suite à un problème d'affectation\n{0}".format(enr))
-                # TODO : Mettre de coté les infos pour validation manuelle
+                #logging.warning(u"Rollback suite à un problème d'affectation\n{0}".format(enr))
+                self.db_in_pending(enr, annee)
 
         else:
             #logging.warning(u"L'élève {0} est déjà présent dans la base {1}".format(ine, self.date.year))
@@ -267,19 +284,18 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.conn.commit()
         self.nb_import = self.nb_import + 1
 
-    def db_lire(self):
+    def db_lire(self, table):
         """ Lit le contenu de la base """
         data = []
-        req = u'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC, Année DESC'
+        req = u'SELECT * FROM ' + table + ' ORDER BY Nom,Prénom ASC, Année DESC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             ine = d['INE']
             # Calcul de l'âge actuel
             d[u'Âge'] = nb_annees(datefr(d['Naissance']))
-
             data.append(d)
         return data
-        
+
 if __name__ == "__main__":
     # DEFINES
     PORT = 5432

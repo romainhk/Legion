@@ -18,7 +18,9 @@
     <!-- #####  Corps  ##### -->
     <div class="gauche">
         <div id="Liste">
-            <h3>Base des élèves</h3>
+            <h3 style="float:left;">Base des élèves</h3>
+            <div id="filter_end" style="margin-top:2.5em; float:right;"></div>
+            <div style="clear:both;"></div>
             <table id="vue" border="1">
                 <thead></thead>
                 <tbody></tbody>
@@ -41,15 +43,22 @@
                 <tbody></tbody>
             </table>
         </div>
+        <div id="Pending">
+            <h3>Importations en attente de validation (données incomplètes)</h3>
+            <table id="pending" border="1">
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
     <!-- #####  Menu  ##### -->
     <div class="droite">
         <ul class="onglet" id="onglets">
             <li>Liste</li>
             <li>Statistiques</li>
+            <li>Pending</li>
         </ul>
         <div style="clear:both;"></div>
-        <div id="filter_end" style="margin-top:1ex;"></div>
         <h4>Légende</h4>
         <ul>
             <li><span class="doublement">Redoublement</span></li>
@@ -66,7 +75,6 @@
         <h4>Options ?</h4>
         <ul>
             <li><a href="#" onclick="nyi('Formulaire d\'envoie de mail à toutes les personnes affichées');">Envoyer un mail à tous</a></li>
-            <li><a href="#" onclick="nyi('Permet de compléter/valider les informations des élèves mis en attente lors de l\'importation car il manquait des données');">Valider les importations partielles</a></li>
             <li><a href="#" onclick="nyi('Permet d\'affecter une classe à un niveau (1er, Term, etc.)\nUtile pour calculer le poids d\'une classe par rapport à son niveau');">Affectation classe-niveau</a></li>
             <li><a href="#" onclick="nyi('Pour le moment, fermez juste le navigateur.');">Quitter</a></li>
         </ul>

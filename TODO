@@ -3,8 +3,9 @@
         - par élève : donnes administratives
             - pour l'année année : établissement, classe
             - pour l'année année-1 ...
-* SAD à mettre avec les affectations (c'est une donnée annuelle)
+    -> Retire la colonne 'Durée'
 * Situation : faire une liste déroulante avec des situation de ref
+* Stocker les option dans la base sqlite ? (Nom de l'étab, liste des situations...)
 
 ### Statistiques à intégrer
 * Statistiques plus par classe mais sur plusieurs niveaux : 

@@ -6,16 +6,14 @@ CREATE TABLE "Élèves" (
     "Genre" INTEGER NOT NULL  DEFAULT (0) ,
     "Mail" TEXT DEFAULT (null) ,
     "Entrée" INTEGER DEFAULT (null) ,
-    "SAD_établissement" TEXT DEFAULT (null) ,
-    "SAD_classe" TEXT DEFAULT (null) ,
     "Diplômé" TEXT DEFAULT (null) ,
     "Situation" TEXT DEFAULT (null) ,
     "Lieu" TEXT DEFAULT (null)
 );
 CREATE TABLE "Affectations"(
-    "Classe" TEXT, 
-    "Année" INTEGER,
     "INE" TEXT,
-    "Doublement" INTEGER NOT NULL  DEFAULT (0),
-    PRIMARY KEY(Classe,Année,INE)
+    "Année" INTEGER,
+    "Classe" TEXT NOT NULL, 
+    "Établissement" TEXT DEFAULT (null) ,
+    PRIMARY KEY(INE,Année)
 );

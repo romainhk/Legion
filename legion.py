@@ -29,8 +29,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                         ['Parcours', 'Classes'], \
                         [u'Entrée', 'Date'], \
                         [u'Durée', '0-9'], \
-                        [u'SAD_établissement', 'A-z'], \
-                        [u'SAD_classe', 'A-z'], \
                         [u'Diplômé', 'A-z'], \
                         [u'Situation', 'A-z'], \
                         [u'Lieu', 'A-z'] \
@@ -65,7 +63,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         query = parse_qs(params.query)
         logging.debug("GET {0} ? {1}".format(params, query))
         if params.path == '/liste':
-            data = self.readfromdb()
+            data = self.db_lire()
             self.repondre(data)
         elif params.path == '/stats':
             annee = query['annee'].pop()
@@ -193,14 +191,30 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, \
                         'naissance': naissance, 'genre': int(genre), 'mail': mail, \
                         'doublement': int(doublement), 'classe': classe, 'entree': int(entree), \
-                        'sad_etablissement': sad_etab,   'sad_classe': sad_classe \
-                        }
-                self.writetodb(enr)
+                        'sad_établissement': sad_etab,   'sad_classe': sad_classe }
+                self.db_ecrire(enr)
             else:
                 #logging.warning(u'{0} {1} (id:{2}) est sortie de l\'établissement'.format(prenom, nom, eid))
                 pass
 
-    def writetodb(self, enr):
+    def db_inserer_affectation(self, ine, annee, classe, etab, doublement=0):
+        """ Ajoute une affectations (un élève, dans une classe, dans un établissement) """
+        if classe == "" or etab == "":
+            logging.info("Erreur lors de l'affectation : classe ou établissement en défaut")
+            return False
+        req = u'INSERT INTO Affectations ' \
+              +  u'(INE, Année, Classe, Établissement) ' \
+              + 'VALUES ("{0}", {1}, "{2}", "{3}")'.format( ine, annee, classe, etab )
+        try:
+            self.curs.execute(req)
+        except sqlite3.Error as e:
+            logging.warning(u"Erreur lors de l'affectation de la classe pour {0}:\n{1}".format(ine, e.args[0]))
+            # En cas de redoublement, une erreur d'insertion indique que l'élève est déjà connu -> on l'ignore
+            if doublement == 0:
+                return False
+        return True
+
+    def db_ecrire(self, enr):
         """ Ajoute les informations d'un élève à la bdd """
         classe = enr['classe']
         ine = enr['ine']
@@ -216,39 +230,43 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         if r[0] == 0:
             # Ajout de l'élève
             req = u'INSERT INTO Élèves ' \
-                + u'(INE, Nom, Prénom, Naissance, Genre, Entrée, Mail, SAD_établissement, SAD_classe, Diplômé, Situation, Lieu) ' \
-                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, {5}, "{6}", "{7}", "{8}", "{9}", "{10}", "{11}")'.format(
+                + u'(INE, Nom, Prénom, Naissance, Genre, Entrée, Mail, Diplômé, Situation, Lieu) ' \
+                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, {5}, "{6}", "{7}", "{8}", "{9}")'.format(
                         ine,                enr['nom'],         enr[u'prénom'],
                         enr['naissance'],   enr['genre'],       enr['entree'],
-                        enr['mail'],        enr['sad_etablissement'],    enr['sad_classe'],
-                        enr[u'Diplômé'],    enr['Situation'],   enr['Lieu'])
+                        enr['mail'],        enr[u'Diplômé'],    enr['Situation'],
+                        enr['Lieu'])
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:
                 logging.error(u"Erreur lors de l'insertion :\n%s" % (e.args[0]))
                 return False
 
+            annee = self.date.year
+            x = self.db_inserer_affectation(
+                    ine,    annee,     classe,  'Jean Moulin')
+            etab = enr['sad_établissement']
+            classe_pre = enr['sad_classe']
+            if enr['doublement']:
+                classe_pre = classe
+                etab = 'Jean Moulin'
+            y = self.db_inserer_affectation(
+                    ine,    annee-1,   classe_pre,  etab,   enr['doublement'])
+            # En cas de problème, annulation des modifications précédentes
+            if not x or not y:
+                self.conn.rollback()
+                logging.warning(u"Rollback suite à un problème d'affectation\n{0}".format(enr))
+                # TODO : Mettre de coté les infos pour validation manuelle
+
         else:
             #logging.warning(u"L'élève {0} est déjà présent dans la base {1}".format(ine, self.date.year))
             pass
 
-        # Affectation à une classe
-        req = u'INSERT INTO Affectations ' \
-              +  u'(INE, Classe, Année, Doublement) ' \
-              + 'VALUES ("{0}", "{1}", {2}, {3})'.format(
-                      ine, classe, self.date.year, enr['doublement'])
-        try:
-            self.curs.execute(req)
-        except sqlite3.Error as e:
-            logging.warning(u"Erreur lors de l'affectation de la classe pour {0}:\n{1}".format(ine, e.args[0]))
-            # au cas où, annulation de l'insert précédent
-            self.conn.rollback()
-            return False
-
+        # Validation de l'affectation à une classe
         self.conn.commit()
         self.nb_import = self.nb_import + 1
 
-    def readfromdb(self):
+    def db_lire(self):
         """ Lit le contenu de la base """
         data = []
         req = u'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC'
@@ -260,11 +278,13 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 parcours = []
                 # Année de sortie
                 sortie = self.date
-                req = u'SELECT Classe,Année,Doublement FROM Affectations WHERE INE="{0}" ORDER BY Année ASC'.format(ine)
+                req = u'SELECT Classe,Année FROM Affectations WHERE INE="{0}" ORDER BY Année ASC'.format(ine)
                 try:
                     for r in self.curs.execute(req):
                         classe = r['Classe']
-                        if r['Doublement'] == 1: classe = classe+'*'
+                        if classe in parcours:
+                            parcours.pop()
+                            classe = classe + '*'
                         parcours.append(classe)
                         a = debut_AS( int(r['Année']) )
                         if a > sortie : sortie = a

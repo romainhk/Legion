@@ -129,7 +129,7 @@ function charger_page(nom) {
                 headers: {
                     3: { sorter: false }
                 },
-                widgets: ["zebra", "filter", "cssStickyHeaders"],
+                widgets: ["zebra", "filter", "cssStickyHeaders", "group"],
                 widgetOptions: {
                     cssStickyHeaders_offset     : 4,
                     cssStickyHeaders_attachTo   : null
@@ -137,6 +137,8 @@ function charger_page(nom) {
             }).bind('filterEnd', total_resultats);
             $("#vue").trigger('update'); // Mise à jour des widgets
             $("#vue").trigger('filterEnd'); // Mise à jour du total
+            $("#vue th:nth-child(1)").addClass('group-word-1');
+            $("#vue th:nth-child(2)").addClass('group-word-2');
         });
     } else if (nom == 'Statistiques') {
         page_active = 'Statistiques';

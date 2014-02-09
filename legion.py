@@ -26,9 +26,9 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                         [u'Âge', '0-9'], \
                         ['Mail', '@'], \
                         ['Genre', 'H/F'], \
-                        ['Parcours', 'Classes'], \
+                        ['Classe', 'C'], \
+                        ['Année', '0-9'], \
                         [u'Entrée', 'Date'], \
-                        [u'Durée', '0-9'], \
                         [u'Diplômé', 'A-z'], \
                         [u'Situation', 'A-z'], \
                         [u'Lieu', 'A-z'] \
@@ -270,36 +270,14 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def db_lire(self):
         """ Lit le contenu de la base """
         data = []
-        req = u'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC'
+        req = u'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC, Année DESC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             ine = d['INE']
-            if [el['INE'] for el in data].count(ine) == 0: # => L'INE est inconnu pour le moment
-                # Génération de la colonne 'Parcours'
-                parcours = []
-                # Année de sortie
-                sortie = self.date
-                req = u'SELECT Classe,Année,Doublement FROM Affectations WHERE INE="{0}" ORDER BY Année ASC'.format(ine)
-                try:
-                    for r in self.curs.execute(req):
-                        classe = r['Classe']
-                        if classe in parcours:
-                            parcours.pop()
-                            classe = classe + '*'
-                        parcours.append(classe)
-                        a = debut_AS( int(r['Année']) )
-                        if a > sortie : sortie = a
-                except sqlite3.Error as e:
-                    logging.error(u"Erreur lors de la génération du parcours de {0}:\n{1}".format(ine, e.args[0]))
-                    continue
-                d['Parcours'] = ', '.join(parcours)
-                # Calcul de la durée de scolarisation
-                entree = debut_AS( d['Entrée'] )
-                d[u'Durée'] = nb_annees(entree, sortie) + 1
-                # Calcul de l'âge actuel
-                d[u'Âge'] = nb_annees(datefr(d['Naissance']))
+            # Calcul de l'âge actuel
+            d[u'Âge'] = nb_annees(datefr(d['Naissance']))
 
-                data.append(d)
+            data.append(d)
         return data
         
 if __name__ == "__main__":

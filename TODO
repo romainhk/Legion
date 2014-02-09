@@ -1,9 +1,9 @@
-* revoir le classement des résultats sur plusieurs niveaux :
+* (en cours) revoir le classement des résultats sur plusieurs niveaux :
     - par classe
         - par élève : donnes administratives
             - pour l'année année : établissement, classe
             - pour l'année année-1 ...
-    -> Retire la colonne 'Durée'
+    -> séparer les données fixes (nom, age...), des données annuelles (classe, etab...)
 * Situation : faire une liste déroulante avec des situation de ref
 * Stocker les option dans la base sqlite ? (Nom de l'étab, liste des situations...)
 
@@ -23,6 +23,7 @@
         - hors BTS, en section Pro
 * Proportion d'étudiants issus de section pro / globale, par section, par filière
 * Représentation graphique des données
+* Pour les élèves sortie : durée d escolarisation
 
 ### Python
 * si aucuns changements à l'extinction -> supprimer la copie de la base

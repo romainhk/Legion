@@ -4,9 +4,10 @@
 * Situation : faire une liste déroulante avec des situation de ref
 * Stocker les options dans la base sqlite ? (Nom de l'étab, liste des situations...)
 * Pending : ajout dans la base après validation
-* Remplir la LICENCE !
 
 ### Statistiques à intégrer
+* avec l'établissement précédent : stats sur les classes d'origine
+* stat "poids dans l'établissement" : classe / niveau
 * Statistiques plus par classe mais sur plusieurs niveaux : 
     - Par Niveau (1er, 2nd,...) -> Générale, Pro -> Filière (GA, ST2S,...)
     - Par Section (ex: toutes les classe de GA qqs le niveau)
@@ -15,7 +16,7 @@
 * Pouvoir répondre à : "Pour une année X, il y a Y élèves en BTS provenant de la section Z"
 * Taux de passage d'une année à l'autre (ex: % d'élève en 1GA passant en TGA)
 * Stats de décrochages (sortie en cours de formation) (-> contacter le cial)
-* Absentéisme : ratio du nombre d'heures de cours non suivi / nombre total d'heures de la section (-> cpe)
+* Absentéisme : ratio du nombre d'heures de cours non suivi / nombre total d'heures de la section (-> cpe ; recoupement avec pronote ?)
 * Taux de réussite au BAC, au BTS
 * Statistiques sur l'établissement:
     - proportion garçon/fille
@@ -33,11 +34,7 @@
 * Séparer le serveur web de la gestion de bdd
 
 ### HTML
-* stats des absences (-> recoupement avec pronote) ?
-* avec l'établissement précédent : stats sur les classes d'origine
 * avec mail : formulaire de mailing
-* stat "poids dans l'établissement" : classe / niveau
-* menu à droite rétractable ?
 * favicon
-* logo du lycée
 * bouton reset pour les filtres de recherche (option filter_reset)
+* remplacer le menu de droite par une page d'options

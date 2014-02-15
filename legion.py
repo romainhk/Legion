@@ -23,12 +23,12 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
                         [u'Prénom', 'A-z'], \
-                        [u'Âge', '0-9'], \
-                        ['Mail', '@'], \
+                        [u'Âge', ''], \
+                        ['Mail', ''], \
                         ['Genre', 'H/F'], \
-                        ['Année', '0-9'], \
-                        ['Classe', 'C'], \
-                        ['Établissement', 'A-z'], \
+                        ['Année', 'Toutes'], \
+                        ['Classe', ''], \
+                        ['Établissement', ''], \
                         ['Doublement', 'Oui/Non'], \
                         [u'Entrée', 'Date'], \
                         [u'Diplômé', 'A-z'], \

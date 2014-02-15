@@ -1,11 +1,10 @@
 * (en cours) revoir le classement des résultats sur plusieurs niveaux :
     - par classe
-        - par élève : donnes administratives
-            - pour l'année année : établissement, classe
-            - pour l'année année-1 ...
-    -> séparer les données fixes (nom, age...), des données annuelles (classe, etab...)
+        - par élève : donnes administratives, puis par année
 * Situation : faire une liste déroulante avec des situation de ref
-* Stocker les option dans la base sqlite ? (Nom de l'étab, liste des situations...)
+* Stocker les options dans la base sqlite ? (Nom de l'étab, liste des situations...)
+* Pending : ajout dans la base après validation
+* Remplir la LICENCE !
 
 ### Statistiques à intégrer
 * Statistiques plus par classe mais sur plusieurs niveaux : 
@@ -23,7 +22,7 @@
         - hors BTS, en section Pro
 * Proportion d'étudiants issus de section pro / globale, par section, par filière
 * Représentation graphique des données
-* Pour les élèves sortie : durée de scolarisation
+* Pour les élèves sorties : durée de scolarisation
 
 ### Python
 * si aucuns changements à l'extinction -> supprimer la copie de la base
@@ -31,10 +30,10 @@
 * Cohérente d importation : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ? ou supposer à l'importation une sortie en fin d'année ?
 * date de sortie plutôt qu'une durée ?
 * colonne Diplômé : importation automatisée depuis ...
+* Séparer le serveur web de la gestion de bdd
 
 ### HTML
 * stats des absences (-> recoupement avec pronote) ?
-* Colonnes editables ?
 * avec l'établissement précédent : stats sur les classes d'origine
 * avec mail : formulaire de mailing
 * stat "poids dans l'établissement" : classe / niveau

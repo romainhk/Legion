@@ -71,6 +71,24 @@ function push_input() {
     }
 }
 
+/*
+ * Traduction des données de la base en quelque chose de plus lisible
+ */
+function trad_db_val(v, j) {
+    if(v != undefined){
+        if (j == "Classe") { // Traduction des doublements
+            v = v.replace(/([^, ]+)\*/g, '<span class="doublement">$1</span>');
+        } else if (j == "Genre") { // Traduction de la colonne genre
+            if (v == "1") { v = "Homme"; } else if (v == "2") { v = "Femme"; }
+        } else if (j == "Mail") { // Mise en page des mails
+            if (v != "") { v = '<a href="mailto:'+v+'">@</a>'; }
+        } else if (j == "Doublement") { // Traduction de la colonne doublement
+            if (v == "0") { v = "Non"; } else { v = "Oui"; }
+        }
+    } else { v= ''; }
+    return v;
+}
+
 /* 
  * Convertir une liste en lignes de tableau (tr)
  */
@@ -80,14 +98,7 @@ function list_to_tab(liste, champs) {
         var vals = "";
         ine = value['INE'];
         $.each( champs, function( i, j ) {
-            v = value[j];
-            if (j == "Parcours") { // Traduction des doublements
-                v = v.replace(/([^, ]+)\*/g, '<span class="doublement">$1</span>');
-            } else if (j == "Genre") { // Traduction de la colonne genre
-                if (v == "1") { v = "Homme"; } else if (v == "2") { v = "Femme"; }
-            } else if (j == "Mail") { // Mise en page des mails
-                if (v != "") { v = '<a href="mailto:'+v+'">@</a>'; }
-            }
+            v = trad_db_val(value[j], j);
             vals += "<td>"+v+"</td>";
         });
         lignes += "<tr id='"+ine+"'>"+vals+"</tr>\n";
@@ -104,6 +115,19 @@ function total_resultats(e, filter){
     $("#filter_end").html(t);
 }
 
+/*
+ * Renvoie la liste triée inversée des clés du dictionnaire donné
+ */
+function reverse_key_sort(dict){
+    var keys = new Array();
+    for (k in dict) {
+        if (dict.hasOwnProperty(k)) {
+            keys.push(k);
+        }
+    }
+    return keys.sort().reverse();
+}
+
 /* 
  * Le switch de page
  */
@@ -113,8 +137,48 @@ function charger_page(nom) {
     if (nom == 'Liste') {
         page_active = 'Liste';
         $.get( "/liste", function( data ) {
+            annee = data['annee'];
             // Construction du tableau
-            $('#vue > tbody').html( list_to_tab(data, champs_vue) );
+var tab = $('#vue > tbody');
+tab.html( '' );
+$.each( data['data'], function( key, value ) {
+    var vals = "";
+    ine = value['INE'];
+    $.each( champs_vue, function( i, j ) {
+        if (j != 'Parcours') {
+            v = trad_db_val(value[j], j);
+            vals += '<td id="'+ine+'-'+j+'">'+v+"</td>";
+        }
+    });
+    tab.append("<tr id='"+ine+"'>"+vals+"</tr>\n");
+    var parcours = value['Parcours'];
+    // Le parcours des classes est rétrograde
+    cles = reverse_key_sort(parcours);
+    $.each( cles, function( i, an ) {
+        var t = parcours[an];
+        var doub = trad_db_val(t[2], "Doublement");
+        if (annee == an) {
+            // Données de l'année en cours
+            $("#"+ine+'-'+'Année').html(an)
+            $("#"+ine+'-'+'Classe').html(t[0])
+            $("#"+ine+'-'+'Établissement').html(t[1])
+            $("#"+ine+'-'+'Doublement').html(doub)
+        } else {
+            // Année précédente : ajout sur une ligne dépliante
+            index = $.inArray("Année", champs_vue);
+            vals = '<td colspan="'+index+'"></td>\n';
+            vals += '<td>'+an+'</td>';
+            vals += '<td>'+t[0]+'</td>';
+            vals += '<td>'+t[1]+'</td>';
+            vals += '<td>'+doub+'</td>';
+            var taille_fin = champs_vue.length - index - 4;
+            vals += '\n<td colspan="'+taille_fin+'"></td>\n';
+            tab.append('<tr class="tablesorter-childRow">'+vals+"</tr>\n");
+            var nom = $("#"+ine+' td:first-child');
+            nom.html('<a href="#" class="toggle">'+nom.html()+'</a>');
+        }
+    });
+});
             // Ajout des input auto sur les colonnes
             $.each(['Situation', 'Lieu'], function( i, col ) {
                 index = $.inArray(col, champs_vue);
@@ -131,16 +195,20 @@ function charger_page(nom) {
                 headers: {
                     3: { sorter: false }
                 },
-                widgets: ["zebra", "filter", "cssStickyHeaders", "group"],
+                widgets: ["zebra", "filter", "cssStickyHeaders"],
                 widgetOptions: {
                     cssStickyHeaders_offset     : 4,
                     cssStickyHeaders_attachTo   : null
-                }
-            }).bind('filterEnd', total_resultats);
+                },
+                cssChildRow: "tablesorter-childRow"
+            }).bind('filterEnd', total_resultats
+            ).delegate('.toggle', 'click' ,function(){
+                $(this).closest('tr').nextUntil('tr:not(.tablesorter-childRow)').find('td').toggle();
+                return false;
+            });
+            $('.tablesorter-childRow td').hide();
             $("#vue").trigger('update'); // Mise à jour des widgets
             $("#vue").trigger('filterEnd'); // Mise à jour du total
-            $("#vue th:nth-child(1)").addClass('group-word-1');
-            $("#vue th:nth-child(2)").addClass('group-word-2');
         });
     } else if (nom == 'Statistiques') {
         page_active = 'Statistiques';

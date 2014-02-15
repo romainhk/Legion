@@ -26,14 +26,20 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                         [u'Âge', '0-9'], \
                         ['Mail', '@'], \
                         ['Genre', 'H/F'], \
-                        ['Classe', 'C'], \
                         ['Année', '0-9'], \
+                        ['Classe', 'C'], \
+                        ['Établissement', 'A-z'], \
+                        ['Doublement', 'Oui/Non'], \
                         [u'Entrée', 'Date'], \
                         [u'Diplômé', 'A-z'], \
                         [u'Situation', 'A-z'], \
                         [u'Lieu', 'A-z'] \
                         ]
-        self.date = datetime.date.today()
+        ajd = datetime.date.today()
+        if ajd.month < 9:
+            self.date = debut_AS(ajd.year-1)
+        else:
+            self.date = debut_AS(ajd.year)
         self.root = root
         self.nb_import = 0
         # DB
@@ -63,8 +69,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         query = parse_qs(params.query)
         logging.debug("GET {0} ? {1}".format(params, query))
         if params.path == '/liste':
-            data = self.db_lire(u'Élèves NATURAL JOIN Affectations')
-            self.repondre(data)
+            data = self.db_lire()
+            self.repondre({'annee': self.date.year, 'data': data})
         elif params.path == '/stats':
             annee = query['annee'].pop()
             if annee == 'null': annee = self.date.year
@@ -77,7 +83,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             data = self.maj_champ(ine, champ, donnee)
             self.repondre(data)
         elif params.path == '/pending':
-            data = self.db_lire('Pending')
+            data = self.db_lire_pending()
             self.repondre(data)
         elif params.path == '/liste-annees':
             annees = self.lister('Année')
@@ -221,7 +227,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}", {10}, "{11}", "{12}", {13})'.format(
                     enr['ine'],         enr['nom'],         enr[u'prénom'],
                     enr['naissance'],   enr['genre'],       enr['mail'],
-                    enr['entrée'],      enr[u'Diplômé'],  enr['Situation'],
+                    enr['entrée'],      enr[u'Diplômé'],    enr['Situation'],
                     enr['Lieu'],        annee,              enr['classe'],
                     enr['sad_établissement'],   enr['doublement'] )
         try:
@@ -284,16 +290,36 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.conn.commit()
         self.nb_import = self.nb_import + 1
 
-    def db_lire(self, table):
+    def db_lire(self):
         """ Lit le contenu de la base """
-        data = []
-        req = u'SELECT * FROM ' + table + ' ORDER BY Nom,Prénom ASC, Année DESC'
+        data = {}
+        req = u'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC, Année DESC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             ine = d['INE']
-            # Calcul de l'âge actuel
-            d[u'Âge'] = nb_annees(datefr(d['Naissance']))
-            data.append(d)
+            # Génération du parcours
+            annee = d.pop('Année')
+            classe = d.pop('Classe')
+            etab = d.pop('Établissement')
+            doub = d.pop('Doublement')
+            if ine in data.keys():
+                # Déjà présent : on ajoute juste une année scolaire
+                data[ine]['Parcours'][annee] = [ classe, etab, doub ]
+            else:
+                d['Parcours'] = {annee: [ classe, etab, doub ]}
+                # Calcul de l'âge actuel
+                d[u'Âge'] = nb_annees(datefr(d['Naissance']))
+                data[ine] = d
+        return data
+
+    def db_lire_pending(self):
+        """ Lit le contenu de la base """
+        data = {}
+        req = u'SELECT * FROM Pending ORDER BY Nom,Prénom ASC, Année DESC'
+        for row in self.curs.execute(req).fetchall():
+            d = dict_from_row(row)
+            ine = d['INE']
+            data[ine] = d
         return data
 
 if __name__ == "__main__":

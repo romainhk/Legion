@@ -1,7 +1,6 @@
 body {
     padding:0 1ex;
     background: #febbbb;
-    /*background: linear-gradient(135deg, #febbbb 0%,#fe9090 45%,#ff5c5c 100%);*/
     background: linear-gradient(90deg, #fec9e4 0%,#fe90C7 50%,#FFABD5 100%);
 }
 h1 {
@@ -112,41 +111,3 @@ td input {
     margin: 0;
     padding: 0;
 }
-/* tablesorter grouping */
-tr.group-header td {
-    background: #eee;
-  }
-  .group-name {
-    text-transform: uppercase;
-    font-weight: bold;
-  }
-  .group-count {
-    color: #999;
-  }
-  .group-hidden {
-    display: none;
-  }
-  .group-header, .group-header td {
-    user-select: none;
-    -moz-user-select: none;
-  }
-  /* collapsed arrow */
-  tr.group-header td i {
-    display: inline-block;
-    width: 0;
-    height: 0;
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid #888;
-    border-right: 4px solid #888;
-    border-left: 4px solid transparent;
-    margin-right: 7px;
-    user-select: none;
-    -moz-user-select: none;
-  }
-  tr.group-header.collapsed td i {
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
-    border-left: 5px solid #888;
-    border-right: 0;
-    margin-right: 10px;
-  }

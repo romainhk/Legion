@@ -16,19 +16,10 @@ h3 {
     margin-top:1em;
 }
 h4 {
-    text-align:center;
+    margin-left:4em;
 }
 input {
     margin:0.5ex;
-}
-/* Structure */
-.gauche {
-    float: left;
-    width:80%;
-}
-.droite {
-    float: right;
-    width:19%;
 }
 /* Tableaux */
 table {
@@ -60,7 +51,6 @@ th, td {
     width:8ex;
 }
 a.export, a.export:visited {
-    font-weight:bold;
     font-family: sans-serif;
     text-decoration: none;
     padding:5px 8px;

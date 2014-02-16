@@ -32,5 +32,5 @@
 * avec mail : formulaire de mailing
 * favicon
 * bouton reset pour les filtres de recherche (option filter_reset)
-* remplacer le menu de droite par une page d'options
 * Situation : limiter la saisie aux valeurs voulues
+* déplier / replier ne fonctionne plus après un changement d'onglet

@@ -254,6 +254,8 @@ $.each( data['data'], function( key, value ) {
             });
             $("#pending").trigger('update');
         });
+    } else if (nom == 'Options') {
+        page_active = 'Options';
     }
     $("#"+page_active).show();
 }

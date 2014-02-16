@@ -19,53 +19,49 @@
         <li>Liste</li>
         <li>Statistiques</li>
         <li>Pending</li>
+        <li>Options</li>
     </ul>
     <h1>Legion</h1>
     <h2>Application de suivi de cohorte</h2>
-    <div style="clear:both;"></div>
-    <!-- #####  Corps  ##### -->
-    <div class="gauche">
-        <div id="Liste">
-            <h3 style="float:left;">Base des élèves</h3>
-            <div id="filter_end" style="margin-top:2.5em; float:right;"></div>
-            <div style="clear:both;"></div>
-            <table id="vue" border="1">
-                <thead></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-        <div id="Statistiques">
-            <h3>Statistiques</h3>
-            <table id="stats" border="1">
-                <caption>Pour l'année <select id="stats-annee" onChange="function(){$('#onglets li:last-child').trigger('click');};">
-                </select></caption>
-                <thead>
-                    <tr>
-                        <th>Classe</th>
-                        <th>Effectif</th>
-                        <th>Poids / Établissement</th>
-                        <th>Redoublants (%)</th>
-                        <th>Répartition<br />% d'hommes</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-        <div id="Pending">
-            <h3>Importations en attente de validation (données incomplètes)</h3>
-            <table id="pending" border="1">
-                <thead></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-    <!-- #####  Menu  ##### -->
-    <div class="droite">
+    <div style="text-align:center;">
         <button class="toggle-deplier" type="button"></button>
-        <h4>Légende</h4>
-        <ul>
-            <li><span class="doublement">Redoublement</span></li>
-        </ul>
+        <a href="#" class="export">Exporter ce tableau</a>
+    </div>
+    <div style="clear:both;"></div>
+    <div id="Liste">
+        <h3 style="float:left;">Base des élèves</h3>
+        <div id="filter_end" style="margin-top:2.5em; float:right;"></div>
+        <div style="clear:both;"></div>
+        <table id="vue" border="1">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div id="Statistiques">
+        <h3>Statistiques</h3>
+        <table id="stats" border="1">
+            <caption>Pour l'année <select id="stats-annee" onChange="function(){$('#onglets li:last-child').trigger('click');};">
+            </select></caption>
+            <thead>
+                <tr>
+                    <th>Classe</th>
+                    <th>Effectif</th>
+                    <th>Poids / Établissement</th>
+                    <th>Redoublants (%)</th>
+                    <th>Répartition<br />% d'hommes</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div id="Pending">
+        <h3>Importations en attente de validation (données incomplètes)</h3>
+        <table id="pending" border="1">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div id="Options" style="background-color:rgba(255,255,255,0.2); margin:1em; padding:1ex 2ex;">
         <h4>Importation</h4>
         Sélectionner l'exportation xml de la base SIÈCLE (<i>ElevesSansAdresses.xml</i>)
         <form id="importation" enctype="multipart/form-data">
@@ -73,8 +69,6 @@
             <input type="button" value="Importer" onClick="importation();" style="font-weight:bold;">
             <img id="progress" src="loading.gif">
         </form>
-        <h4>Exportation CSV</h4>
-        <a href="#" class="export">Exporter ce tableau</a>
         <h4>Options ?</h4>
         <ul>
             <li><a href="#" onclick="nyi('Formulaire d\'envoie de mail à toutes les personnes affichées');">Envoyer un mail à tous</a></li>

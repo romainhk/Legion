@@ -5,6 +5,7 @@ import sqlite3
 import datetime
 import logging
 import shutil
+import configparser
 #web
 import http.server, socketserver
 import json
@@ -20,6 +21,10 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     """
     def __init__(self, request, client, server):
         global root
+        # Fichier de config
+        config = configparser.ConfigParser()
+        config.read(root + os.sep + 'config.cfg')
+        self.liste_situations=config.get('General', 'liste de situations').split(',')
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
                         [u'Prénom', 'A-z'], \
@@ -68,31 +73,29 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         params = urlparse(self.path)
         query = parse_qs(params.query)
         logging.debug("GET {0} ? {1}".format(params, query))
+        data = "";
         if params.path == '/liste':
-            data = self.db_lire()
-            self.repondre({'annee': self.date.year, 'data': data})
+            data = { 'annee': self.date.year, 'data': self.db_lire() }
         elif params.path == '/stats':
             annee = query['annee'].pop()
             if annee == 'null': annee = self.date.year
             data = self.generer_stats(annee)
-            self.repondre(data)
         elif params.path == '/maj':
             ine = query['ine'].pop()
             champ = query['champ'].pop()
             donnee = query['d'].pop()
             data = self.maj_champ(ine, champ, donnee)
-            self.repondre(data)
         elif params.path == '/pending':
             data = self.db_lire_pending()
-            self.repondre(data)
         elif params.path == '/liste-annees':
-            annees = self.lister('Année')
-            self.repondre(annees)
+            data = self.lister('Année')
         elif params.path == '/init':
-            self.repondre(self.header)
+            data = {'header': self.header, 'situations': self.liste_situations }
         else:
             # Par défaut, on sert l'index 
             http.server.SimpleHTTPRequestHandler.do_GET(self)
+            return True
+        self.repondre(data)
 
     def do_POST(self):
         """ Traitement des POST """

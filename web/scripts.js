@@ -7,6 +7,8 @@ var les_pages = new Array();
 var nb_eleves = 0;
 // Champs du pending (tous)
 var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Genre", "Mail", "Entrée", "Diplômé", "Situation", "Lieu", "Année", "Classe", "Établissement", "Doublement" ];
+// Liste des situations possibles
+var liste_situations = new Array();
 
 /* Placeholder */
 function nyi(message) { alert ('Not yet implemented :)\n'+message); }
@@ -331,12 +333,12 @@ $(document).ready(function() {
     $.get( "/init", function( data ) {
         var entete = "";
         var filtre = "";
-        $.each(data, function( i, j ) {
+        liste_situations = data['situations'];
+        $.each(data['header'], function( i, j ) {
             champ = j[0];
             champs_vue.push(champ);
             type = j[1];
-            if (champ!="Nom" && champ!="Prénom" && champ!="Diplômé"
-                && champ!="Situation" && champ!="Lieu") {
+            if (champ!="Nom" && champ!="Prénom" && champ!="Diplômé" && champ!="Lieu") {
                 filter = 'class="filter-select"';
             } else { filter = ""; }
             entete += "<th "+filter+" data-placeholder=\""+type+"\">"+champ+"</th>\n";

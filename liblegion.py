@@ -3,7 +3,7 @@ import threading
 import datetime
 
 """
-    Librairies contenant les fonctions générales
+    Librairie contenant les fonctions générales
 """
 
 def xstr(s):

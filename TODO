@@ -33,5 +33,4 @@
 * favicon
 * bouton reset pour les filtres de recherche (option filter_reset)
 * remplacer le menu de droite par une page d'options
-* l'export csv n'aime pas les colspan
 * Situation : limiter la saisie aux valeurs voulues

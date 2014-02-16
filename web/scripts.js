@@ -210,18 +210,19 @@ $.each( data['data'], function( key, value ) {
             });
             // Modifier l'affichage des lignes et la recherche globale (sur les sous-cellules)
             $('button.toggle-deplier').click(function(){
+                $('.tablesorter-childRow').toggleClass('remove-me');
                 $('.tablesorter-childRow').find('td').toggle();
                 var c = $('.tablesorter')[0].config.widgetOptions, o = !c.filter_childRows;
                 c.filter_childRows = o;
-                var text = "Déplier tout";
-                if (o) { text = "Replier tout"; }
+                var text = "Replier tout";
+                if (o) { text = "Déplier tout"; }
                 $(this).html(text);
                 $('table').trigger('search', false);
                 return false;
             });
-            $('.tablesorter-childRow td').hide();
             $("#vue").trigger('update'); // Mise à jour des widgets
             $("#vue").trigger('filterEnd'); // Mise à jour du total
+            $('button.toggle-deplier').trigger('click'); // Pliage de toutes les lignes
         });
     } else if (nom == 'Statistiques') {
         page_active = 'Statistiques';
@@ -295,6 +296,16 @@ function exportTableToCSV($table, filename) {
         return $cols.map(function (j, col) {
             var $col = $(col),
                 text = $col.text();
+            // On remplace les colspan vides par autant de td
+            var colspan = $col.attr('colspan');
+            if (colspan != undefined) {
+                var t = new Array();
+                for (var m=0; m < colspan; m++) { t.push(''); }
+                return t;
+            }
+            // Cas de la colonne mail
+            if (text == "@") { return $col.find('a').attr('href').replace('mailto:',''); }
+
             return text.replace('"', '""'); // escape double quotes
         }).get().join(tmpColDelim);
 

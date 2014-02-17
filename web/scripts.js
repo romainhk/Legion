@@ -39,37 +39,19 @@ function envoie_du_fichier(event) {
 }
 
 /*
- * Système d'input pour modifier le contenu d'une colonne
+ * Mise à jour d'une des cellules de la vue
  */
-/*   Création de l'input   */
-function add_input() {
-    var td = $(this);
-    td.removeClass('maj_oui maj_non'); // Nettoyage du marqueur d'envoie précédent
-    if ( td.children().first().prop("tagName") != "INPUT" ) { // S'il n'y a pas encore d'input
-        var val = td.html();
-        if (val == "?") { val = ""; }
-        td.html("<input type='text' value='"+val+"' size='10'></input>");
-        td.children().first().focus(); // Focus auto sur ce nouvel input
-    }
-}
-/*   Envoie de la modification   */
-function push_input() {
-    var td = $(this);
-    if ( td.html() != "?" ) {
-        var input = td.children().first();
-        var val = input.val();
-        old = input.attr('value');
-        if (val != "" && val != old) {
-            var ine = td.parent().attr('id');
-            index_x = td.parent().children().index(td);
-            var champ = champs_vue[index_x];
-            params = "ine="+ine+"&champ="+champ+"&d="+val;
-            $.get( "/maj?"+params, function( data ) {
-                if (data == 'Oui') { td.addClass("maj_oui"); }
-                else if (data == 'Non') { td.addClass("maj_non"); }
-            });
-        }
-        td.html(val); // Suppression de l'input
+function maj_cellule(cell) {
+    var val = cell.text();
+    if (val != "") {
+        var ine = cell.parent().attr('id');
+        index_x = cell.parent().children().index(cell);
+        var champ = champs_vue[index_x];
+        params = "ine="+ine+"&champ="+champ+"&d="+val;
+        $.get( "/maj?"+params, function( data ) {
+            if (data == 'Oui') { cell.addClass("maj_oui"); }
+            else if (data == 'Non') { cell.addClass("maj_non"); }
+        });
     }
 }
 
@@ -181,15 +163,13 @@ $.each( data['data'], function( key, value ) {
         }
     });
 });
-            // Ajout des input auto sur les colonnes
-            $.each(['Situation', 'Lieu'], function( i, col ) {
-                index = $.inArray(col, champs_vue);
-                var col_apres = $('#vue > tbody td:nth-child('+(index+1)+')');
-                col_apres.on('click', add_input);
-                col_apres.on('focusout', push_input);
-            });
 
             nb_eleves = Object.keys(data['data']).length;
+            index = $.inArray("Année", champs_vue);
+            var champs_editables = [
+                    $.inArray('Diplômé', champs_vue),
+                    $.inArray('Situation', champs_vue),
+                    $.inArray('Lieu', champs_vue)];
             $("#vue").tablesorter({
                 theme:'blue',
                 showProcessing: true,
@@ -197,16 +177,21 @@ $.each( data['data'], function( key, value ) {
                 headers: {
                     3: { sorter: false }
                 },
-                widgets: ["zebra", "filter", "cssStickyHeaders"],
+                widgets: ["zebra", "filter", "cssStickyHeaders", "editable"],
                 widgetOptions: {
                     cssStickyHeaders_offset   : 4,
-                    cssStickyHeaders_attachTo : null
+                    cssStickyHeaders_attachTo : null,
+                    editable_columns       : champs_editables,
+                    editable_enterToAccept : true,
+                    editable_editComplete  : 'editComplete'
                 },
                 cssChildRow: "tablesorter-childRow"
             }).bind('filterEnd', total_resultats
             ).delegate('.toggle', 'click' ,function(){
                 $(this).closest('tr').nextUntil('tr:not(.tablesorter-childRow)').find('td').toggle();
                 return false;
+            }).children('tbody').on('editComplete', 'td', function(){
+                maj_cellule($(this));
             });
             // Modifier l'affichage des lignes et la recherche globale (sur les sous-cellules)
             $('button.toggle-deplier').click(function(){

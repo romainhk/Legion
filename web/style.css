@@ -62,10 +62,6 @@ a.export, a.export:visited {
     -o-appearance:button;
     -ms-appearance:button;
 }
-.doublement {
-    color:green;
-    text-decoration: underline;
-}
 .logo {
     float:left;
     height:100px;
@@ -99,14 +95,15 @@ a.export, a.export:visited {
     margin-left:3ex;
     vertical-align:middle;
 }
-/* input */
+/* tablesorter : editable */
+.tablesorter tbody > tr > td[contenteditable=true]:focus {
+  outline: #08f 1px solid;
+  background: #eee !important;
+  resize: none;
+}
 .maj_oui {
     background-color: #B3FFB3 !important;
 }
 .maj_non {
     background-color: #FFB3B3 !important;
-}
-td input {
-    margin: 0;
-    padding: 0;
 }

@@ -73,29 +73,29 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         params = urlparse(self.path)
         query = parse_qs(params.query)
         logging.debug("GET {0} ? {1}".format(params, query))
-        data = "";
+        rep = "";
         if params.path == '/liste':
-            data = { 'annee': self.date.year, 'data': self.db_lire() }
+            rep = { 'annee': self.date.year, 'data': self.db_lire() }
         elif params.path == '/stats':
             annee = query['annee'].pop()
             if annee == 'null': annee = self.date.year
-            data = self.generer_stats(annee)
+            rep = self.generer_stats(annee)
         elif params.path == '/maj':
             ine = query['ine'].pop()
             champ = query['champ'].pop()
             donnee = query['d'].pop()
-            data = self.maj_champ(ine, champ, donnee)
+            rep = self.maj_champ(ine, champ, donnee)
         elif params.path == '/pending':
-            data = self.db_lire_pending()
+            rep = self.db_lire_pending()
         elif params.path == '/liste-annees':
-            data = self.lister('Année')
+            rep = self.lister('Année')
         elif params.path == '/init':
-            data = {'header': self.header, 'situations': self.liste_situations }
+            rep = {'header': self.header, 'situations': self.liste_situations }
         else:
             # Par défaut, on sert l'index 
             http.server.SimpleHTTPRequestHandler.do_GET(self)
             return True
-        self.repondre(data)
+        self.repondre(rep)
 
     def do_POST(self):
         """ Traitement des POST """
@@ -104,10 +104,14 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         parse = parse_qs(data.decode('UTF-8')) # { data: , name: }
         # le fichier xml est en ISO-8859-15
         data = parse['data'].pop()
+        rep = "";
         if self.path == '/importation':
             logging.info('Importation du fichier...')
             self.importer_xml(data)
-            self.repondre(u"L'importation de {nb} élèves s'est bien terminée.".format(nb=self.nb_import))
+            rep = u"L'importation de {nb} élèves s'est bien terminée.".format(nb=self.nb_import)
+        else:
+            return True
+        self.repondre(rep)
 
     def repondre(self, reponse):
         """ Envoie une réponse http [sic] """

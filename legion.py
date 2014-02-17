@@ -24,7 +24,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         # Fichier de config
         config = configparser.ConfigParser()
         config.read(root + os.sep + 'config.cfg')
-        self.liste_situations=config.get('General', 'liste de situations').split(',')
+        self.liste_situations=config.get('General', 'situations').split(',')
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
                         [u'Prénom', 'A-z'], \

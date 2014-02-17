@@ -9,6 +9,8 @@ var nb_eleves = 0;
 var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Genre", "Mail", "Entrée", "Diplômé", "Situation", "Lieu", "Année", "Classe", "Établissement", "Doublement" ];
 // Liste des situations possibles
 var liste_situations = new Array();
+// Indique si les sous-cellules sont visibles ou non
+var vue_depliee = true;
 
 /* Placeholder */
 function nyi(message) { alert ('Not yet implemented :)\n'+message); }
@@ -193,21 +195,11 @@ $.each( data['data'], function( key, value ) {
             }).children('tbody').on('editComplete', 'td', function(){
                 maj_cellule($(this));
             });
-            // Modifier l'affichage des lignes et la recherche globale (sur les sous-cellules)
-            $('button.toggle-deplier').click(function(){
-                $('.tablesorter-childRow').toggleClass('remove-me');
-                $('.tablesorter-childRow').find('td').toggle();
-                var c = $('.tablesorter')[0].config.widgetOptions, o = !c.filter_childRows;
-                c.filter_childRows = o;
-                var text = "Replier tout";
-                if (o) { text = "Déplier tout"; }
-                $(this).html(text);
-                $('table').trigger('search', false);
-                return false;
-            });
             $("#vue").trigger('update'); // Mise à jour des widgets
             $("#vue").trigger('filterEnd'); // Mise à jour du total
-            $('button.toggle-deplier').trigger('click'); // Pliage de toutes les lignes
+            // Pliage de toutes les lignes
+            if (vue_depliee) { $('button.toggle-deplier').trigger('click'); }
+            $('#vue .tablesorter-childRow td').hide();
         });
     } else if (nom == 'Statistiques') {
         page_active = 'Statistiques';
@@ -347,6 +339,20 @@ $(document).ready(function() {
             entete += "<th>"+j+"</th>\n";
         });
         $('#pending > thead').html( "<tr>"+entete+"</tr>\n" );
+
+        // Modifier l'affichage des sous-cellules et permet leur recherche
+        $('button.toggle-deplier').click(function(){
+            $('#vue .tablesorter-childRow').toggleClass('remove-me');
+            $('#vue .tablesorter-childRow').find('td').toggle();
+            var c = $('#vue')[0].config.widgetOptions, o = !c.filter_childRows;
+            c.filter_childRows = o;
+            var text = "Replier tout";
+            if (vue_depliee) { text = "Déplier tout"; }
+            vue_depliee = !vue_depliee;
+            $(this).html(text);
+            $('table').trigger('search', false);
+            return false;
+        });
     });
     stats_annees();
     // Chargement de la première page

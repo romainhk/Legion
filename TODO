@@ -33,6 +33,6 @@
 * favicon
 * bouton reset pour les filtres de recherche (option filter_reset)
 * Situation : limiter la saisie aux valeurs voulues
-* déplier / replier ne fonctionne plus après un changement d'onglet, ou à moitié après un filtrage
+* déplier / replier à moitié après un filtrage
 * filtre colonne année : manque les autres années lorsque déplié
 * filtre colonne doublement : ne fonctionne que pour l'année en cours

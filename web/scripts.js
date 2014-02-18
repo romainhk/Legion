@@ -91,7 +91,7 @@ function list_to_tab(liste, champs) {
 }
 
 /*
- * Mise à jour de l'affiche du nombre total de résultats lors d'une recherche
+ * Mises à jour après une recherche
  */
 function fin_filtrage(e, filter){
     // MAJ du total de résultat
@@ -99,10 +99,12 @@ function fin_filtrage(e, filter){
     t = 'Résultats : ' + a + ' / ' + nb_eleves + ' élèves.';
     $("#filter_end").html(t);
     // Reaffichage des childrows
-    var cr = $(this).find('tr.tablesorter-childRow');
-    if (cr.prev().css('display') == 'table-row') {
-        cr.removeClass('filtered').removeClass('remove-me').show();
-    }
+    $.each($(this).find('tr.tablesorter-childRow'), function(i, cr) {
+        cr = $(cr);
+        if (cr.prev().css('display') == 'table-row') {
+            cr.removeClass('filtered').removeClass('remove-me').show();
+        }
+    });
 }
 
 /*

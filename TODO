@@ -31,8 +31,6 @@
 ### HTML
 * avec mail : formulaire de mailing
 * favicon
-* bouton reset pour les filtres de recherche (option filter_reset)
 * Situation : limiter la saisie aux valeurs voulues
-* déplier / replier à moitié après un filtrage
 * filtre colonne année : manque les autres années lorsque déplié
 * filtre colonne doublement : ne fonctionne que pour l'année en cours

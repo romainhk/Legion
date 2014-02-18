@@ -9,7 +9,7 @@ var nb_eleves = 0;
 var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Genre", "Mail", "Entrée", "Diplômé", "Situation", "Lieu", "Année", "Classe", "Établissement", "Doublement" ];
 // Liste des situations possibles
 var liste_situations = new Array();
-// Indique si les sous-cellules sont visibles ou non
+// Indique si les sous-cellules (childrows) sont visibles ou non
 var vue_depliee = true;
 
 /* Placeholder */
@@ -41,20 +41,18 @@ function envoie_du_fichier(event) {
 }
 
 /*
- * Mise à jour d'une des cellules de la vue
+ * Mise à jour d'un des champs autorisé
  */
 function maj_cellule(cell) {
     var val = cell.text();
-    if (val != "") {
-        var ine = cell.parent().attr('id');
-        index_x = cell.parent().children().index(cell);
-        var champ = champs_vue[index_x];
-        params = "ine="+ine+"&champ="+champ+"&d="+val;
-        $.get( "/maj?"+params, function( data ) {
-            if (data == 'Oui') { cell.addClass("maj_oui"); }
-            else if (data == 'Non') { cell.addClass("maj_non"); }
-        });
-    }
+    var ine = cell.parent().attr('id');
+    index_x = cell.parent().children().index(cell);
+    var champ = champs_vue[index_x];
+    params = "ine="+ine+"&champ="+champ+"&d="+val;
+    $.get( "/maj?"+params, function( data ) {
+        if (data == 'Oui') { cell.addClass("maj_oui"); }
+        else if (data == 'Non') { cell.addClass("maj_non"); }
+    });
 }
 
 /*
@@ -93,12 +91,18 @@ function list_to_tab(liste, champs) {
 }
 
 /*
- * Mise à jour de l'affiche du nombre  total de résultats lors d'une recherche
+ * Mise à jour de l'affiche du nombre total de résultats lors d'une recherche
  */
-function total_resultats(e, filter){
+function fin_filtrage(e, filter){
+    // MAJ du total de résultat
     a = $(this).find('tr:visible:not(".tablesorter-childRow")').length - 2; // - le header et le filtre
     t = 'Résultats : ' + a + ' / ' + nb_eleves + ' élèves.';
     $("#filter_end").html(t);
+    // Reaffichage des childrows
+    var cr = $(this).find('tr.tablesorter-childRow');
+    if (cr.prev().css('display') == 'table-row') {
+        cr.removeClass('filtered').removeClass('remove-me').show();
+    }
 }
 
 /*
@@ -181,6 +185,7 @@ $.each( data['data'], function( key, value ) {
                 },
                 widgets: ["zebra", "filter", "cssStickyHeaders", "editable"],
                 widgetOptions: {
+                    filter_reset : '.reset',
                     cssStickyHeaders_offset   : 4,
                     cssStickyHeaders_attachTo : null,
                     editable_columns       : champs_editables,
@@ -188,7 +193,7 @@ $.each( data['data'], function( key, value ) {
                     editable_editComplete  : 'editComplete'
                 },
                 cssChildRow: "tablesorter-childRow"
-            }).bind('filterEnd', total_resultats
+            }).bind('filterEnd', fin_filtrage
             ).delegate('.toggle', 'click' ,function(){
                 $(this).closest('tr').nextUntil('tr:not(.tablesorter-childRow)').find('td').toggle();
                 return false;
@@ -340,7 +345,7 @@ $(document).ready(function() {
         });
         $('#pending > thead').html( "<tr>"+entete+"</tr>\n" );
 
-        // Modifier l'affichage des sous-cellules et permet leur recherche
+        // Modifier l'affichage des childrows et permet la recherche sur eux
         $('button.toggle-deplier').click(function(){
             $('#vue .tablesorter-childRow').toggleClass('remove-me');
             $('#vue .tablesorter-childRow').find('td').toggle();

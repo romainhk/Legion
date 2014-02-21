@@ -32,7 +32,7 @@
         <div style="float:right;">
             <button class="reset">Vider filtres</button>
             <button class="toggle-deplier" type="button"></button>
-            <span id="filter_end" style="margin:2em 0 0 4em;"></span>
+            <span id="totalListe" style="margin:2em 0 0 4em;"></span>
         </div>
         <div style="clear:both;"></div>
         <table id="vue" border="1">
@@ -58,7 +58,11 @@
         </table>
     </div>
     <div id="Pending">
-        <h3>Importations en attente de validation (données incomplètes)</h3>
+        <h3 style="float:left;">Importations en attente de validation (données incomplètes)</h3>
+        <div style="float:right;">
+            <span id="totalPending" style="margin:2em 0 0 4em;"></span>
+        </div>
+        <div style="clear:both;"></div>
         <table id="pending" border="1">
             <thead></thead>
             <tbody></tbody>

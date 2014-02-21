@@ -98,9 +98,16 @@ function list_to_tab(liste, champs) {
  */
 function fin_filtrage(e, filter){
     // MAJ du total de résultat
-    a = $(this).find('tr:visible:not(".tablesorter-childRow")').length - 2; // - le header et le filtre
-    t = 'Résultats : ' + a + ' / ' + nb_eleves + ' élèves.';
-    $("#filter_end").html(t);
+    var a = $(this).find('tr:visible:not(".tablesorter-childRow"):not(".tablesorter-filter-row")').length - 1; // - le header
+    var id = '';
+    if (page_active == 'Liste') {
+        id = 'totalListe';
+        t = 'Résultats : ' + a + ' / ' + nb_eleves + ' élèves.';
+    } else {
+        id = 'totalPending';
+        t = a + ' élèves.';
+    }
+    $("#"+id).html(t);
     // Reaffichage des childrows
     $.each($(this).find('tr.tablesorter-childRow'), function(i, cr) {
         cr = $(cr);
@@ -238,8 +245,10 @@ $.each( data['data'], function( key, value ) {
             $("#pending").tablesorter({
                 theme:'blue',
                 widgets: ["zebra", "cssStickyHeaders"],
-            });
+            }).bind('filterEnd', fin_filtrage
+            );
             $("#pending").trigger('update');
+            $("#pending").trigger('filterEnd'); // Mise à jour du total
         });
     } else if (nom == 'Options') {
         page_active = 'Options';

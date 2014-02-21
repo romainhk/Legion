@@ -11,6 +11,9 @@ var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Genre", "Mail", "
 var liste_situations = new Array();
 // Indique si les sous-cellules (childrows) sont visibles ou non
 var vue_depliee = true;
+// Les niveaux et les sections reconnues
+var niveaux = new Array();
+var sections = new Array();
 
 /* Placeholder */
 function nyi(message) { alert ('Not yet implemented :)\n'+message); }
@@ -240,6 +243,19 @@ $.each( data['data'], function( key, value ) {
         });
     } else if (nom == 'Options') {
         page_active = 'Options';
+        $.get( "/options", function( data ) {
+            niveaux = data['niveaux'];
+            sections = data['sections'];
+            var affectations = data['affectations'];
+            var tab = '';
+            $.each(affectations, function(i, j) {
+                var c = j['Classe'];
+                var n = j['Niveau'];
+                var s = j['Section'];
+                tab += '<tr><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
+            });
+            $('#options > tbody').html(tab);
+        });
     }
     $("#"+page_active).show();
 }

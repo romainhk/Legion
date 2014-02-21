@@ -39,3 +39,10 @@ CREATE TABLE "Pending" (
     "Doublement" INTEGER  DEFAULT (0),
     PRIMARY KEY(ID)
 );
+CREATE TABLE "Classes" (
+    -- Classement des classes (sic)
+    "Classe" TEXT NOT NULL,
+    "Niveau" TEXT NOT NULL,
+    "Section" TEXT NOT NULL,
+    PRIMARY KEY(Classe)
+);

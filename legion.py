@@ -25,6 +25,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         config = configparser.ConfigParser()
         config.read(root + os.sep + 'config.cfg')
         self.liste_situations=config.get('General', 'situations').split(',')
+        self.niveaux=config.get('General', 'niveaux').split(',')
+        self.sections=config.get('General', 'sections').split(',')
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
                         [u'Prénom', 'A-z'], \
@@ -89,6 +91,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             rep = self.db_lire_pending()
         elif params.path == '/liste-annees':
             rep = self.lister('Année')
+        elif params.path == '/options':
+            rep = {'affectations': self.db_lire_classes(), 'niveaux': self.niveaux, 'sections': self.sections }
         elif params.path == '/init':
             rep = {'header': self.header, 'situations': self.liste_situations }
         else:
@@ -176,6 +180,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def importer_xml(self, data):
         """ Parse le xml à importer """
         self.nb_import = 0
+        les_classes = list(self.db_lire_classes().keys())
+        classes_a_ajouter = []
         # Écriture de l'xml dans un fichier
         fichier_tmp = 'importation.xml'
         f = open(fichier_tmp, 'w', encoding='ISO-8859-15')
@@ -208,6 +214,17 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                     'doublement': int(doublement), 'classe': classe, 'entrée': int(entrée), \
                     'sad_établissement': sad_etab,   'sad_classe': sad_classe }
             self.db_ecrire(enr)
+            if not (classe in les_classes or classe in classes_a_ajouter or classe is None) :
+                classes_a_ajouter.append(classe)
+        # Ici, les données élèves ont été importé ; il ne reste qu'à ajouter les classes inconnues
+        for cla in classes_a_ajouter:
+            req = u'INSERT INTO Classes VALUES ("{0}", "", "")'.format(cla)
+            try:
+                self.curs.execute(req)
+            except sqlite3.Error as e:
+                #logging.warning(u"Erreur lors de l'ajout de la classe {0}:\n{1}".format(cla, e.args[0]))
+                pass
+        self.conn.commit()
 
     def db_inserer_affectation(self, ine, annee, classe, etab, doublement):
         """ Ajoute une affectations (un élève, dans une classe, dans un établissement) """
@@ -327,6 +344,16 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             d = dict_from_row(row)
             ine = d['INE']
             data[ine] = d
+        return data
+
+    def db_lire_classes(self):
+        """ Lit le contenu de la table classes """
+        data = {}
+        req = u'SELECT * FROM Classes ORDER BY Classe ASC'
+        for row in self.curs.execute(req).fetchall():
+            d = dict_from_row(row)
+            classe = d['Classe']
+            data[classe] = d
         return data
 
 if __name__ == "__main__":

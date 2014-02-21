@@ -35,3 +35,4 @@
 * filtre colonne année : manque les autres années lorsque déplié
 * filtre colonne doublement : ne fonctionne que pour l'année en cours
 * affection de la section et du niveau aux classes ; tablesorter
+* les colonnes editables ne le sont plus après un changement d'onglet

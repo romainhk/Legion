@@ -30,7 +30,6 @@
 
 ### HTML
 * avec mail : formulaire de mailing
-* favicon
 * Situation : limiter la saisie aux valeurs voulues
 * filtre colonne année : manque les autres années lorsque déplié
 * filtre colonne doublement : ne fonctionne que pour l'année en cours

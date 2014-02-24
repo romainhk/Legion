@@ -7,10 +7,10 @@ var les_pages = new Array();
 var nb_eleves = 0;
 // Champs du pending (tous)
 var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Genre", "Mail", "Entrée", "Diplômé", "Situation", "Lieu", "Année", "Classe", "Établissement", "Doublement" ];
-// Liste des situations possibles
-var liste_situations = new Array();
 // Indique si les sous-cellules (childrows) sont visibles ou non
 var vue_depliee = true;
+// Liste des situations possibles
+var situations = new Array();
 // Les niveaux et les sections reconnues
 var niveaux = new Array();
 var sections = new Array();
@@ -254,7 +254,7 @@ $(document).ready(function() {
     $.get( "/init", function( data ) {
         var entete = "";
         var filtre = "";
-        liste_situations = data['situations'];
+        situations = data['situations'];
         $.each(data['header'], function( i, j ) {
             champ = j[0];
             champs_vue.push(champ);

@@ -1,5 +1,3 @@
-* Pending : ajout dans la base après validation
-
 ### Statistiques à intégrer
 * avec l'établissement précédent : stats sur les classes d'origine
 * stat "poids dans l'établissement" : classe / niveau
@@ -26,7 +24,7 @@
 * Cohérente d importation : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ? ou supposer à l'importation une sortie en fin d'année ?
 * date de sortie plutôt qu'une durée ?
 * colonne Diplômé : importation automatisée depuis ...
-* Séparer le serveur web de la gestion de bdd
+* Pending : ajout dans la base après validation
 
 ### HTML
 * avec mail : formulaire de mailing
@@ -35,4 +33,3 @@
 * filtre colonne doublement : ne fonctionne que pour l'année en cours
 * les colonnes editables ne le sont plus après un changement d'onglet
 * footer
-* conserver la même page ouverte au rechargement

@@ -23,7 +23,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         # Fichier de config
         config = configparser.ConfigParser()
         config.read(root + os.sep + 'config.cfg')
-        self.liste_situations=[x.strip(' ') for x in config.get('General', 'situations').split(',')]
+        self.situations=[x.strip(' ') for x in config.get('General', 'situations').split(',')]
         self.niveaux=[x.strip(' ') for x in config.get('General', 'niveaux').split(',')]
         self.sections=[x.strip(' ') for x in config.get('General', 'sections').split(',')]
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
@@ -86,7 +86,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         elif params.path == '/options':
             rep = {'affectations': self.db.lire_classes(), 'niveaux': self.niveaux, 'sections': self.sections }
         elif params.path == '/init':
-            rep = {'header': self.header, 'situations': self.liste_situations }
+            rep = {'header': self.header, 'situations': self.situations }
         else:
             # Par défaut, on sert l'index 
             http.server.SimpleHTTPRequestHandler.do_GET(self)

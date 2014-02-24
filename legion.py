@@ -23,9 +23,9 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         # Fichier de config
         config = configparser.ConfigParser()
         config.read(root + os.sep + 'config.cfg')
-        self.liste_situations=config.get('General', 'situations').split(',')
-        self.niveaux=config.get('General', 'niveaux').split(',')
-        self.sections=config.get('General', 'sections').split(',')
+        self.liste_situations=[x.strip(' ') for x in config.get('General', 'situations').split(',')]
+        self.niveaux=[x.strip(' ') for x in config.get('General', 'niveaux').split(',')]
+        self.sections=[x.strip(' ') for x in config.get('General', 'sections').split(',')]
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
                         [u'Prénom', 'A-z'], \
@@ -70,7 +70,15 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             ine = query['ine'].pop()
             champ = query['champ'].pop()
             donnee = query['d'].pop()
-            rep = self.db.maj_champ(ine, champ, donnee)
+            rep = self.db.maj_champ('Élèves', ine, champ, donnee)
+        elif params.path == '/maj_classe':
+            classe = query['classe'].pop()
+            champ = query['champ'].pop()
+            if 'val' in query: # val peut être vide
+                val = query['val'].pop()
+            else:
+                val = ''
+            rep = self.db.maj_champ('Classes', classe, champ, val)
         elif params.path == '/pending':
             rep = self.db.lire_pending()
         elif params.path == '/liste-annees':

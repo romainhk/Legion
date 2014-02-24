@@ -144,3 +144,11 @@ function exportTableToCSV($table, filename) {
     });
 }
 
+/*
+ * Donne les coordonnées de la cellule dans son tableau
+ */
+function coordonnees(cell) {
+    x = cell.cellIndex;
+    y = cell.parentNode.rowIndex;
+    return {'x':x, 'y':y};
+}

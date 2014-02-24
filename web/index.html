@@ -71,6 +71,7 @@
         </table>
     </div>
     <div id="Options" style="background-color:rgba(255,255,255,0.2); margin:1em; padding:1ex 2ex;">
+        <div style="float:left; width:48%">
         <h4>Importation</h4>
         Sélectionner l'exportation xml de la base SIÈCLE (<i>ElevesSansAdresses.xml</i>)
         <form id="importation" enctype="multipart/form-data">
@@ -84,6 +85,8 @@
             <li><a href="#" onclick="nyi('Permet d\'affecter une classe à un niveau (1er, Term, etc.)\nUtile pour calculer le poids d\'une classe par rapport à son niveau');">Affectation classe-niveau</a></li>
             <li><a href="#" onclick="nyi('Pour le moment, fermez juste le navigateur.');">Quitter</a></li>
         </ul>
+        </div>
+        <div style="float:right; width:48%">
         <table id="options" border="1">
             <caption>Affecter les classes à leur groupes</caption>
             <thead>
@@ -95,6 +98,8 @@
             </thead>
             <tbody></tbody>
         </table>
+        </div>
+        <div style="clear:both;"></div>
     </div>
   </body>
 </html>

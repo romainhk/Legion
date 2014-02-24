@@ -21,6 +21,7 @@ h4 {
 input {
     margin:0.5ex;
 }
+
 /* Tableaux */
 table {
     margin-top:0.5ex;
@@ -36,6 +37,18 @@ th {
 th, td {
     padding:8px;
 }
+/* pour les select dans un table */
+td select {
+    width:100%;
+    border:0;
+}
+.odd td select {
+    background-color:white;
+}
+.even td select {
+    background-color:#EBF2FA;
+}
+
 /* Classes */
 .recherche {
     border:1px dotted black;
@@ -62,10 +75,17 @@ a.export, a.export:visited {
     -o-appearance:button;
     -ms-appearance:button;
 }
+.maj_oui {
+    background-color: #B3FFB3 !important;
+}
+.maj_non {
+    background-color: #FFB3B3 !important;
+}
 .logo {
     float:left;
     height:100px;
 }
+
 /* Onglets */
 .onglet {
     float:right;
@@ -90,20 +110,16 @@ a.export, a.export:visited {
     background-color:#99BFE6 !important;
     cursor: default !important;
 }
+
 /* upload */
 #progress {
     margin-left:3ex;
     vertical-align:middle;
 }
+
 /* tablesorter : editable */
 .tablesorter tbody > tr > td[contenteditable=true]:focus {
   outline: #08f 1px solid;
   background: #eee !important;
   resize: none;
-}
-.maj_oui {
-    background-color: #B3FFB3 !important;
-}
-.maj_non {
-    background-color: #FFB3B3 !important;
 }

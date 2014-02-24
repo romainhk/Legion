@@ -41,9 +41,11 @@ class Database():
                 data[classe] = t
         return data
 
-    def maj_champ(self, ine, champ, donnee):
+    def maj_champ(self, table, ident, champ, donnee):
         """ Mets à jour un champ de la base """
-        req = u'UPDATE Élèves SET {champ}="{d}" WHERE INE="{ine}"'.format(ine=ine, champ=champ, d=donnee)
+        if table == 'Élèves':       col = 'INE'
+        elif table == 'Classes':    col = 'Classe'
+        req = u'UPDATE {tab} SET {champ}="{d}" WHERE {col}="{ident}"'.format(tab=table, col=col, ident=ident, champ=champ, d=donnee)
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:

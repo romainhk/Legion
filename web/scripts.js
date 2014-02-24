@@ -187,6 +187,46 @@ $.each( data['data'], function( key, value ) {
                 tab += '<tr><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
             });
             $('#options > tbody').html(tab);
+            $("#options").tablesorter({
+                theme:'blue',
+                sortList: [ [0,0] ],
+                widgets: ["zebra", "cssStickyHeaders"]
+            }).delegate('td', 'click', function(e) {
+                // Au click, on ajoute un select
+                cell = $(e.target);
+                c = coordonnees(e.target);
+                s = cell.find('select');
+                // S'il n'y a pas encore de select et si le click vient d'une cellule
+                if (s.length == 0 && c['x']) {
+                    col = $("#options th:nth-child("+(c['x']+1)+") div").html();
+                    if (col == "Niveau" || col == "Section") {
+                        if (col == "Niveau") { valeurs = niveaux; }
+                        else { valeurs = sections; }
+                        selected = cell.html();
+                        cell.html('');
+                        var sel = $('<select>').appendTo(cell);
+                        sel.append('<option value="">...</option>'); // Option vide
+                        $.each(valeurs, function(i, j) {
+                            pardefaut = "";
+                            if (j == selected) { pardefaut = ' selected="selected"' ; }
+                            sel.append('<option value="'+j+'"'+pardefaut+'>'+j+'</option>');
+                        });
+                        sel.change( function(){
+                            // Au changement de valeur, on l'enregistre dans la base
+                            val = $(this).val();
+                            row = cell.parents('tr').find('td').first().html();
+                            params = "classe="+row+"&val="+val+"&champ="+col;
+$.get( "/maj_classe?"+params, function( data ) {
+    c = cell.parents('td');
+    if (data == 'Oui') { c.addClass("maj_oui"); }
+    else if (data == 'Non') { c.addClass("maj_non"); }
+    c.html(val); // Et on retire le select
+});
+                        });
+                    }
+                }
+            });
+            $("#options").trigger('update');
         });
     }
     $("#"+page_active).show();

@@ -121,25 +121,91 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         """ Génère des statistiques sur la base """
         # Récupération des infos : classes, effectif...
         data = self.db.get_stats(annee)
+        classes = self.db.lire_classes()
 
         # On génère maintenant le tableau de statistiques
-        rep = []
+        """ Structure de la réponse
+        rep -> ordre : l'ordre d'affichage
+            -> pour l'établissement
+                -> effectif total
+                -> proportion de garçon
+                -> DE MÊME, hors BTS
+            -> par section
+                -> effectif total => rep['section'][SECTION]['effectif'] = TOTAL
+                -> poids / étab
+                -> proportion de redoublants
+                -> proportion de garçon
+            -> par niveau
+                _idem_
+            -> par classe
+                _idem_
+        """
+        rep = { 'ordre': ['effectif', 'poids', 'garçon', 'doublant'],
+                'établissement': {},
+                'section': {}, 
+                'niveau': {},
+                'classe': {} }
         eff_total = sum([sum(x[:2]) for x in data.values()]) # Effectif total
+        eff_total_bts = 0
+        total_garcon = 0
+        total_garcon_bts = 0
+        total_doublant = 0
         for cla, val in sorted(data.items()):
             g, f, doub = val
             eff = g + f
-            r = ( "{classe}".format(classe=cla), \
-                  "{effectif}".format(effectif=eff), \
-                  "{0} %".format(round(100*eff/eff_total,1)), \
-                  "{0} ({1} %)".format(doub, round(100*doub/eff, 1)), \
-                  "{0} %".format( round(100*g/eff, 1) ) )
-            rep.append(r)
+            section_classe = classes[cla]['Section']
+            niveau_classe = classes[cla]['Niveau']
+            total_garcon = total_garcon + g
+            total_doublant = total_doublant + doub
+
+            # Par Section
+            if section_classe:
+                if not section_classe in rep['section']:
+                    rep['section'][section_classe] = {}
+                dict_add(rep['section'][section_classe], 'effectif', eff)
+                dict_add(rep['section'][section_classe], 'garçon', g)
+                dict_add(rep['section'][section_classe], 'doublant', doub)
+            # Par Niveau
+            if niveau_classe:
+                if not niveau_classe in rep['niveau']:
+                    rep['niveau'][niveau_classe] = {}
+                if niveau_classe == "BTS":
+                    total_garcon_bts = total_garcon_bts + g
+                    eff_total_bts = eff_total_bts + eff
+                dict_add(rep['niveau'][niveau_classe], 'effectif', eff)
+                dict_add(rep['niveau'][niveau_classe], 'garçon', g)
+                dict_add(rep['niveau'][niveau_classe], 'doublant', doub)
+            # Par Classe
+            if not cla in rep['niveau']:
+                rep['classe'][cla] = {}
+            dict_add(rep['classe'][cla], 'effectif', eff)
+            dict_add(rep['classe'][cla], 'garçon', g)
+            dict_add(rep['classe'][cla], 'doublant', doub)
+
+        # Calcul des proportions : Poids, Garçon, Doublant
+        for key, val in rep['section'].items():
+            rep['section'][key]['poids'] = round(100*val['effectif']/eff_total, 1)
+            rep['section'][key]['garçon'] = round(100*val['garçon']/val['effectif'], 1)
+            rep['section'][key]['doublant'] = round(100*val['doublant']/val['effectif'], 1)
+        for key, val in rep['niveau'].items():
+            rep['niveau'][key]['poids'] = round(100*val['effectif']/eff_total, 1)
+            rep['niveau'][key]['garçon'] = round(100*val['garçon']/val['effectif'], 1)
+            rep['niveau'][key]['doublant'] = round(100*val['doublant']/val['effectif'], 1)
+        for key, val in rep['classe'].items():
+            rep['classe'][key]['poids'] = round(100*val['effectif']/eff_total, 1)
+            rep['classe'][key]['garçon'] = round(100*val['garçon']/val['effectif'], 1)
+            rep['classe'][key]['doublant'] = round(100*val['doublant']/val['effectif'], 1)
+        # Pour l'établissement
+        rep['établissement']['Effectif total'] = eff_total
+        rep['établissement']['Proportion garçon'] = round(100 * total_garcon / eff_total, 1)
+        rep['établissement']['Proportion garçon (hors BTS)'] = round(100 * (total_garcon - total_garcon_bts)/(eff_total-eff_total_bts), 1)
+        rep['établissement']['Proportion doublant'] = round(100 * total_doublant / eff_total, 1)
         return rep
 
     def importer_xml(self, data):
         """ Parse le xml à importer """
         self.nb_import = 0
-        les_classes = list(self.db_lire_classes().keys())
+        les_classes = list(self.db.lire_classes().keys())
         classes_a_ajouter = []
         # Écriture de l'xml dans un fichier
         fichier_tmp = 'importation.xml'
@@ -172,18 +238,12 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                     'naissance': naissance, 'genre': int(genre), 'mail': mail, \
                     'doublement': int(doublement), 'classe': classe, 'entrée': int(entrée), \
                     'sad_établissement': sad_etab,   'sad_classe': sad_classe }
-            self.db.ecrire(enr)
+            if self.db.ecrire(enr, self.date):
+                self.nb_import = self.nb_import + 1
             if not (classe in les_classes or classe in classes_a_ajouter or classe is None) :
                 classes_a_ajouter.append(classe)
         # Ici, les données élèves ont été importé ; il ne reste qu'à ajouter les classes inconnues
-        for cla in classes_a_ajouter:
-            req = u'INSERT INTO Classes VALUES ("{0}", "", "")'.format(cla)
-            try:
-                self.curs.execute(req)
-            except sqlite3.Error as e:
-                #logging.warning(u"Erreur lors de l'ajout de la classe {0}:\n{1}".format(cla, e.args[0]))
-                pass
-        self.conn.commit()
+        self.db.inserer_classes(classes_a_ajouter)
 
 if __name__ == "__main__":
     # DEFINES

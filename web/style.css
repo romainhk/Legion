@@ -33,6 +33,7 @@ table > caption {
 }
 th {
     text-align:center;
+    text-transform:capitalize;
 }
 th, td {
     padding:8px;

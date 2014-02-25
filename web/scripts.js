@@ -145,8 +145,14 @@ $.each( data['data'], function( key, value ) {
         page_active = 'Statistiques';
         annee = $('#stats-annee').val();
         $.get( "/stats?annee="+annee, function( data ) {
-            $('#stats > tbody').html( list_to_tab(data, [0, 1, 2, 3, 4]) );
-            $("#stats").tablesorter({
+            dict_to_tab($('#stats-classe'), data, 'classe');
+            $('#stats-etablissement > tbody').html('');
+            $.each(data['établissement'], function(i,j) {
+                $('#stats-etablissement > tbody').append('<tr><td>'+i+'</td><td>'+j+'</td></tr>');
+            });
+            dict_to_tab($('#stats-section'), data, 'section');
+            dict_to_tab($('#stats-niveau'), data, 'niveau');
+            $("#stats-classe").tablesorter({
                 theme:'blue',
                 sortList: [ [0,0] ],
                 headers: {
@@ -159,7 +165,7 @@ $.each( data['data'], function( key, value ) {
                     cssStickyHeaders_attachTo   : null
                 }
             });
-            $("#stats").trigger('update');
+            $("#stats-classe").trigger('update');
         });
     } else if (nom == 'Pending') {
         page_active = 'Pending';

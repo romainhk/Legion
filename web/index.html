@@ -43,21 +43,27 @@
         </table>
     </div>
     <div id="Statistiques">
-        <h3>Statistiques</h3>
-        <table id="stats" border="1">
-            <caption>Pour l'année <select id="stats-annee" onChange="function(){$('#onglets li:last-child').trigger('click');};">
-            </select></caption>
-            <thead>
-                <tr>
-                    <th>Classe</th>
-                    <th>Effectif</th>
-                    <th>Poids / Établissement</th>
-                    <th>Redoublants (%)</th>
-                    <th>Répartition<br />% d'hommes</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <h3>Statistiques : pour l'année <select id="stats-annee" onChange="function(){$('#onglets li:last-child').trigger('click');};"></select></h3>
+       <div style="float: left; width:48%">
+           <table id="stats-section" border="1">
+                <caption>Par section</caption>
+            </table>
+            <table id="stats-niveau" border="1">
+            <caption>Par niveau</caption>
+            </table>
+        </div>
+        <div style="float: right; width:48%">
+            <table id="stats-etablissement" border="1">
+                <caption>Pour l'établissement</caption>
+                <tbody></tbody>
+            </table>
+            <table id="stats-classe" border="1">
+                <caption>Par classe</caption>
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div style="clear:both;"></div>
     </div>
     <div id="Pending">
         <h3 style="float:left;">Importations en attente de validation (données incomplètes)</h3>
@@ -88,7 +94,7 @@
         </div>
         <div style="float:right; width:48%">
         <table id="options" border="1">
-            <caption>Affecter les classes à leur groupes</caption>
+            <caption>Veuillez affecter les classes à leurs groupes</caption>
             <thead>
                 <tr>
                     <th>Classe</th>

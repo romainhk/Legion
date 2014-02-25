@@ -81,6 +81,17 @@ class Database():
                 return False
         return True
 
+    def inserer_classes(self, classes):
+        """ Insère une liste de classes (fin d'importation) """
+        for cla in classes:
+            req = u'INSERT INTO Classes VALUES ("{0}", "", "")'.format(cla)
+            try:
+                self.curs.execute(req)
+            except sqlite3.Error as e:
+                #logging.warning(u"Erreur lors de l'ajout de la classe {0}:\n{1}".format(cla, e.args[0]))
+                pass
+        self.conn.commit()
+
     def in_pending(self, enr, annee):
         """ Mise en attente de donnes incomplètes pour validation """
         req = u'INSERT INTO Pending ' \
@@ -96,17 +107,19 @@ class Database():
         except sqlite3.Error as e:
             logging.error(u"Erreur lors de la mise en pending :\n%s" % (e.args[0]))
 
-    def ecrire(self, enr):
-        """ Ajoute les informations d'un élève à la bdd """
+    def ecrire(self, enr, date):
+        """ Ajoute les informations d'un élève à la bdd
+        * date est l'objet datetime de référence de l'importation
+        """
         ine = enr['ine']
         classe = enr['classe']
         enr[u'Diplômé'] = enr[u'Situation'] = enr['Lieu'] = '?'
         if ine is None or classe is None:
-            self.in_pending(enr, self.date.year)
+            self.in_pending(enr, date.year)
             return True
         # On vérifie si l'élève est déjà présent dans la bdd pour cette année
         req = u'SELECT COUNT(*) FROM Affectations WHERE ' \
-            + u'INE="{ine}" AND Année={annee}'.format(ine=ine, annee=self.date.year)
+            + u'INE="{ine}" AND Année={annee}'.format(ine=ine, annee=date.year)
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
@@ -127,7 +140,7 @@ class Database():
                 logging.error(u"Erreur lors de l'insertion :\n%s" % (e.args[0]))
                 return False
 
-            annee = self.date.year
+            annee = date.year
             x = self.inserer_affectation(
                     ine,    annee,     classe,  'Jean Moulin',  enr['doublement'])
             etab = enr['sad_établissement']
@@ -144,12 +157,12 @@ class Database():
                 self.in_pending(enr, annee)
 
         else:
-            #logging.warning(u"L'élève {0} est déjà présent dans la base {1}".format(ine, self.date.year))
-            pass
+            #logging.warning(u"L'élève {0} est déjà présent dans la base {1}".format(ine, date.year))
+            return False
 
         # Validation de l'affectation à une classe
         self.conn.commit()
-        self.nb_import = self.nb_import + 1
+        return True
 
     def lire(self):
         """ Lit le contenu de la base """

@@ -81,6 +81,31 @@ function list_to_tab(liste, champs) {
     return(lignes);
 }
 
+/* 
+ * Convertir un dictionnaire en tableau complet
+ * cell: le tableau visé, dict: toutes les donnees, donnee: la clé de dict voulue
+ */
+function dict_to_tab(cell, dict, donnee) {
+    // Pour l'en-tête
+    cell.find('thead').remove();
+    var thead = $('<thead>').appendTo(cell);
+    thead.append('<th>'+donnee+'</th>');
+    $.each( dict['ordre'], function( key, value ) {
+        thead.append('<th>'+value+'</th>');
+    });
+    // Pour les données
+    cell.find('tbody').remove();
+    var tbody = $('<tbody>').appendTo(cell);
+    $.each( dict[donnee], function( key, value ) {
+        vals = "<td>"+key+"</td>";
+        $.each( dict['ordre'], function( i, j ) {
+            vals += "<td>"+value[j]+"</td>";
+        });
+        tbody.append('<tr>'+vals+'</tr>');
+    });
+}
+
+
 /*
  * Renvoie la liste triée inversée des clés du dictionnaire donné
  */

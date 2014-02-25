@@ -16,6 +16,13 @@ def dict_from_row(row):
     """ Converti un sqlite.Row en dictionnaire """
     return dict(zip(row.keys(), row))
 
+def dict_add(dictionnaire, index, val):
+    """ Ajoute val à la clé 'index' du dictionnaire, si l'entrée existe """
+    if index in dictionnaire:
+        dictionnaire[index] = dictionnaire[index] + val
+    else:
+        dictionnaire[index] = val
+
 def open_browser(port):
     """ Ouvre un navigateur web sur la bonne page """
     def _open_browser():

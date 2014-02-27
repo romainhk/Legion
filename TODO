@@ -28,5 +28,6 @@
 * Situation : limiter la saisie aux valeurs voulues
 * filtre colonne année : manque les autres années lorsque déplié
 * filtre colonne doublement : ne fonctionne que pour l'année en cours
+* filtre colonne établissement : recherche aussi pour les années précédentes si dépliées
 * les colonnes editables ne le sont plus après un changement d'onglet
 * footer

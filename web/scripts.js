@@ -112,17 +112,13 @@ $.each( data['data'], function( key, value ) {
                     $.inArray('Situation', champs_vue),
                     $.inArray('Lieu', champs_vue)];
             $("#vue").tablesorter({
-                theme:'blue',
                 showProcessing: true,
-                sortList: [ [0,0] ],
                 headers: {
                     3: { sorter: false }
                 },
                 widgets: ["zebra", "filter", "cssStickyHeaders", "editable"],
                 widgetOptions: {
                     filter_reset : '.reset',
-                    cssStickyHeaders_offset   : 4,
-                    cssStickyHeaders_attachTo : null,
                     editable_columns       : champs_editables,
                     editable_enterToAccept : true,
                     editable_editComplete  : 'editComplete'
@@ -153,27 +149,22 @@ $.each( data['data'], function( key, value ) {
             dict_to_tab($('#stats-section'), data, 'section');
             dict_to_tab($('#stats-niveau'), data, 'niveau');
             $("#stats-classe").tablesorter({
-                theme:'blue',
-                sortList: [ [0,0] ],
                 headers: {
                     3: { sorter: false },
                     4: { sorter: false }
-                },
-                widgets: ["zebra", "cssStickyHeaders"],
-                widgetOptions: {
-                    cssStickyHeaders_offset     : 4,
-                    cssStickyHeaders_attachTo   : null
                 }
             });
             $("#stats-classe").trigger('update');
+            $("#stats-section").tablesorter();
+            $("#stats-niveau").tablesorter();
+            $("#stats-etablissement").tablesorter();
         });
     } else if (nom == 'Pending') {
         page_active = 'Pending';
         $.get( "/pending", function( data ) {
             $('#pending > tbody').html( list_to_tab(data, champs_pending) );
             $("#pending").tablesorter({
-                theme:'blue',
-                widgets: ["zebra", "cssStickyHeaders"],
+                sortList: [ [1,0] ]
             }).bind('filterEnd', fin_filtrage
             );
             $("#pending").trigger('update');
@@ -194,9 +185,6 @@ $.each( data['data'], function( key, value ) {
             });
             $('#options > tbody').html(tab);
             $("#options").tablesorter({
-                theme:'blue',
-                sortList: [ [0,0] ],
-                widgets: ["zebra", "cssStickyHeaders"]
             }).delegate('td', 'click', function(e) {
                 // Au click, on ajoute un select
                 cell = $(e.target);
@@ -240,6 +228,13 @@ $.get( "/maj_classe?"+params, function( data ) {
 
 $(document).ready(function() {
     $("#progress").hide();
+
+    // Paramétrage général de tablesorter
+    $.tablesorter.defaults.sortList = [ [0,0] ];
+    $.tablesorter.defaults.widgets = ["zebra", "cssStickyHeaders"];
+    $.tablesorter.defaults.widgetOptions.cssStickyHeaders_offset = 4;
+    $.tablesorter.defaults.theme = 'blue';
+
     // Création du lien d'exportation
     $(".export").on('click', function (event) {
         exportTableToCSV.apply(this, [$('#'+page_active), 'export_'+page_active+'.csv']);

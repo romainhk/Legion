@@ -198,7 +198,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         # Pour l'établissement
         rep['établissement']['Effectif total'] = eff_total
         rep['établissement']['Proportion garçon'] = round(100 * total_garcon / eff_total, 1)
-        rep['établissement']['Proportion garçon (hors BTS)'] = round(100 * (total_garcon - total_garcon_bts)/(eff_total-eff_total_bts), 1)
+        a = round(100 * (total_garcon - total_garcon_bts)/(eff_total - eff_total_bts), 1)
+        rep['établissement']['Proportion garçon (hors BTS)'] = a
         rep['établissement']['Proportion doublant'] = round(100 * total_doublant / eff_total, 1)
         return rep
 

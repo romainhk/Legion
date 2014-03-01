@@ -177,3 +177,22 @@ function coordonnees(cell) {
     y = cell.parentNode.rowIndex;
     return {'x':x, 'y':y};
 }
+
+/*
+ * Mailer toutes les personnes affichée
+ */
+function mailer_tous() {
+    index = $.inArray('Mail', champs_vue) + 1;
+    col_mail = $("#vue > tbody").find('td:visible:nth-child('+index+')');
+    mailto = new Array();
+    $.each(col_mail, function(i,j){
+        val = $(j).html();
+        if (val) {
+            mailto.push($(val).attr('href').split(':')[1]);
+        }
+    });
+    window.location.href = "mailto:"+mailto.join(' ,');
+    // À tester : l'utilisation du , pour de multiples destinataires n'est pas standard
+    // http://www.sightspecific.com/~mosh/www_faq/multrec.html
+    // Une autre solution serait d'envoyer ça au serveur python
+}

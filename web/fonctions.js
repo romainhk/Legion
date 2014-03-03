@@ -196,3 +196,51 @@ function mailer_tous() {
     // http://www.sightspecific.com/~mosh/www_faq/multrec.html
     // Une autre solution serait d'envoyer ça au serveur python
 }
+
+/*
+ * Ajoute une liste de choix à un element
+ */
+function cell_to_select(e) {
+    cell = $(e.target);
+    c = coordonnees(e.target);
+    s = cell.find('select');
+    // S'il n'y a pas encore de select et si le click vient d'une cellule
+    if (s.length == 0 && c['x']) {
+        valeurs = null;
+        col = cell.parentsUntil('table').parent().find("th:nth-child("+(c['x']+1)+") div").html();
+        if (col == "Niveau") { valeurs = niveaux; }
+        else if (col == "Section") { valeurs = sections; }
+        else if (col == "Situation") { valeurs = situations; }
+        if (valeurs != null) {
+            selected = cell.html();
+            cell.html('');
+            var sel = $('<select>').appendTo(cell);
+            sel.append('<option value="">...</option>'); // Option vide
+            $.each(valeurs, function(i, j) {
+                pardefaut = "";
+                if (j == selected) { pardefaut = ' selected="selected"' ; }
+                sel.append('<option value="'+j+'"'+pardefaut+'>'+j+'</option>');
+            });
+            sel.change( function(){
+                // Au changement de valeur, on l'enregistre dans la base
+                val = $(this).val();
+                if (col == "Situation") {
+                    ine = cell.parentsUntil('table').find('tr').attr('id');
+                    params = "ine="+ine+"&champ="+col+"&d="+val;
+                    url = "/maj?"+params;
+                } else {
+                    row = cell.parents('tr').find('td').first().html();
+                    params = "classe="+row+"&val="+val+"&champ="+col;
+                    url = "/maj_classe?"+params;
+                }
+                $.get( url, function( data ) {
+                    c = cell.parents('td');
+                    if (data == 'Oui') { c.addClass("maj_oui"); }
+                    else if (data == 'Non') { c.addClass("maj_non"); }
+                    c.html(val); // Et on retire le select
+                });
+            });
+        }
+    }
+}
+ 

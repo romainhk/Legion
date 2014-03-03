@@ -1,6 +1,5 @@
 ### Statistiques à intégrer
 * avec l'établissement précédent : stats sur les classes d'origine
-* stat "poids dans l'établissement" : classe / niveau
 * Statistiques plus par classe mais sur plusieurs niveaux : 
     - Par Niveau (1er, 2nd,...) -> Générale, Pro -> Filière (GA, ST2S,...)
     - Par Section (ex: toutes les classe de GA qqs le niveau)
@@ -26,7 +25,6 @@
 
 ### HTML
 * envoie de mail en masse : à tester
-* Situation : limiter la saisie aux valeurs voulues
 * filtre colonne année : manque les autres années lorsque déplié
 * filtre colonne doublement : ne fonctionne que pour l'année en cours
 * filtre colonne établissement : recherche aussi pour les années précédentes si dépliées

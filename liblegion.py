@@ -63,5 +63,5 @@ def debut_AS(annee):
     return datetime.date(year=annee, month=9, day=1)
 
 def en_pourcentage(nombre):
-    """ Met en forme un nombre en pourcentage """
+    """ Met en forme un nombre réel en pourcentage à 10^-1 """
     return str( round(100*nombre,1) ) + ' %'

@@ -58,7 +58,7 @@ function trad_db_val(v, j) {
         } else if (j == "Mail") { // Mise en page des mails
             if (v != "") { v = '<a href="mailto:'+v+'">@</a>'; }
         } else if (j == "Doublement") { // Traduction de la colonne doublement
-            if (v == "0") { v = "Non"; } else { v = "Oui"; }
+            if (v == "0") { v = "Non"; } else if (v == "1") { v = "Oui"; } else { v = "?"; }
         }
     } else { v= ''; }
     return v;

@@ -154,7 +154,7 @@ class Database():
                     ine,    annee,     classe,  'Jean Moulin',  enr['doublement'])
             etab = enr['sad_établissement']
             classe_pre = enr['sad_classe']
-            if enr['doublement']: # Parfois, ces informations ne sont pas redonnées dans SIECLE
+            if enr['doublement'] == 1: # Parfois, ces informations ne sont pas redonnées dans SIECLE
                 classe_pre = classe
                 etab = 'Jean Moulin'
             y = self.inserer_affectation(
@@ -163,10 +163,10 @@ class Database():
             if not x:
                 raison.append('Pb affectation année en cours')
             if not y:
-                raison.append('Pb affectation année précédente')
+                #raison.append('Pb affectation année précédente')
+                logging.warning(u"Pb affectation sur l'année précédente\n{0}".format(enr))
             if len(raison) > 0:
                 self.conn.rollback()
-                #logging.warning(u"Rollback suite à un problème d'affectation\n{0}".format(enr))
                 self.in_pending(enr, annee, ', '.join(raison))
 
         else:
@@ -218,8 +218,4 @@ class Database():
             classe = d['Classe']
             data[classe] = d
         return data
-
-    def taux_de_passage(self, classe):
-        """ Calcul le taux de passage pour une classe donnée """
-        return 0
 

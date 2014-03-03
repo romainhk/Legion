@@ -61,3 +61,7 @@ def debut_AS(annee):
     """ Converti une année en objet Date le jour de la rentrée scolaire
     """
     return datetime.date(year=annee, month=9, day=1)
+
+def en_pourcentage(nombre):
+    """ Met en forme un nombre en pourcentage """
+    return str( round(100*nombre,1) ) + ' %'

@@ -86,6 +86,10 @@ a.export, a.export:visited {
     float:left;
     height:100px;
 }
+.total {
+    float: right;
+    margin:2ex 3ex 0 0;
+}
 
 /* Onglets */
 .onglet {

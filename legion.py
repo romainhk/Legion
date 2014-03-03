@@ -184,23 +184,23 @@ class Legion(http.server.SimpleHTTPRequestHandler):
 
         # Calcul des proportions : Poids, Garçon, Doublant
         for key, val in rep['section'].items():
-            rep['section'][key]['poids'] = round(100*val['effectif']/eff_total, 1)
-            rep['section'][key]['garçon'] = round(100*val['garçon']/val['effectif'], 1)
-            rep['section'][key]['doublant'] = round(100*val['doublant']/val['effectif'], 1)
+            rep['section'][key]['poids'] = en_pourcentage(val['effectif']/eff_total)
+            rep['section'][key]['garçon'] = en_pourcentage(val['garçon']/val['effectif'])
+            rep['section'][key]['doublant'] = en_pourcentage(val['doublant']/val['effectif'])
         for key, val in rep['niveau'].items():
-            rep['niveau'][key]['poids'] = round(100*val['effectif']/eff_total, 1)
-            rep['niveau'][key]['garçon'] = round(100*val['garçon']/val['effectif'], 1)
-            rep['niveau'][key]['doublant'] = round(100*val['doublant']/val['effectif'], 1)
+            rep['niveau'][key]['poids'] = en_pourcentage(val['effectif']/eff_total)
+            rep['niveau'][key]['garçon'] = en_pourcentage(val['garçon']/val['effectif'])
+            rep['niveau'][key]['doublant'] = en_pourcentage(val['doublant']/val['effectif'])
         for key, val in rep['classe'].items():
-            rep['classe'][key]['poids'] = round(100*val['effectif']/eff_total, 1)
-            rep['classe'][key]['garçon'] = round(100*val['garçon']/val['effectif'], 1)
-            rep['classe'][key]['doublant'] = round(100*val['doublant']/val['effectif'], 1)
+            rep['classe'][key]['poids'] = en_pourcentage(val['effectif']/eff_total)
+            rep['classe'][key]['garçon'] = en_pourcentage(val['garçon']/val['effectif'])
+            rep['classe'][key]['doublant'] = en_pourcentage(val['doublant']/val['effectif'])
         # Pour l'établissement
         rep['établissement']['Effectif total'] = eff_total
-        rep['établissement']['Proportion garçon'] = round(100 * total_garcon / eff_total, 1)
-        a = round(100 * (total_garcon - total_garcon_bts)/(eff_total - eff_total_bts), 1)
-        rep['établissement']['Proportion garçon (hors BTS)'] = a
-        rep['établissement']['Proportion doublant'] = round(100 * total_doublant / eff_total, 1)
+        rep['établissement']['Proportion garçon'] = en_pourcentage(total_garcon / eff_total)
+        a = (total_garcon - total_garcon_bts)/(eff_total - eff_total_bts)
+        rep['établissement']['Proportion garçon (hors BTS)'] = en_pourcentage(a)
+        rep['établissement']['Proportion doublant'] = en_pourcentage(total_doublant / eff_total)
         return rep
 
     def importer_xml(self, data):

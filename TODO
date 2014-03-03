@@ -22,6 +22,7 @@
 * date de sortie plutôt qu'une durée ?
 * colonne Diplômé : importation automatisée depuis ...
 * Pending : ajout dans la base après validation
+* Importation : si l'élève est déjà présent -> mettre à jour ses informations
 
 ### HTML
 * envoie de mail en masse : à tester

@@ -209,6 +209,7 @@ function cell_to_select(e) {
         valeurs = null;
         col = cell.parentsUntil('table').parent().find("th:nth-child("+(c['x']+1)+") div").html();
         if (col == "Niveau") { valeurs = niveaux; }
+        else if (col == "Filière") { valeurs = filières; }
         else if (col == "Section") { valeurs = sections; }
         else if (col == "Situation") { valeurs = situations; }
         if (valeurs != null) {

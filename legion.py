@@ -25,6 +25,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         config.read(root + os.sep + 'config.cfg')
         self.situations=[x.strip(' ') for x in config.get('General', 'situations').split(',')]
         self.niveaux=[x.strip(' ') for x in config.get('General', 'niveaux').split(',')]
+        self.filières=[x.strip(' ') for x in config.get('General', 'filières').split(',')]
         self.sections=[x.strip(' ') for x in config.get('General', 'sections').split(',')]
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
@@ -84,7 +85,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         elif params.path == '/liste-annees':
             rep = self.db.lister('Année')
         elif params.path == '/options':
-            rep = {'affectations': self.db.lire_classes(), 'niveaux': self.niveaux, 'sections': self.sections }
+            rep = {'affectations': self.db.lire_classes(), 'niveaux': self.niveaux, 'filières': self.filières, 'sections': self.sections }
         elif params.path == '/init':
             rep = {'header': self.header, 'situations': self.situations }
         else:
@@ -135,16 +136,14 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 -> poids / étab
                 -> proportion de redoublants
                 -> proportion de garçon
+                -> taux de passage
             -> par niveau
-                _idem_
-            -> par classe
                 _idem_
         """
         rep = { 'ordre': ['effectif', 'poids', 'garçon', 'doublant'],
                 'établissement': {},
                 'section': {}, 
-                'niveau': {},
-                'classe': {} }
+                'niveau': {} }
         eff_total = sum([sum(x[:2]) for x in data.values()]) # Effectif total
         eff_total_bts = 0
         total_garcon = 0
@@ -157,6 +156,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             niveau_classe = classes[cla]['Niveau']
             total_garcon = total_garcon + g
             total_doublant = total_doublant + doub
+            #tp = self.db.taux_de_passage(cla)
 
             # Par Section
             if section_classe:
@@ -165,6 +165,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 dict_add(rep['section'][section_classe], 'effectif', eff)
                 dict_add(rep['section'][section_classe], 'garçon', g)
                 dict_add(rep['section'][section_classe], 'doublant', doub)
+                #dict_add(rep['section'][section_classe], 'taux de passage', tp)
             # Par Niveau
             if niveau_classe:
                 if not niveau_classe in rep['niveau']:
@@ -175,12 +176,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 dict_add(rep['niveau'][niveau_classe], 'effectif', eff)
                 dict_add(rep['niveau'][niveau_classe], 'garçon', g)
                 dict_add(rep['niveau'][niveau_classe], 'doublant', doub)
-            # Par Classe
-            if not cla in rep['niveau']:
-                rep['classe'][cla] = {}
-            dict_add(rep['classe'][cla], 'effectif', eff)
-            dict_add(rep['classe'][cla], 'garçon', g)
-            dict_add(rep['classe'][cla], 'doublant', doub)
 
         # Calcul des proportions : Poids, Garçon, Doublant
         for key, val in rep['section'].items():
@@ -191,10 +186,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             rep['niveau'][key]['poids'] = en_pourcentage(val['effectif']/eff_total)
             rep['niveau'][key]['garçon'] = en_pourcentage(val['garçon']/val['effectif'])
             rep['niveau'][key]['doublant'] = en_pourcentage(val['doublant']/val['effectif'])
-        for key, val in rep['classe'].items():
-            rep['classe'][key]['poids'] = en_pourcentage(val['effectif']/eff_total)
-            rep['classe'][key]['garçon'] = en_pourcentage(val['garçon']/val['effectif'])
-            rep['classe'][key]['doublant'] = en_pourcentage(val['doublant']/val['effectif'])
         # Pour l'établissement
         rep['établissement']['Effectif total'] = eff_total
         rep['établissement']['Proportion garçon'] = en_pourcentage(total_garcon / eff_total)

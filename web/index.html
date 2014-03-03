@@ -45,21 +45,16 @@
     <div id="Statistiques">
         <h3>Statistiques : pour l'année <select id="stats-annee" onChange="function(){$('#onglets li:last-child').trigger('click');};"></select></h3>
        <div style="float: left; width:48%">
+            <table id="stats-niveau" border="1">
+            <caption>Par niveau - filière</caption>
+            </table>
            <table id="stats-section" border="1">
                 <caption>Par section</caption>
-            </table>
-            <table id="stats-niveau" border="1">
-            <caption>Par niveau</caption>
             </table>
         </div>
         <div style="float: right; width:48%">
             <table id="stats-etablissement" border="1">
                 <caption>Pour l'établissement</caption>
-                <thead></thead>
-                <tbody></tbody>
-            </table>
-            <table id="stats-classe" border="1">
-                <caption>Par classe</caption>
                 <thead></thead>
                 <tbody></tbody>
             </table>
@@ -97,6 +92,7 @@
                 <tr>
                     <th>Classe</th>
                     <th>Niveau</th>
+                    <th>Filière</th>
                     <th>Section</th>
                 </tr>
             </thead>

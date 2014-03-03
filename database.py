@@ -84,7 +84,7 @@ class Database():
     def inserer_classes(self, classes):
         """ Insère une liste de classes (fin d'importation) """
         for cla in classes:
-            req = u'INSERT INTO Classes VALUES ("{0}", "", "")'.format(cla)
+            req = u'INSERT INTO Classes VALUES ("{0}", "", "", "")'.format(cla)
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:
@@ -219,4 +219,7 @@ class Database():
             data[classe] = d
         return data
 
+    def taux_de_passage(self, classe):
+        """ Calcul le taux de passage pour une classe donnée """
+        return 0
 

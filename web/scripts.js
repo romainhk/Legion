@@ -11,8 +11,9 @@ var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Genre", "Mail", "
 var vue_depliee = true;
 // Liste des situations possibles
 var situations = new Array();
-// Les niveaux et les sections reconnues
+// Les niveaux, filières et sections reconnues
 var niveaux = new Array();
+var filières = new Array();
 var sections = new Array();
 
 /*
@@ -141,20 +142,12 @@ $.each( data['data'], function( key, value ) {
         page_active = 'Statistiques';
         annee = $('#stats-annee').val();
         $.get( "/stats?annee="+annee, function( data ) {
-            dict_to_tab($('#stats-classe'), data, 'classe');
             $('#stats-etablissement > tbody').html('');
             $.each(data['établissement'], function(i,j) {
                 $('#stats-etablissement > tbody').append('<tr><td>'+i+'</td><td>'+j+'</td></tr>');
             });
             dict_to_tab($('#stats-section'), data, 'section');
             dict_to_tab($('#stats-niveau'), data, 'niveau');
-            $("#stats-classe").tablesorter({
-                headers: {
-                    3: { sorter: false },
-                    4: { sorter: false }
-                }
-            });
-            $("#stats-classe").trigger('update');
             $("#stats-section").tablesorter();
             $("#stats-niveau").tablesorter();
             $("#stats-etablissement").tablesorter();
@@ -174,14 +167,16 @@ $.each( data['data'], function( key, value ) {
         page_active = 'Options';
         $.get( "/options", function( data ) {
             niveaux = data['niveaux'];
+            filières = data['filières'];
             sections = data['sections'];
             var affectations = data['affectations'];
             var tab = '';
             $.each(affectations, function(i, j) {
                 var c = j['Classe'];
                 var n = j['Niveau'];
+                var f = j['Filière'];
                 var s = j['Section'];
-                tab += '<tr><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
+                tab += '<tr><td>'+c+'</td><td>'+n+'</td><td>'+f+'</td><td>'+s+'</td></tr>\n';
             });
             $('#options > tbody').html(tab);
             $("#options").tablesorter().delegate('td', 'click', cell_to_select);

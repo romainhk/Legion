@@ -44,6 +44,7 @@ CREATE TABLE "Classes" (
     -- Classement des classes (sic)
     "Classe" TEXT NOT NULL,
     "Niveau" TEXT NOT NULL,
+    "Filière" TEXT NOT NULL,
     "Section" TEXT NOT NULL,
     PRIMARY KEY(Classe)
 );

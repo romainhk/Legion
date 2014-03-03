@@ -49,7 +49,7 @@ function fin_filtrage(e, filter){
     $.each($(this).find('tr.tablesorter-childRow'), function(i, cr) {
         cr = $(cr);
         if (cr.prev().css('display') == 'table-row') {
-            cr.removeClass('filtered').removeClass('remove-me').show();
+            cr.removeClass('filtered').show();
         }
     });
 }
@@ -62,6 +62,7 @@ function charger_page(nom) {
 
     if (nom == 'Liste') {
         page_active = 'Liste';
+        vue_depliee = true;
         $.get( "/liste", function( data ) {
             annee = data['annee'];
             // Construction du tableau
@@ -128,6 +129,7 @@ $.each( data['data'], function( key, value ) {
             ).delegate('td', 'click', cell_to_select
             ).delegate('.toggle', 'click' ,function(){
                 $(this).closest('tr').nextUntil('tr:not(.tablesorter-childRow)').find('td').toggle();
+                $(this).closest('tr').nextUntil('tr:not(.tablesorter-childRow)').toggleClass('removeme');
                 return false;
             }).children('tbody').on('editComplete', 'td', function(){
                 maj_cellule($(this));
@@ -136,7 +138,6 @@ $.each( data['data'], function( key, value ) {
             $("#vue").trigger('filterEnd'); // Mise à jour du total
             // Pliage de toutes les lignes
             if (vue_depliee) { $('button.toggle-deplier').trigger('click'); }
-            $('#vue .tablesorter-childRow td').hide();
         });
     } else if (nom == 'Statistiques') {
         page_active = 'Statistiques';
@@ -234,14 +235,22 @@ $(document).ready(function() {
 
         // Modifier l'affichage des childrows et permet la recherche sur eux
         $('button.toggle-deplier').click(function(){
-            $('#vue .tablesorter-childRow').toggleClass('remove-me');
-            $('#vue .tablesorter-childRow').find('td').toggle();
+            console.log($('#vue .tablesorter-childRow'));
+            if (vue_depliee){
+                $('#vue .tablesorter-childRow').find('td').hide();
+                $('#vue .tablesorter-childRow').addClass('removeme');
+            } else {
+                $('#vue .tablesorter-childRow').find('td').show();
+                $('#vue .tablesorter-childRow').removeClass('removeme');
+            }
             var c = $('#vue')[0].config.widgetOptions, o = !c.filter_childRows;
             c.filter_childRows = o;
+            // Modification du bouton
             var text = "Replier tout";
             if (vue_depliee) { text = "Déplier tout"; }
             vue_depliee = !vue_depliee;
             $(this).html(text);
+
             $('table').trigger('search', false);
             return false;
         });

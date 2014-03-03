@@ -124,7 +124,7 @@ function reverse_key_sort(dict){
  * FROM http://jsfiddle.net/terryyounghk/KPEGU/
  */
 function exportTableToCSV($table, filename) {
-    var $rows = $table.find('tr:visible:has(td,th):not(".tablesorter-filter-row"):not(".remove-me")'),
+    var $rows = $table.find('tr:visible:has(td,th):not(".tablesorter-filter-row"):not(".removeme")'),
 
     // Temporary delimiter characters unlikely to be typed by keyboard
     // This is to avoid accidentally splitting the actual contents
@@ -216,7 +216,7 @@ function cell_to_select(e) {
             selected = cell.html();
             cell.html('');
             var sel = $('<select>').appendTo(cell);
-            sel.append('<option value="">...</option>'); // Option vide
+            sel.append('<option value="?">...</option>'); // Option vide
             $.each(valeurs, function(i, j) {
                 pardefaut = "";
                 if (j == selected) { pardefaut = ' selected="selected"' ; }

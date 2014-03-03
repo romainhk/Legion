@@ -221,9 +221,6 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         for eleve in root.iter('ELEVE'):
             eid = eleve.get('ELEVE_ID')
             ine = eleve.findtext('ID_NATIONAL')
-            if ine is None:
-                #logging.error(u"Impossible d'importer l'élève muni de l'ID {0}, données insuffisantes".format(eid))
-                continue
             nom = eleve.findtext('NOM')
             prenom = eleve.findtext('PRENOM')
             naissance = eleve.findtext('DATE_NAISS')
@@ -236,8 +233,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             sad_etab = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/DENOM_COMPL')).title()
             sad_classe = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_STRUCTURE')).strip(' ')
             enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, \
-                    'naissance': naissance, 'genre': int(genre), 'mail': mail, \
-                    'doublement': int(doublement), 'classe': classe, 'entrée': int(entrée), \
+                    'naissance': naissance, 'genre': genre, 'mail': mail, \
+                    'doublement': doublement, 'classe': classe, 'entrée': entrée, \
                     'sad_établissement': sad_etab,   'sad_classe': sad_classe }
             if self.db.ecrire(enr, self.date):
                 self.nb_import = self.nb_import + 1

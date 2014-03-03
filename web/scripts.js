@@ -6,7 +6,7 @@ var les_pages = new Array();
 // Total d'élèves dans la base
 var nb_eleves = 0;
 // Champs du pending (tous)
-var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Genre", "Mail", "Entrée", "Diplômé", "Situation", "Lieu", "Année", "Classe", "Établissement", "Doublement" ];
+var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Genre", "Mail", "Entrée", "Diplômé", "Situation", "Lieu", "Année", "Classe", "Établissement", "Doublement", "Raison" ];
 // Indique si les sous-cellules (childrows) sont visibles ou non
 var vue_depliee = true;
 // Liste des situations possibles

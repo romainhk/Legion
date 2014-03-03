@@ -37,6 +37,7 @@ CREATE TABLE "Pending" (
     "Classe" TEXT,
     "Établissement" TEXT DEFAULT (null),
     "Doublement" INTEGER  DEFAULT (0),
+    "Raison" TEXT DEFAULT (null),
     PRIMARY KEY(ID)
 );
 CREATE TABLE "Classes" (

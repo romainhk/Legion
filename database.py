@@ -92,16 +92,20 @@ class Database():
                 pass
         self.conn.commit()
 
-    def in_pending(self, enr, annee):
-        """ Mise en attente de donnes incomplètes pour validation """
+    def in_pending(self, enr, annee, raison=""):
+        """ Mise en attente de données incomplètes pour validation ultérieure """
+        # Protection contre des données qui seraient non valides
+        for k, v in enr.items():
+            if v is None: enr[k] = '0'
+
         req = u'INSERT INTO Pending ' \
-            + u'(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu, Année, CLasse, Établissement, Doublement) ' \
-            + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}", {10}, "{11}", "{12}", {13})'.format(
-                    enr['ine'],         enr['nom'],         enr[u'prénom'],
-                    enr['naissance'],   enr['genre'],       enr['mail'],
-                    enr['entrée'],      enr[u'Diplômé'],    enr['Situation'],
-                    enr['Lieu'],        annee,              enr['classe'],
-                    enr['sad_établissement'],   enr['doublement'] )
+            + u'(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu, Année, Classe, Établissement, Doublement, Raison) ' \
+            + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}", {10}, "{11}", "{12}", {13}, "{14}")'.format(
+                enr['ine'],             enr['nom'],             enr[u'prénom'],
+                enr['naissance'],       int(enr['genre']),      enr['mail'],
+                int(enr['entrée']),     enr[u'Diplômé'],        enr['Situation'],
+                enr['Lieu'],            annee,                  enr['classe'],
+                enr['sad_établissement'],   int(enr['doublement']),     raison)
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
@@ -114,8 +118,13 @@ class Database():
         ine = enr['ine']
         classe = enr['classe']
         enr[u'Diplômé'] = enr[u'Situation'] = enr['Lieu'] = '?'
-        if ine is None or classe is None:
-            self.in_pending(enr, date.year)
+        raison = []
+        if ine is None:
+            raison.append("Pas d'INE")
+        if classe is None:
+            raison.append('Pas de classe')
+        if len(raison) > 0:
+            self.in_pending(enr, date.year, ', '.join(raison))
             return True
         # On vérifie si l'élève est déjà présent dans la bdd pour cette année
         req = u'SELECT COUNT(*) FROM Affectations WHERE ' \
@@ -131,8 +140,8 @@ class Database():
                 + u'(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu) ' \
                 + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}")'.format(
                         ine,                enr['nom'],         enr[u'prénom'],
-                        enr['naissance'],   enr['genre'],       enr['mail'],
-                        enr['entrée'],        enr[u'Diplômé'],    enr['Situation'],
+                        enr['naissance'],   int(enr['genre']),  enr['mail'],
+                        int(enr['entrée']), enr[u'Diplômé'],    enr['Situation'],
                         enr['Lieu'])
             try:
                 self.curs.execute(req)
@@ -151,10 +160,14 @@ class Database():
             y = self.inserer_affectation(
                     ine,    annee-1,   classe_pre,  etab,   9)
             # En cas de problème, annulation des modifications précédentes
-            if not x or not y:
+            if not x:
+                raison.append('Pb affectation année en cours')
+            if not y:
+                raison.append('Pb affectation année précédente')
+            if len(raison) > 0:
                 self.conn.rollback()
                 #logging.warning(u"Rollback suite à un problème d'affectation\n{0}".format(enr))
-                self.in_pending(enr, annee)
+                self.in_pending(enr, annee, ', '.join(raison))
 
         else:
             #logging.warning(u"L'élève {0} est déjà présent dans la base {1}".format(ine, date.year))

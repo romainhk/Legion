@@ -205,8 +205,8 @@ class Database():
         req = u'SELECT * FROM Pending ORDER BY Nom,Prénom ASC, Année DESC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
-            ine = d['INE']
-            data[ine] = d
+            key = d['INE']
+            data[key] = d
         return data
 
     def lire_classes(self):
@@ -215,7 +215,16 @@ class Database():
         req = u'SELECT * FROM Classes ORDER BY Classe ASC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
-            classe = d['Classe']
-            data[classe] = d
+            key = d['Classe']
+            data[key] = d
         return data
 
+    def lire_affectations(self):
+        """ Lit le contenu de la table affectations et classes """
+        data = {}
+        req = u'SELECT * FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe'
+        for row in self.curs.execute(req).fetchall():
+            d = dict_from_row(row)
+            key = d['INE']+'__'+str(d['Année'])
+            data[key] = d
+        return data

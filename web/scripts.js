@@ -151,9 +151,11 @@ $.each( data['data'], function( key, value ) {
             });
             dict_to_tab($('#stats-section'), data, 'section');
             dict_to_tab($('#stats-niveau'), data, 'niveau');
+            dict_to_tab($('#stats-provenance'), data, 'provenance');
             $("#stats-section").tablesorter();
             $("#stats-niveau").tablesorter();
             $("#stats-etablissement").tablesorter();
+            $("#stats-provenance").tablesorter();
         });
     } else if (nom == 'Pending') {
         page_active = 'Pending';

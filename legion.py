@@ -139,11 +139,19 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 -> taux de passage
             -> par niveau
                 _idem_
+            -> provenance
+                -> établissement : nombre d'élèves
         """
-        rep = { 'ordre': ['effectif', 'poids', 'garçon', 'doublant'],
+        rep = { 'ordre': {},
                 'établissement': {},
                 'section': {}, 
-                'niveau': {} }
+                'niveau': {},
+                'provenance': {} }
+        # Ordre d'affichage des colonnes
+        rep['ordre']['section']    = ['effectif', 'poids', 'garçon', 'doublant']
+        rep['ordre']['niveau']     = ['effectif', 'poids', 'garçon', 'doublant']
+        rep['ordre']['provenance'] = ['nombre', 'en seconde']
+        # Calculs
         eff_total = sum([sum(x[:2]) for x in data.values()]) # Effectif total
         eff_total_bts = 0
         total_garcon = 0
@@ -192,6 +200,27 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         a = (total_garcon - total_garcon_bts)/(eff_total - eff_total_bts)
         rep['établissement']['Proportion garçon (hors BTS)'] = en_pourcentage(a)
         rep['établissement']['Proportion doublant'] = en_pourcentage(total_doublant / eff_total)
+        # Provenance
+        aff = self.db.lire_affectations()
+        annee_pre = int(annee)-1
+        for k,v in aff.items():
+            annee_aff = v['Année']
+            etab = v['Établissement']
+            if not etab in rep['provenance']:
+                rep['provenance'][etab] = {'en seconde':0, 'nombre':0}
+            if annee_aff == annee_pre: # On ne compte que les affectations de l'année précédente
+                dict_add(rep['provenance'][etab], 'nombre', 1)
+            elif annee_aff == int(annee):
+                if v['Niveau'] == "Seconde": # Pour les élèves de seconde...
+                    a = v['INE']+'__'+str(annee_pre)
+                    if a in aff:
+                        #... on recherche l'établissement de l'année précédent (si possible)
+                        etab_pre = aff[a]['Établissement']
+                        if not etab_pre in rep['provenance']:
+                            rep['provenance'][etab_pre] = {'en seconde':0, 'nombre':0}
+                        dict_add(rep['provenance'][etab_pre], 'en seconde', 1)
+                    # Requête équivalente en SQL :
+                    # SELECT Établissement,count(*) FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="Seconde" AND Année=2013) AND Année=2012 GROUP BY Établissement
         return rep
 
     def importer_xml(self, data):

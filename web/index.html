@@ -44,18 +44,26 @@
     </div>
     <div id="Statistiques">
         <h3>Statistiques : pour l'année <select id="stats-annee" onChange="function(){$('#onglets li:last-child').trigger('click');};"></select></h3>
-       <div style="float: left; width:48%">
+       <div style="float: left; width:49%">
             <table id="stats-niveau" border="1">
-            <caption>Par niveau - filière</caption>
+                <caption>Par niveau - filière</caption>
             </table>
-           <table id="stats-section" border="1">
+            <table id="stats-section" border="1">
                 <caption>Par section</caption>
             </table>
         </div>
-        <div style="float: right; width:48%">
+        <div style="float: right; width:49%">
             <table id="stats-etablissement" border="1">
                 <caption>Pour l'établissement</caption>
                 <thead></thead>
+                <tbody></tbody>
+            </table>
+            <table id="stats-provenance" style="width:auto; margin:auto;" border="1">
+                <caption>Provenance des élèves cette année là</caption>
+                <thead><tr>
+                    <th>Établissement</th>
+                    <th>Nombre d'élèves</th>
+                </tr></thead>
                 <tbody></tbody>
             </table>
         </div>

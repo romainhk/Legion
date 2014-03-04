@@ -90,7 +90,7 @@ function dict_to_tab(cell, dict, donnee) {
     cell.find('thead').remove();
     var thead = $('<thead>').appendTo(cell);
     thead.append('<th>'+donnee+'</th>');
-    $.each( dict['ordre'], function( key, value ) {
+    $.each( dict['ordre'][donnee], function( key, value ) {
         thead.append('<th>'+value+'</th>');
     });
     // Pour les données
@@ -98,7 +98,7 @@ function dict_to_tab(cell, dict, donnee) {
     var tbody = $('<tbody>').appendTo(cell);
     $.each( dict[donnee], function( key, value ) {
         vals = "<td>"+key+"</td>";
-        $.each( dict['ordre'], function( i, j ) {
+        $.each( dict['ordre'][donnee], function( i, j ) {
             vals += "<td>"+value[j]+"</td>";
         });
         tbody.append('<tr>'+vals+'</tr>');

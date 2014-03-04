@@ -1,5 +1,4 @@
 ### Statistiques à intégrer
-* avec l'établissement précédent : stats sur les classes d'origine
 * Statistiques plus par classe mais sur plusieurs niveaux : 
     - Par Niveau (1er, 2nd,...) -> Filière (Générale, Pro) -> Section (GA, ST2S,...)
     - Par Section (ex: toutes les classe de GA qqs le niveau)
@@ -22,6 +21,7 @@
 * Pending : ajout dans la base après validation
 * Pending : sad_etab et sad_classe ?
 * Importation : si l'élève est déjà présent -> mettre à jour ses informations
+* epydoc.conf
 
 ### HTML
 * envoie de mail en masse : à tester

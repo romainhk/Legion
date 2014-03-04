@@ -119,29 +119,34 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.wfile.flush()
 
     def generer_stats(self, annee):
-        """ Génère des statistiques sur la base """
+        """
+            Génère des statistiques sur la base
+
+        :param annee: Statistiques pour cette année
+        :type annee: str
+
+        :return: un dictionnaire des valeurs triées par catégories
+        - ordre : l'ordre d'affichage
+        - pour l'établissement
+            - effectif total
+            - proportion de garçon
+            - De même, hors BTS
+        - par section
+            - effectif total => rep['section'][SECTION]['effectif'] = TOTAL
+            - poids / étab
+            - proportion de redoublants
+            - proportion de garçon
+            - taux de passage
+        - par niveau
+            - _idem_
+        - provenance
+            - établissement : total d'élèves, total d'élèves actuellement en seconde
+        """
         # Récupération des infos : classes, effectif...
         data = self.db.stats_par_classe(annee)
         classes = self.db.lire_classes()
 
         # On génère maintenant le tableau de statistiques
-        """ Structure de la réponse
-        rep -> ordre : l'ordre d'affichage
-            -> pour l'établissement
-                -> effectif total
-                -> proportion de garçon
-                -> DE MÊME, hors BTS
-            -> par section
-                -> effectif total => rep['section'][SECTION]['effectif'] = TOTAL
-                -> poids / étab
-                -> proportion de redoublants
-                -> proportion de garçon
-                -> taux de passage
-            -> par niveau
-                _idem_
-            -> provenance
-                -> établissement : total d'élèves
-        """
         rep = { 'ordre': {},
                 'établissement': {},
                 'section': {}, 
@@ -224,7 +229,11 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         return rep
 
     def importer_xml(self, data):
-        """ Parse le xml à importer """
+        """
+            Parse le xml à importer
+        :param data: le fichier à importer (passé en POST)
+        :type data: flux de fichier xml
+        """
         self.nb_import = 0
         les_classes = list(self.db.lire_classes().keys())
         classes_a_ajouter = []

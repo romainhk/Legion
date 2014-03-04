@@ -21,6 +21,17 @@ h4 {
 input {
     margin:0.5ex;
 }
+footer {
+    text-align:center;
+    font-style:italic;
+}
+footer span {
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    display: inline-block;
+}
 
 /* Tableaux */
 table {

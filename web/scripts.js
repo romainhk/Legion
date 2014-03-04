@@ -109,6 +109,7 @@ $.each( data['data'], function( key, value ) {
 
             nb_eleves = Object.keys(data['data']).length;
             index = $.inArray("Année", champs_vue);
+            // Les champs modifiables
             var champs_editables = [
                     $.inArray('Diplômé', champs_vue),
                     $.inArray('Lieu', champs_vue)];
@@ -120,6 +121,7 @@ $.each( data['data'], function( key, value ) {
                 widgets: ["zebra", "filter", "cssStickyHeaders", "editable"],
                 widgetOptions: {
                     filter_reset : '.reset',
+                    filter_childRows : true,
                     editable_columns       : champs_editables,
                     editable_enterToAccept : true,
                     editable_editComplete  : 'editComplete'
@@ -235,7 +237,6 @@ $(document).ready(function() {
 
         // Modifier l'affichage des childrows et permet la recherche sur eux
         $('button.toggle-deplier').click(function(){
-            console.log($('#vue .tablesorter-childRow'));
             if (vue_depliee){
                 $('#vue .tablesorter-childRow').find('td').hide();
                 $('#vue .tablesorter-childRow').addClass('removeme');
@@ -243,8 +244,8 @@ $(document).ready(function() {
                 $('#vue .tablesorter-childRow').find('td').show();
                 $('#vue .tablesorter-childRow').removeClass('removeme');
             }
-            var c = $('#vue')[0].config.widgetOptions, o = !c.filter_childRows;
-            c.filter_childRows = o;
+            //var c = $('#vue')[0].config.widgetOptions, o = !c.filter_childRows;
+            //c.filter_childRows = o;
             // Modification du bouton
             var text = "Replier tout";
             if (vue_depliee) { text = "Déplier tout"; }

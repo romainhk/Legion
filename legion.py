@@ -121,7 +121,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
     def generer_stats(self, annee):
         """ Génère des statistiques sur la base """
         # Récupération des infos : classes, effectif...
-        data = self.db.get_stats(annee)
+        data = self.db.stats_par_classe(annee)
         classes = self.db.lire_classes()
 
         # On génère maintenant le tableau de statistiques
@@ -140,7 +140,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             -> par niveau
                 _idem_
             -> provenance
-                -> établissement : nombre d'élèves
+                -> établissement : total d'élèves
         """
         rep = { 'ordre': {},
                 'établissement': {},
@@ -150,7 +150,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         # Ordre d'affichage des colonnes
         rep['ordre']['section']    = ['effectif', 'poids', 'garçon', 'doublant']
         rep['ordre']['niveau']     = ['effectif', 'poids', 'garçon', 'doublant']
-        rep['ordre']['provenance'] = ['nombre', 'en seconde']
+        rep['ordre']['provenance'] = ['total', 'en seconde']
         # Calculs
         eff_total = sum([sum(x[:2]) for x in data.values()]) # Effectif total
         eff_total_bts = 0
@@ -207,9 +207,9 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             annee_aff = v['Année']
             etab = v['Établissement']
             if not etab in rep['provenance']:
-                rep['provenance'][etab] = {'en seconde':0, 'nombre':0}
+                rep['provenance'][etab] = {'en seconde':0, 'total':0}
             if annee_aff == annee_pre: # On ne compte que les affectations de l'année précédente
-                dict_add(rep['provenance'][etab], 'nombre', 1)
+                dict_add(rep['provenance'][etab], 'total', 1)
             elif annee_aff == int(annee):
                 if v['Niveau'] == "Seconde": # Pour les élèves de seconde...
                     a = v['INE']+'__'+str(annee_pre)
@@ -217,7 +217,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                         #... on recherche l'établissement de l'année précédent (si possible)
                         etab_pre = aff[a]['Établissement']
                         if not etab_pre in rep['provenance']:
-                            rep['provenance'][etab_pre] = {'en seconde':0, 'nombre':0}
+                            rep['provenance'][etab_pre] = {'en seconde':0, 'total':0}
                         dict_add(rep['provenance'][etab_pre], 'en seconde', 1)
                     # Requête équivalente en SQL :
                     # SELECT Établissement,count(*) FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="Seconde" AND Année=2013) AND Année=2012 GROUP BY Établissement
@@ -261,7 +261,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             if not (classe in les_classes or classe in classes_a_ajouter or classe is None) :
                 classes_a_ajouter.append(classe)
         # Ici, les données élèves ont été importé ; il ne reste qu'à ajouter les classes inconnues
-        self.db.inserer_classes(classes_a_ajouter)
+        self.db.ecrire_classes(classes_a_ajouter)
 
 if __name__ == "__main__":
     # DEFINES

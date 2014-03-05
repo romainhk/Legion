@@ -24,25 +24,6 @@ class Database():
         self.conn.row_factory = sqlite3.Row
         self.curs = self.conn.cursor()
 
-    def stats_par_classe(self, annee):
-        """ Génère des statistiques par classe : le nombre de garçons, de filles, de doublants
-        """
-        data = {}
-        req = u'SELECT * FROM Élèves NATURAL JOIN Affectations WHERE Année={0}'.format(annee)
-        for row in self.curs.execute(req).fetchall():
-            d = dict_from_row(row)
-            if d['Genre'] == 2: # une femme
-                h = (0,1)
-            else: # == 1
-                h = (1,0)
-            t = [ h[0], h[1], int(d['Doublement']) ] # Nb : garçon, fille, doublant
-            classe = d['Classe']
-            if classe in data:
-                data[classe] = [sum(x) for x in zip(data[classe], t)] # data[classe] += t
-            else:
-                data[classe] = t
-        return data
-
     def maj_champ(self, table, ident, champ, donnee):
         """ Mets à jour un champ de la base """
         if table == 'Élèves':       col = 'INE'

@@ -65,3 +65,13 @@ def debut_AS(annee):
 def en_pourcentage(nombre):
     """ Met en forme un nombre réel en pourcentage à 10^-1 """
     return str( round(100*nombre,1) ) + ' %'
+
+def filtrer_dict(dictionnaire, clef, valeur):
+    """ Filtre les éléments d'un dictionnaire de dictionnaires, dont la sous-valeur "clef" vaut "valeur"
+    :example: { {clef: valeur, clef2: xxx}, {clef: autre_valeur, clef2: yyy} }
+    """
+    premier_element = next (iter (dictionnaire.values()))
+    if clef in premier_element:
+        return dict((k, v) for k, v in dictionnaire.items() if v[clef]==valeur)
+    else:
+        return dictionnaire

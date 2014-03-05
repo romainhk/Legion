@@ -8,7 +8,6 @@
 * Stats de décrochages (sortie en cours de formation) (-> contacter le cial)
 * Absentéisme : ratio du nombre d'heures de cours non suivi / nombre total d'heures de la section (-> cpe ; recoupement avec pronote ?)
 * Taux de réussite au BAC, au BTS
-* Proportion d'étudiants issus de section pro / globale, par section, par filière
 * Représentation graphique des données
 * Pour les élèves sorties : durée de scolarisation
 
@@ -22,6 +21,7 @@
 * Pending : sad_etab et sad_classe ?
 * Importation : si l'élève est déjà présent -> mettre à jour ses informations
 * la classe Legion est recréée à chaque requête ?
+* Stats : donner un équivalent SQL pour vérification
 
 ### HTML
 * envoie de mail en masse : à tester

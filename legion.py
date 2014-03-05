@@ -23,6 +23,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         # Fichier de config
         config = configparser.ConfigParser()
         config.read(root + os.sep + 'config.cfg')
+        self.nom_etablissement=config.get('General', 'nom de l\'etablissement')
         self.situations=sorted([x.strip(' ') for x in config.get('General', 'situations').split(',')])
         self.niveaux=sorted([x.strip(' ') for x in config.get('General', 'niveaux').split(',')])
         self.filières=sorted([x.strip(' ') for x in config.get('General', 'filières').split(',')])
@@ -66,7 +67,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         elif params.path == '/stats':
             annee = query['annee'].pop()
             if annee == 'null': annee = self.date.year
-            rep = self.generer_stats(annee)
+            rep = self.generer_stats(int(annee))
         elif params.path == '/maj':
             ine = query['ine'].pop()
             champ = query['champ'].pop()
@@ -123,28 +124,68 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             Génère des statistiques sur la base
 
         :param annee: Statistiques pour cette année
-        :type annee: str
+        :type annee: int
 
         :return: un dictionnaire des valeurs triées par catégories
-        - ordre : l'ordre d'affichage
+
+        - ordre
+            - pour chaque type de donnée (section, niveau...), l'ordre d'affichage voulu
         - pour l'établissement
             - effectif total
             - proportion de garçon
             - De même, hors BTS
+            - proportion d'élèves issus de filière pro
         - par section
-            - effectif total => rep['section'][SECTION]['effectif'] = TOTAL
+            - effectif total (ce qui donne reponse['section'][SECTION]['effectif'] = TOTAL)
             - poids / étab
             - proportion de redoublants
             - proportion de garçon
-            - taux de passage
+            - proportion de nouveaux
+            - proportion d'élèves issus de section pro dans l'établissement
         - par niveau
             - _idem_
         - provenance
             - établissement : total d'élèves, total d'élèves actuellement en seconde
+
+
+        Validation des résultats par SQL
+
+        - Nb d'élève issus de pro / classe
+            > SELECT Classe,Niveau,Filière,Section,count(*) NbIssueDePro FROM Affectations NATURAL JOIN Classes WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE  Année=2012 AND Filière='Pro') AND Année = 2013 GROUP BY Classe
+        - Dénombrement des élèves / établissement d'origine
+            > SELECT Établissement,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="Seconde" AND Année=<ANNEE>) AND Année=<ANNEE>-1 GROUP BY Établissement
         """
+
         # Récupération des infos : classes, effectif...
-        data = self.db.stats_par_classe(annee)
         classes = self.db.lire_classes()
+        classes_pro = filtrer_dict(classes, 'Filière', 'Pro')
+        data = {}
+        for d in self.db.lire().values():
+            p = d['Parcours']
+            if d['Genre'] == 2: # une femme
+                h = (0,1)
+            else: # == 1
+                h = (1,0)
+            doub = p[annee][2]
+            if doub == 9: doub = 0
+
+            nouveau = 0
+            frompro = 0
+            if annee-1 in p:
+                etab_1 = p[annee-1][1]
+                if etab_1 != self.nom_etablissement:
+                    nouveau = 1
+                else:
+                    classe = p[annee-1][0]
+                    if classe in classes_pro: frompro = 1
+
+            t = [ h[0], h[1], doub, nouveau, frompro ] # Nb : garçon, fille, doublant, nouveau, issu de pro
+            classe = p[annee][0]
+            if classe in data:
+                data[classe] = [sum(x) for x in zip(data[classe], t)] # data[classe] += t
+            else:
+                data[classe] = t
+        logging.debug(data)
 
         # On génère maintenant le tableau de statistiques
         rep = { 'ordre': {},
@@ -153,8 +194,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 'niveau': {},
                 'provenance': {} }
         # Ordre d'affichage des colonnes
-        rep['ordre']['section']    = ['effectif', 'poids', 'garçon', 'doublant']
-        rep['ordre']['niveau']     = ['effectif', 'poids', 'garçon', 'doublant']
+        rep['ordre']['niveau'] = rep['ordre']['section'] = \
+            ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
         rep['ordre']['provenance'] = ['total', 'en seconde']
         # Calculs
         eff_total = sum([sum(x[:2]) for x in data.values()]) # Effectif total
@@ -162,13 +203,15 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         total_garcon = 0
         total_garcon_bts = 0
         total_doublant = 0
+        total_issue_de_pro = 0
         for cla, val in sorted(data.items()):
-            g, f, doub = val
+            g, f, doub, nouveau, frompro = val
             eff = g + f
             section_classe = classes[cla]['Section']
             niveau_classe = classes[cla]['Niveau']
             total_garcon = total_garcon + g
             total_doublant = total_doublant + doub
+            total_issue_de_pro = total_issue_de_pro + frompro
             #tp = self.db.taux_de_passage(cla)
 
             # Par Section
@@ -178,6 +221,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 dict_add(rep['section'][section_classe], 'effectif', eff)
                 dict_add(rep['section'][section_classe], 'garçon', g)
                 dict_add(rep['section'][section_classe], 'doublant', doub)
+                dict_add(rep['section'][section_classe], 'nouveau', nouveau)
+                dict_add(rep['section'][section_classe], 'issue de pro', frompro)
                 #dict_add(rep['section'][section_classe], 'taux de passage', tp)
             # Par Niveau
             if niveau_classe:
@@ -189,25 +234,33 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 dict_add(rep['niveau'][niveau_classe], 'effectif', eff)
                 dict_add(rep['niveau'][niveau_classe], 'garçon', g)
                 dict_add(rep['niveau'][niveau_classe], 'doublant', doub)
+                dict_add(rep['niveau'][niveau_classe], 'nouveau', nouveau)
+                dict_add(rep['niveau'][niveau_classe], 'issue de pro', frompro)
 
         # Calcul des proportions : Poids, Garçon, Doublant
         for key, val in rep['section'].items():
             rep['section'][key]['poids'] = en_pourcentage(val['effectif']/eff_total)
             rep['section'][key]['garçon'] = en_pourcentage(val['garçon']/val['effectif'])
             rep['section'][key]['doublant'] = en_pourcentage(val['doublant']/val['effectif'])
+            rep['section'][key]['nouveau'] = en_pourcentage(val['nouveau']/val['effectif'])
+            rep['section'][key]['issue de pro'] = en_pourcentage(val['issue de pro']/val['effectif'])
         for key, val in rep['niveau'].items():
             rep['niveau'][key]['poids'] = en_pourcentage(val['effectif']/eff_total)
             rep['niveau'][key]['garçon'] = en_pourcentage(val['garçon']/val['effectif'])
             rep['niveau'][key]['doublant'] = en_pourcentage(val['doublant']/val['effectif'])
+            rep['niveau'][key]['nouveau'] = en_pourcentage(val['nouveau']/val['effectif'])
+            rep['niveau'][key]['issue de pro'] = en_pourcentage(val['issue de pro']/val['effectif'])
         # Pour l'établissement
+        eff_hors_bts = eff_total - eff_total_bts
         rep['établissement']['Effectif total'] = eff_total
         rep['établissement']['Proportion garçon'] = en_pourcentage(total_garcon / eff_total)
-        a = (total_garcon - total_garcon_bts)/(eff_total - eff_total_bts)
+        a = (total_garcon - total_garcon_bts)/eff_hors_bts
         rep['établissement']['Proportion garçon (hors BTS)'] = en_pourcentage(a)
         rep['établissement']['Proportion doublant'] = en_pourcentage(total_doublant / eff_total)
+        rep['établissement']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
         # Provenance
         aff = self.db.lire_affectations()
-        annee_pre = int(annee)-1
+        annee_pre = annee-1
         for k,v in aff.items():
             annee_aff = v['Année']
             etab = v['Établissement']
@@ -215,7 +268,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                 rep['provenance'][etab] = {'en seconde':0, 'total':0}
             if annee_aff == annee_pre: # On ne compte que les affectations de l'année précédente
                 dict_add(rep['provenance'][etab], 'total', 1)
-            elif annee_aff == int(annee):
+            elif annee_aff == annee:
                 if v['Niveau'] == "Seconde": # Pour les élèves de seconde...
                     a = v['INE']+'__'+str(annee_pre)
                     if a in aff:
@@ -224,13 +277,12 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                         if not etab_pre in rep['provenance']:
                             rep['provenance'][etab_pre] = {'en seconde':0, 'total':0}
                         dict_add(rep['provenance'][etab_pre], 'en seconde', 1)
-                    # Requête équivalente en SQL :
-                    # SELECT Établissement,count(*) FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="Seconde" AND Année=2013) AND Année=2012 GROUP BY Établissement
         return rep
 
     def importer_xml(self, data):
         """
             Parse le xml à importer
+
         :param data: le fichier à importer (passé en POST)
         :type data: flux de fichier xml
         """

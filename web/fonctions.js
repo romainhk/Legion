@@ -5,6 +5,32 @@
 /* Placeholder */
 function nyi(message) { alert ('Not yet implemented :)\n'+message); }
 
+/*
+ * Donne les coordonnées de la cellule dans son tableau
+ */
+function coordonnees(cell) {
+    x = cell.cellIndex;
+    y = cell.parentNode.rowIndex;
+    return {'x':x, 'y':y};
+}
+
+/*
+ * Renvoie la liste triée inversée des clés du dictionnaire donné
+ */
+function dict_key_sort(dict, reversered=false){
+    var keys = new Array();
+    for (k in dict) {
+        if (dict.hasOwnProperty(k)) {
+            keys.push(k);
+        }
+    }
+    if (reversered) {
+        return keys.sort().reverse();
+    } else {
+        return keys.sort();
+    }
+}
+
 /* 
  * Importation
  */
@@ -105,20 +131,6 @@ function dict_to_tab(cell, dict, donnee) {
     });
 }
 
-
-/*
- * Renvoie la liste triée inversée des clés du dictionnaire donné
- */
-function reverse_key_sort(dict){
-    var keys = new Array();
-    for (k in dict) {
-        if (dict.hasOwnProperty(k)) {
-            keys.push(k);
-        }
-    }
-    return keys.sort().reverse();
-}
-
 /*
  * Conversion d'un tableau html en fichier CSV
  * FROM http://jsfiddle.net/terryyounghk/KPEGU/
@@ -167,15 +179,6 @@ function exportTableToCSV($table, filename) {
         'href': csvData,
         'target': '_blank'
     });
-}
-
-/*
- * Donne les coordonnées de la cellule dans son tableau
- */
-function coordonnees(cell) {
-    x = cell.cellIndex;
-    y = cell.parentNode.rowIndex;
-    return {'x':x, 'y':y};
 }
 
 /*

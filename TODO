@@ -21,6 +21,7 @@
 * Pending : ajout dans la base après validation
 * Pending : sad_etab et sad_classe ?
 * Importation : si l'élève est déjà présent -> mettre à jour ses informations
+* la classe Legion est recréée à chaque requête ?
 
 ### HTML
 * envoie de mail en masse : à tester

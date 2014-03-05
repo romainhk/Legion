@@ -80,7 +80,7 @@ $.each( data['data'], function( key, value ) {
     tab.append("<tr id='"+ine+"'>"+vals+"</tr>\n");
     var parcours = value['Parcours'];
     // Le parcours des classes est rétrograde
-    cles = reverse_key_sort(parcours);
+    cles = dict_key_sort(parcours, true);
     $.each( cles, function( i, an ) {
         var t = parcours[an];
         var doub = trad_db_val(t[2], "Doublement");
@@ -146,15 +146,17 @@ $.each( data['data'], function( key, value ) {
         annee = $('#stats-annee').val();
         $.get( "/stats?annee="+annee, function( data ) {
             $('#stats-etablissement > tbody').html('');
-            $.each(data['établissement'], function(i,j) {
-                $('#stats-etablissement > tbody').append('<tr><td>'+i+'</td><td>'+j+'</td></tr>');
+            cles = dict_key_sort(data['établissement']);
+            $.each(cles, function(i,k) {
+                l = data['établissement'][k];
+                $('#stats-etablissement > tbody').append('<tr><td>'+k+'</td><td>'+l+'</td></tr>');
             });
             dict_to_tab($('#stats-section'), data, 'section');
             dict_to_tab($('#stats-niveau'), data, 'niveau');
             dict_to_tab($('#stats-provenance'), data, 'provenance');
+            $("#stats-etablissement").tablesorter();
             $("#stats-section").tablesorter();
             $("#stats-niveau").tablesorter();
-            $("#stats-etablissement").tablesorter();
             $("#stats-provenance").tablesorter();
         });
     } else if (nom == 'Pending') {

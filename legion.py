@@ -23,10 +23,10 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         # Fichier de config
         config = configparser.ConfigParser()
         config.read(root + os.sep + 'config.cfg')
-        self.situations=[x.strip(' ') for x in config.get('General', 'situations').split(',')]
-        self.niveaux=[x.strip(' ') for x in config.get('General', 'niveaux').split(',')]
-        self.filières=[x.strip(' ') for x in config.get('General', 'filières').split(',')]
-        self.sections=[x.strip(' ') for x in config.get('General', 'sections').split(',')]
+        self.situations=sorted([x.strip(' ') for x in config.get('General', 'situations').split(',')])
+        self.niveaux=sorted([x.strip(' ') for x in config.get('General', 'niveaux').split(',')])
+        self.filières=sorted([x.strip(' ') for x in config.get('General', 'filières').split(',')])
+        self.sections=sorted([x.strip(' ') for x in config.get('General', 'sections').split(',')])
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
                         [u'Prénom', 'A-z'], \

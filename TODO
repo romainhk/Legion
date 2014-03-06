@@ -12,14 +12,12 @@
 * Pour les élèves sorties : durée de scolarisation
 
 ### Python
-* si aucuns changements à l'extinction -> supprimer la copie de la base
 * Cohérente d importation : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ? ou supposer à l'importation une sortie en fin d'année ?
 * date de sortie plutôt qu'une durée ?
 * colonne Diplômé : importation automatisée depuis ...
 * Pending : ajout dans la base après validation
 * Pending : sad_etab et sad_classe ?
 * Importation : si l'élève est déjà présent -> mettre à jour ses informations
-* la classe Legion est recréée à chaque requête ?
 * Stats : donner un équivalent SQL pour vérification
 
 ### HTML

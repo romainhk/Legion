@@ -13,6 +13,13 @@ Classe Legion
     :undoc-members:
     :private-members:
 
+Classe HttpHandler
+==================
+.. autoclass:: httphandler.HttpHandler
+    :members:
+    :undoc-members:
+    :private-members:
+
 Classe Database
 ===============
 .. autoclass:: database.Database

@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8  -*-
 import sqlite3
 import shutil
 import datetime
@@ -7,7 +9,8 @@ from liblegion import *
 
 class Database():
     def __init__(self, root):
-        bdd = root+os.sep+'base.sqlite'
+        self.nom_base = 'base.sqlite'
+        bdd = root + os.sep + self.nom_base
         if os.path.isfile(bdd):
             self.old_db = bdd+'.'+datetime.date.today().isoformat()
             # Sauvegarde de la base
@@ -17,7 +20,11 @@ class Database():
             exit(2)
 
         try:
-            self.conn = sqlite3.connect(bdd)
+            self.conn = sqlite3.connect(bdd, check_same_thread=False)
+            # Par défaut, sqlite interdit l'accès si la connexion avec la base a été fait depuis un autre thread
+            # mais c'est le cas de l'HttpHandler, qui est créé à chaque requête.
+            # check_same_thread permet de surmonter ça et d'autoriser l'handler à appeler des fonctions de Database
+            #ref: http://stackoverflow.com/questions/393554/python-sqlite3-and-concurrency
         except:
             logging.error("Impossible de se connecter à la base de données ({0})".format(bdd))
             exit(3)
@@ -25,8 +32,15 @@ class Database():
         self.curs = self.conn.cursor()
 
     def fermer(self):
-        """ Éteint proprement la base de données """
-        self.conn.commit()
+        """
+            Gère les sauvegardes de la base de données
+            & Ferme proprement la base
+        """
+        nb_changements = self.conn.total_changes
+        logging.info('{0} changements effectués sur la base.'.format(nb_changements))
+        if nb_changements == 0:
+            # Si aucuns changements, on supprime la sauvegarde créé au lancement
+            os.remove(self.old_db)
         self.conn.close()
 
     def maj_champ(self, table, ident, champ, donnee):
@@ -62,7 +76,9 @@ class Database():
 
     def ecrire(self, enr, date, nom_etablissement):
         """ Ajoute les informations d'un élève à la bdd
-        * date est l'objet datetime de référence de l'importation
+
+        :param date: l'objet date de référence pour l'importation
+        :type date: datetime
         """
         ine = enr['ine']
         classe = enr['classe']

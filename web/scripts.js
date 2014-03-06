@@ -226,7 +226,7 @@ $(document).ready(function() {
         $.get( "/quitter", function( data ) {
             var msg = $('<div>').append(data);
             msg.addClass('msg_quitter');
-            $('#'+page_active).html( msg );
+            $('#'+page_active).replaceWith( msg );
         });
     });
 

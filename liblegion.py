@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8  -*-
 import webbrowser
 import threading
 import datetime
@@ -75,3 +77,9 @@ def filtrer_dict(dictionnaire, clef, valeur):
         return dict((k, v) for k, v in dictionnaire.items() if v[clef]==valeur)
     else:
         return dictionnaire
+
+def eteindre_serveur(serveur):
+    """ Tue le serveur web """
+    assassin = threading.Thread(target=serveur.shutdown)
+    assassin.daemon = True
+    assassin.start()

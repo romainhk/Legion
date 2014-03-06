@@ -25,7 +25,7 @@ footer {
     text-align:center;
     font-style:italic;
 }
-footer span {
+footer .copyleft {
     -moz-transform: scaleX(-1);
     -o-transform: scaleX(-1);
     -webkit-transform: scaleX(-1);
@@ -97,6 +97,11 @@ a.export, a.export:visited {
     float:left;
     height:100px;
 }
+.msg_quitter {
+    text-align:center;
+    font-size:1.5em;
+    margin:4em auto 2em;
+}
 .total {
     float: right;
     margin:2ex 3ex 0 0;
@@ -121,6 +126,11 @@ a.export, a.export:visited {
 }
 .onglet li:hover {
     background-color:#99BFE6;
+}
+.onglet img {
+    width:4ex;
+    margin: 2px;
+    padding-left:2ex;
 }
 .onglet_actif {
     background-color:#99BFE6 !important;

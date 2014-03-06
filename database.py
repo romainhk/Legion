@@ -24,6 +24,11 @@ class Database():
         self.conn.row_factory = sqlite3.Row
         self.curs = self.conn.cursor()
 
+    def fermer(self):
+        """ Éteint proprement la base de données """
+        self.conn.commit()
+        self.conn.close()
+
     def maj_champ(self, table, ident, champ, donnee):
         """ Mets à jour un champ de la base """
         if table == 'Élèves':       col = 'INE'
@@ -55,7 +60,7 @@ class Database():
                 return False
         return True
 
-    def ecrire(self, enr, date):
+    def ecrire(self, enr, date, nom_etablissement):
         """ Ajoute les informations d'un élève à la bdd
         * date est l'objet datetime de référence de l'importation
         """
@@ -95,12 +100,12 @@ class Database():
 
             annee = date.year
             x = self.ecrire_affectation(
-                    ine,    annee,     classe,  'Jean Moulin',  enr['doublement'])
+                    ine,    annee,     classe,  nom_etablissement,  enr['doublement'])
             etab = enr['sad_établissement']
             classe_pre = enr['sad_classe']
             if enr['doublement'] == 1: # Parfois, ces informations ne sont pas redonnées dans SIECLE
                 classe_pre = classe
-                etab = 'Jean Moulin'
+                etab = nom_etablissement
             y = self.ecrire_affectation(
                     ine,    annee-1,   classe_pre,  etab,   9)
             # En cas de problème, annulation des modifications précédentes

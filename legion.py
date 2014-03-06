@@ -89,6 +89,8 @@ class Legion(http.server.SimpleHTTPRequestHandler):
             rep = {'affectations': self.db.lire_classes(), 'niveaux': self.niveaux, 'filières': self.filières, 'sections': self.sections }
         elif params.path == '/init':
             rep = {'header': self.header, 'situations': self.situations }
+        elif params.path == '/quitter':
+            self.quitter()
         else:
             # Par défaut, on sert l'index 
             http.server.SimpleHTTPRequestHandler.do_GET(self)
@@ -118,6 +120,14 @@ class Legion(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(bytes(json.dumps(reponse), 'UTF-8'))
         self.wfile.flush()
+
+    def quitter(self):
+        """ Éteint le programme proprement """
+        rep = 'Vous pouvez éteindre votre navigateur et reprendre une activité normale.'
+        self.repondre(rep)
+        self.db.fermer()
+        # Quid des sauvegardes de la base
+        # Couper le serveur web
 
     def generer_stats(self, annee):
         """
@@ -317,7 +327,7 @@ class Legion(http.server.SimpleHTTPRequestHandler):
                     'naissance': naissance, 'genre': genre, 'mail': mail, \
                     'doublement': doublement, 'classe': classe, 'entrée': entrée, \
                     'sad_établissement': sad_etab,   'sad_classe': sad_classe }
-            if self.db.ecrire(enr, self.date):
+            if self.db.ecrire(enr, self.date, self.nom_etablissement):
                 self.nb_import = self.nb_import + 1
             if not (classe in les_classes or classe in classes_a_ajouter or classe is None) :
                 classes_a_ajouter.append(classe)

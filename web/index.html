@@ -22,6 +22,7 @@
         <li>Statistiques</li>
         <li>Pending</li>
         <li>Options</li>
+        <img src="quitter.png" class="img_quitter" alt="Quitter l'application" title="Quitter l'application" />
     </ul>
     <h1>Legion</h1>
     <h2>Application de suivi de cohorte</h2>
@@ -81,17 +82,13 @@
     </div>
     <div id="Options" style="background-color:rgba(255,255,255,0.2); margin:1em; padding:1ex 2ex;">
         <div style="float:left; width:48%">
-        <h4>Importation</h4>
-        Sélectionner l'exportation xml de la base SIÈCLE (<i>ElevesSansAdresses.xml</i>)
-        <form id="importation" enctype="multipart/form-data">
-            <input type="file" id="fichier">
-            <input type="button" value="Importer" onClick="importation();" style="font-weight:bold;">
-            <img id="progress" src="loading.gif">
-        </form>
-        <h4>Options ?</h4>
-        <ul>
-            <li><a href="#" onclick="nyi('Pour le moment, fermez juste le navigateur.');">Quitter</a></li>
-        </ul>
+            <h4>Importation</h4>
+            Sélectionner l'exportation xml de la base SIÈCLE (<i>ElevesSansAdresses.xml</i>)
+            <form id="importation" enctype="multipart/form-data">
+                <input type="file" id="fichier">
+                <input type="button" value="Importer" onClick="importation();" style="font-weight:bold;">
+                <img id="progress" src="loading.gif">
+            </form>
         </div>
         <div style="float:right; width:48%">
         <table id="options" border="1">
@@ -109,6 +106,6 @@
         </div>
         <div style="clear:both;"></div>
     </div>
-    <footer><span>©</span> Romain Hennuyer</footer>
+    <footer><span class="copyleft">©</span> Romain Hennuyer</footer>
   </body>
 </html>

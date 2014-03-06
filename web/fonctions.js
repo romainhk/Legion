@@ -2,9 +2,6 @@
  * Ici : les fonctions stables et peu interactives
  */
 
-/* Placeholder */
-function nyi(message) { alert ('Not yet implemented :)\n'+message); }
-
 /*
  * Donne les coordonnées de la cellule dans son tableau
  */

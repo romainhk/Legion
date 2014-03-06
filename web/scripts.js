@@ -217,6 +217,18 @@ $(document).ready(function() {
         target.addClass('onglet_actif');
         charger_page(target.html());
     });
+    // Bouton quitter
+    $("#onglets .img_quitter").hover(function(event) {
+        $(this).attr("src", 'quitter_hover.png');
+    }).mouseout(function(event) {
+        $(this).attr("src", 'quitter.png');
+    }).on('click', function (event) {
+        $.get( "/quitter", function( data ) {
+            var msg = $('<div>').append(data);
+            msg.addClass('msg_quitter');
+            $('#'+page_active).html( msg );
+        });
+    });
 
     // Initialisation de l'application
     $.get( "/init", function( data ) {

@@ -13,7 +13,6 @@
 
 ### Python
 * si aucuns changements à l'extinction -> supprimer la copie de la base
-** bouton "quitter"
 * Cohérente d importation : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ? ou supposer à l'importation une sortie en fin d'année ?
 * date de sortie plutôt qu'une durée ?
 * colonne Diplômé : importation automatisée depuis ...

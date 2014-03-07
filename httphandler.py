@@ -245,7 +245,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         rep['établissement']['Proportion garçon (hors BTS)'] = en_pourcentage(a)
         rep['établissement']['Proportion doublant'] = en_pourcentage(total_doublant / eff_total)
         rep['établissement']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
-        rep['établissement']['Années de scolarisation moyennes par élève'] = str(round(total_scol / eff_total, 1)) + ' ans'
+        rep['établissement']['Années de scolarisation moyenne par élève'] = str(round(total_scol / eff_total, 1)) + ' ans'
         # Provenance
         aff = self.server.db.lire_affectations()
         annee_pre = annee-1
@@ -265,6 +265,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         if not etab_pre in rep['provenance']:
                             rep['provenance'][etab_pre] = {'en seconde':0, 'total':0}
                         dict_add(rep['provenance'][etab_pre], 'en seconde', 1)
+        logging.debug(rep)
         return rep
 
     def importer_xml(self, data):

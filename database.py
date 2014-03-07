@@ -158,13 +158,13 @@ class Database():
                 raison.append('Pb affectation année en cours')
             if not y:
                 #raison.append('Pb affectation année précédente')
-                logging.warning(u"Pb affectation sur l'année précédente\n{0}".format(enr))
+                logging.info(u"Pb affectation sur l'année précédente\n{0}".format(enr))
             if len(raison) > 0:
                 self.conn.rollback()
                 self.ecrire_en_pending(enr, annee, ', '.join(raison))
 
         else:
-            #logging.warning(u"L'élève {0} est déjà présent dans la base {1}".format(ine, date.year))
+            # L'élève est déjà présent dans la base
             return False
 
         # Validation de l'affectation à une classe
@@ -211,8 +211,7 @@ class Database():
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:
-                #logging.warning(u"Erreur lors de l'ajout de la classe {0}:\n{1}".format(cla, e.args[0]))
-                pass
+                logging.info(u"Erreur lors de l'ajout de la classe {0}:\n{1}".format(cla, e.args[0]))
         self.conn.commit()
 
     def lire(self):

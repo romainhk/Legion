@@ -19,7 +19,9 @@ class Legion(http.server.HTTPServer):
         C'est le serveur web qui lance le traitement des requêtes HTTP et instancie la base sqlite
     """
     def __init__(self, address, handler):
+        # Création du server
         super().__init__(address, handler)
+
         self.nb_import = 0
         self.root = os.getcwd()
         os.chdir(self.root + os.sep + 'web') # la partie html est dans le dossier web
@@ -60,12 +62,16 @@ class Legion(http.server.HTTPServer):
         self.date = date
 
 if __name__ == "__main__":
-    """
-    logging.basicConfig(
-        filename='legion.log',
-        level=logging.DEBUG,
-        format='%(asctime)s;%(levelname)s;%(message)s')
-    """
+    # Logging
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    # Logging fichier
+    file_handler = logging.FileHandler('legion.log', 'a')
+    file_handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s;%(levelname)s;%(message)s')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
     PORT = 5432
     address = ("", PORT)
     server = Legion(address, httphandler.HttpHandler)

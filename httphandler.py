@@ -128,16 +128,20 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
 
         Validation des résultats par SQL
 
-        - Nb d'élève issus de pro / classe
+        - Nb d'élèves issus de pro / classe
             > SELECT Classe,Niveau,Filière,Section,count(*) NbIssueDePro FROM Affectations NATURAL JOIN Classes WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE  Année=2012 AND Filière='Pro') AND Année = 2013 GROUP BY Classe
         - Dénombrement des élèves / établissement d'origine
             > SELECT Établissement,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="Seconde" AND Année=<ANNEE>) AND Année=<ANNEE>-1 GROUP BY Établissement
+        - Nombre d'années de scolarisation / élève
+            > SELECT INE,count(*) FROM Affectations WHERE Établissement="Jean Moulin" GROUP BY INE
         """
 
         # Récupération des infos : classes, effectif...
         classes = self.server.db.lire_classes()
         classes_pro = filtrer_dict(classes, 'Filière', 'Pro')
         data = {}
+        total_scol = 0
+        # Pour chaque élève
         for d in self.server.db.lire().values():
             p = d['Parcours']
             if d['Genre'] == 2: # une femme
@@ -163,6 +167,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 data[classe] = [sum(x) for x in zip(data[classe], t)] # data[classe] += t
             else:
                 data[classe] = t
+            # Nombre d'années de scolarisation
+            for b in p.values():
+                if b[1] == self.server.nom_etablissement:
+                    total_scol = total_scol + 1
         logging.debug(data)
 
         # On génère maintenant le tableau de statistiques
@@ -182,6 +190,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         total_garcon_bts = 0
         total_doublant = 0
         total_issue_de_pro = 0
+        # Pour chaque classe
         for cla, val in sorted(data.items()):
             g, f, doub, nouveau, frompro = val
             eff = g + f
@@ -236,6 +245,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         rep['établissement']['Proportion garçon (hors BTS)'] = en_pourcentage(a)
         rep['établissement']['Proportion doublant'] = en_pourcentage(total_doublant / eff_total)
         rep['établissement']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
+        rep['établissement']['Années de scolarisation moyennes par élève'] = str(round(total_scol / eff_total, 1)) + ' ans'
         # Provenance
         aff = self.server.db.lire_affectations()
         annee_pre = annee-1

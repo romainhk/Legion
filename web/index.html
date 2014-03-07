@@ -45,7 +45,7 @@
     </div>
     <div id="Statistiques">
         <h3>Statistiques : pour l'année <select id="stats-annee" onChange="function(){$('#onglets li:last-child').trigger('click');};"></select></h3>
-       <div style="float: left; width:59%">
+       <div style="float: left; width:64%">
             <table id="stats-etablissement" border="1">
                 <caption>Pour l'établissement</caption>
                 <thead></thead>
@@ -58,7 +58,7 @@
                 <caption>Par section</caption>
             </table>
         </div>
-        <div style="float: right; width:39%">
+        <div style="float: right; width:34%">
             <table id="stats-provenance" style="width:auto; margin:auto;" border="1">
                 <caption>Établissement d'origine des élèves</caption>
                 <thead><tr>
@@ -81,7 +81,7 @@
         </table>
     </div>
     <div id="Options" class="page_options">
-        <div style="float:left; width:48%">
+        <div style="float:left; width:49%">
             <h4>Importation</h4>
             Sélectionner l'exportation xml de la base SIÈCLE (<i>ElevesSansAdresses.xml</i>)
             <form id="importation" enctype="multipart/form-data">
@@ -90,19 +90,20 @@
                 <img id="progress" src="loading.gif">
             </form>
         </div>
-        <div style="float:right; width:48%">
-        <table id="options" border="1">
-            <caption>Veuillez affecter les classes à leurs groupes</caption>
-            <thead>
-                <tr>
-                    <th>Classe</th>
-                    <th>Niveau</th>
-                    <th>Filière</th>
-                    <th>Section</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <div style="float:right; width:49%">
+            <h4>Affectations</h4>
+            <table id="options" border="1">
+                <caption>Veuillez affecter les classes à leurs groupes</caption>
+                <thead>
+                    <tr>
+                        <th>Classe</th>
+                        <th>Niveau</th>
+                        <th>Filière</th>
+                        <th>Section</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
         <div style="clear:both;"></div>
     </div>

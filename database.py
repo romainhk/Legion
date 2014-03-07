@@ -44,7 +44,18 @@ class Database():
         self.conn.close()
 
     def maj_champ(self, table, ident, champ, donnee):
-        """ Mets à jour un champ de la base """
+        """
+            Mets à jour un champ de la base
+
+        :param table: le nom de la table visée
+        :param ident: l'identifiant (clé primaire) visé
+        :param champ: le champ à modifier
+        :param donnee: la nouvelle valoir
+        :type table: str
+        :type ident: str
+        :type champ: str
+        :type donnee: str
+        """
         if table == 'Élèves':       col = 'INE'
         elif table == 'Classes':    col = 'Classe'
         req = u'UPDATE {tab} SET {champ}="{d}" WHERE {col}="{ident}"'.format(tab=table, col=col, ident=ident, champ=champ, d=donnee)
@@ -57,7 +68,20 @@ class Database():
         return 'Oui'
 
     def ecrire_affectation(self, ine, annee, classe, etab, doublement):
-        """ Ajoute une affectations (un élève, dans une classe, dans un établissement) """
+        """
+            Ajoute une affectations (un élève, dans une classe, dans un établissement)
+
+        :param ine: l'INE de l'élève
+        :param annee: l'année de scolarisation
+        :param classe: sa classe
+        :param etab: le nom de l'établissement
+        :param doublement: si c'est un redoublement
+        :type ine: str
+        :type annee: int
+        :type classe: str
+        :type etab: str
+        :type doublement: int - 0 ou 1
+        """
         if classe == "" or etab == "":
             logging.info("Erreur lors de l'affectation : classe ou établissement en défaut")
             return False
@@ -75,10 +99,15 @@ class Database():
         return True
 
     def ecrire(self, enr, date, nom_etablissement):
-        """ Ajoute les informations d'un élève à la bdd
+        """
+            Ajoute les informations d'un élève à la bdd
 
+        :param enr: les données à enregistrer
         :param date: l'objet date de référence pour l'importation
+        :param nom_etablissement: le nom de l'établissement [sic]
+        :type enr: dict
         :type date: datetime
+        :type nom_etablissement: str
         """
         ine = enr['ine']
         classe = enr['classe']
@@ -143,7 +172,16 @@ class Database():
         return True
 
     def ecrire_en_pending(self, enr, annee, raison=""):
-        """ Mise en attente de données incomplètes pour validation ultérieure """
+        """
+            Mise en attente de données incomplètes pour validation ultérieure
+            
+        :param enr: les données à enregistrer
+        :param annee: année de scolarisation
+        :param raison: raison de la mise en pending
+        :type enr: dict 
+        :type annee: int
+        :type raison: str
+        """
         # Protection contre des données qui seraient non valides
         for k, v in enr.items():
             if v is None: enr[k] = '0'
@@ -162,7 +200,12 @@ class Database():
             logging.error(u"Erreur lors de la mise en pending :\n%s" % (e.args[0]))
 
     def ecrire_classes(self, classes):
-        """ Insère une liste de classes (fin d'importation) """
+        """
+            Insère une liste de classes (fin d'importation)
+            
+        :param classes: les classes à créer
+        :type classes: list
+        """
         for cla in classes:
             req = u'INSERT INTO Classes VALUES ("{0}", "", "", "")'.format(cla)
             try:
@@ -173,7 +216,11 @@ class Database():
         self.conn.commit()
 
     def lire(self):
-        """ Lit le contenu de la base """
+        """
+            Lit le contenu de la base
+        
+        :rtype: dict
+        """
         data = {}
         req = u'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC, Année DESC'
         for row in self.curs.execute(req).fetchall():
@@ -195,7 +242,11 @@ class Database():
         return data
 
     def lire_pending(self):
-        """ Lit le contenu de la base """
+        """
+            Lit le contenu de la base
+        
+        :rtype: dict
+        """
         data = {}
         req = u'SELECT * FROM Pending ORDER BY Nom,Prénom ASC, Année DESC'
         for row in self.curs.execute(req).fetchall():
@@ -205,7 +256,11 @@ class Database():
         return data
 
     def lire_classes(self):
-        """ Lit le contenu de la table classes """
+        """
+            Lit le contenu de la table classes
+        
+        :rtype: dict
+        """
         data = {}
         req = u'SELECT * FROM Classes ORDER BY Classe ASC'
         for row in self.curs.execute(req).fetchall():
@@ -215,7 +270,11 @@ class Database():
         return data
 
     def lire_affectations(self):
-        """ Lit le contenu de la table affectations et classes """
+        """
+            Lit le contenu de la table affectations et classes
+        
+        :rtype: dict
+        """
         data = {}
         req = u'SELECT * FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe'
         for row in self.curs.execute(req).fetchall():
@@ -225,7 +284,13 @@ class Database():
         return data
 
     def lister(self, info):
-        """ Génère une liste des INE, des classes ou des années connues """
+        """
+            Génère une liste des INE, des classes ou des années connues
+
+        :param info: l'information recherchée dans 'Affectations'
+        :type info: str
+        :rtype: list
+        """
         req = u'SELECT DISTINCT {0} FROM Affectations ORDER BY {0} ASC'.format(info)
         try:
             self.curs.execute(req)

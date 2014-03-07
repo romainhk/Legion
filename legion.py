@@ -56,6 +56,7 @@ class Legion(http.server.HTTPServer):
         self.db = database.Database(self.root)
 
     def maj_date(self, date):
+        """ Seter sur la date """
         self.date = date
 
 if __name__ == "__main__":

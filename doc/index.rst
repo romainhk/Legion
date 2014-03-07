@@ -38,6 +38,8 @@ Fonctions statiques
 .. autofunction:: liblegion.nb_annees
 .. autofunction:: liblegion.debut_AS
 .. autofunction:: liblegion.en_pourcentage
+.. autofunction:: liblegion.filtrer_dict
+.. autofunction:: liblegion.eteindre_serveur
 
 Index et recherche
 ==================

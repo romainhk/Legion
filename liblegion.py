@@ -15,7 +15,11 @@ def xstr(s):
     return str(s)
 
 def dict_from_row(row):
-    """ Converti un sqlite.Row en dictionnaire """
+    """
+        Converti un sqlite.Row en dictionnaire
+    
+    :rtype: dict
+    """
     return dict(zip(row.keys(), row))
 
 def dict_add(dictionnaire, index, val):
@@ -33,7 +37,10 @@ def open_browser(port):
     thread.start()
 
 def datefr(chaine):
-    """ Converti une date au format français en objet Date
+    """
+        Converti une date au format français en objet Date
+    
+    :rtype: datetime
     """
     return datetime.datetime.strptime(chaine, "%d/%m/%Y")
 
@@ -49,7 +56,10 @@ def yearsago(years, from_date=None):
         return from_date.replace(month=2, day=28, year=from_date.year-years)
 
 def nb_annees(begin, end=None):
-    """ Nombre d'années depuis ...
+    """
+        Nombre d'années depuis ...
+    
+    :rtype: int
     """
     if end is None:
         end = datetime.datetime.now()
@@ -60,17 +70,27 @@ def nb_annees(begin, end=None):
         return nb_annees
 
 def debut_AS(annee):
-    """ Converti une année en objet Date le jour de la rentrée scolaire
+    """
+        Converti une année en objet Date le jour de la rentrée scolaire
+    
+    :rtype: datetime
     """
     return datetime.date(year=annee, month=9, day=1)
 
 def en_pourcentage(nombre):
-    """ Met en forme un nombre réel en pourcentage à 10^-1 """
+    """
+        Met en forme un nombre réel en pourcentage à 10^-1
+    
+    :rtype: str
+    """
     return str( round(100*nombre,1) ) + ' %'
 
 def filtrer_dict(dictionnaire, clef, valeur):
-    """ Filtre les éléments d'un dictionnaire de dictionnaires, dont la sous-valeur "clef" vaut "valeur"
+    """
+        Filtre les éléments d'un dictionnaire de dictionnaires, dont la sous-valeur "clef" vaut "valeur"
+    
     :example: { {clef: valeur, clef2: xxx}, {clef: autre_valeur, clef2: yyy} }
+    :rtype: dict
     """
     premier_element = next (iter (dictionnaire.values()))
     if clef in premier_element:
@@ -79,7 +99,12 @@ def filtrer_dict(dictionnaire, clef, valeur):
         return dictionnaire
 
 def eteindre_serveur(serveur):
-    """ Tue le serveur web """
+    """
+        Tue le serveur web
+
+    :param serveur: le serveur à éteindre
+    :type serveur: référence
+    """
     assassin = threading.Thread(target=serveur.shutdown)
     assassin.daemon = True
     assassin.start()

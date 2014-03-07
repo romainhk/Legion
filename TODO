@@ -24,3 +24,6 @@
 * envoie de mail en masse : à tester
 * filtre colonne année, doublement et étab : ne fonctionne que pour l'année en cours
 * les colonnes editables ne le sont plus après un changement d'onglet
+* possibilité d'ajouter un mail ?
+* virer l'autofocus sur un tablesorter l'orde d'un update
+* Liste : limiter à une année scolaire (comme stats) ?

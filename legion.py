@@ -71,6 +71,10 @@ if __name__ == "__main__":
     formatter = logging.Formatter('%(asctime)s;%(levelname)s;%(message)s')
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
+    # Logging console
+    steam_handler = logging.StreamHandler()
+    steam_handler.setLevel(logging.DEBUG)
+    logger.addHandler(steam_handler)
 
     PORT = 5432
     address = ("", PORT)

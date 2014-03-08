@@ -1,7 +1,4 @@
-### Statistiques à intégrer
-* Statistiques plus par classe mais sur plusieurs niveaux : 
-    - Par Niveau (1er, 2nd,...) -> Filière (Générale, Pro) -> Section (GA, ST2S,...)
-    - Par Section (ex: toutes les classe de GA qqs le niveau)
+### Statistiques
 * Moyenne annuelle / élève / an (-> importation depuis pronote ?)
 * Pouvoir répondre à : "Pour une année X, il y a Y élèves en BTS provenant de la section Z"
 * Taux de passage d'une année à l'autre (ex: % d'élève en 1GA passant en TGA)

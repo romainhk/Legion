@@ -22,7 +22,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         # Analyse de l'url
         params = urlparse(self.path)
         query = parse_qs(params.query)
-        logging.debug("GET {0} ? {1}".format(params, query))
+        #logging.debug("GET {0} ? {1}".format(params, query))
         rep = "";
         if params.path == '/liste':
             rep = { 'annee': self.server.date.year, 'data': self.server.db.lire() }
@@ -180,8 +180,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 'niveau': {},
                 'provenance': {} }
         # Ordre d'affichage des colonnes
-        rep['ordre']['niveau'] = rep['ordre']['section'] = \
-            ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
+        rep['ordre']['niveau'] = ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
+        rep['ordre']['section'] = ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
         rep['ordre']['provenance'] = ['total', 'en seconde']
         # Calculs
         eff_total = sum([sum(x[:2]) for x in data.values()]) # Effectif total
@@ -195,7 +195,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             g, f, doub, nouveau, frompro = val
             eff = g + f
             section_classe = classes[cla]['Section']
-            niveau_classe = classes[cla]['Niveau']
+            niveau_classe = classes[cla]['Niveau']+' '+classes[cla]['Filière']
             total_garcon = total_garcon + g
             total_doublant = total_doublant + doub
             total_issue_de_pro = total_issue_de_pro + frompro

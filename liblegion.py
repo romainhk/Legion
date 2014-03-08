@@ -29,6 +29,10 @@ def dict_add(dictionnaire, index, val):
     else:
         dictionnaire[index] = val
 
+def inc_list(liste, index):
+    """ Incrémente un élément de la liste """
+    liste[index] = liste[index] + 1
+
 def open_browser(port):
     """ Ouvre un navigateur web sur la bonne page """
     def _open_browser():

@@ -74,7 +74,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         if self.path == '/importation':
             logging.info('Importation du fichier...')
             self.importer_xml(data)
-            rep = u"L'importation de {nb} élèves s'est bien terminée.".format(nb=self.server.nb_import)
+            rep = u"L'importation s'est bien terminée."
         else:
             return True
         self.repondre(rep)
@@ -275,7 +275,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         :param data: le fichier à importer (passé en POST)
         :type data: flux de fichier xml
         """
-        self.server.nb_import = 0
         les_classes = list(self.server.db.lire_classes().keys())
         classes_a_ajouter = []
         # Écriture de l'xml dans un fichier
@@ -306,8 +305,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     'naissance': naissance, 'genre': genre, 'mail': mail, \
                     'doublement': doublement, 'classe': classe, 'entrée': entrée, \
                     'sad_établissement': sad_etab,   'sad_classe': sad_classe }
-            if self.server.db.ecrire(enr, self.server.date, self.server.nom_etablissement):
-                self.server.nb_import = self.server.nb_import + 1
+            self.server.db.ecrire(enr, self.server.date, self.server.nom_etablissement)
             if not (classe in les_classes or classe in classes_a_ajouter or classe is None) :
                 classes_a_ajouter.append(classe)
         # Ici, les données élèves ont été importé ; il ne reste qu'à ajouter les classes inconnues

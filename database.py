@@ -30,6 +30,12 @@ class Database():
             exit(3)
         self.conn.row_factory = sqlite3.Row
         self.curs = self.conn.cursor()
+        # defines
+        self.FAILED = 0
+        self.INSERT = 1
+        self.UPDATE = 2
+        self.PENDING = 3
+        self.importations = [0]*4
 
     def fermer(self):
         """
@@ -41,6 +47,10 @@ class Database():
         if nb_changements == 0:
             # Si aucuns changements, on supprime la sauvegarde créé au lancement
             os.remove(self.old_db)
+        else:
+            logging.info('Rapport de modifications sur la base : {0} échecs ; {1} insertions ; {2} majs ; {3} pending.'.format(
+                self.importations[self.FAILED],     self.importations[self.INSERT],
+                self.importations[self.UPDATE],     self.importations[self.PENDING]) )
         self.conn.close()
 
     def maj_champ(self, table, ident, champ, donnee):
@@ -67,6 +77,92 @@ class Database():
         self.conn.commit()
         return 'Oui'
 
+    def ecrire(self, enr, date, nom_etablissement):
+        """
+            Ajoute les informations d'un élève à la bdd
+
+        :param enr: les données à enregistrer
+        :param date: l'objet date de référence pour l'importation
+        :param nom_etablissement: le nom de l'établissement [sic]
+        :type enr: dict
+        :type date: datetime
+        :type nom_etablissement: str
+        :return: define du type d'importation effectuée
+        :rtype: int
+        """
+        ofthejedi = self.INSERT # valeur de retour par défaut
+        ine = enr['ine']
+        classe = enr['classe']
+        enr[u'Diplômé'] = enr[u'Situation'] = enr['Lieu'] = '?'
+        raison = []
+        if ine is None:
+            raison.append("Pas d'INE")
+        if classe is None:
+            raison.append('Pas de classe')
+        if len(raison) > 0:
+            self.ecrire_en_pending(enr, date.year, ', '.join(raison))
+            inc_list(self.importations, self.PENDING)
+            return self.PENDING
+
+        # Ajout de l'élève
+        req = u'INSERT INTO Élèves ' \
+            + u'(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu) ' \
+            + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}")'.format(
+                    ine,                enr['nom'],         enr[u'prénom'],
+                    enr['naissance'],   int(enr['genre']),  enr['mail'],
+                    int(enr['entrée']), enr[u'Diplômé'],    enr['Situation'],
+                    enr['Lieu'])
+        try:
+            self.curs.execute(req)
+        except sqlite3.IntegrityError:
+            # L'élève est déjà présent dans la base
+            # On met a jour les infos administratives mais pas les colonnes remplies à la main : Diplômé, Situation et Lieu
+            req = u'UPDATE Élèves SET ' \
+                + u'Nom="{0}", Prénom="{1}", Naissance="{2}", Genre={3}, Mail="{4}", Entrée={5}'.format(
+                        enr['nom'],         enr[u'prénom'],     enr['naissance'],
+                        int(enr['genre']),  enr['mail'],        int(enr['entrée']) ) \
+                + u' WHERE INE="{ine}"'.format(ine=ine)
+            try:
+                self.curs.execute(req)
+            except sqlite3.Error as e:
+                logging.error(u"Update d'un élève : {0}\n{1}".format(e.args[0], req))
+                inc_list(self.importations, self.FAILED)
+                return self.FAILED
+            ofthejedi = self.UPDATE
+
+        except sqlite3.Error as e:
+            # Pour toute autre erreur, on laisse tomber
+            logging.error(u"Insertion d'un élève : {0}\n{1}".format(e.args[0], req))
+            inc_list(self.importations, self.FAILED)
+            return self.FAILED
+
+        # Reste à affecter notre élève à sa classe de cette année et de l'année dernière
+        x = self.ecrire_affectation(
+                ine,    date.year,     classe,  nom_etablissement,  enr['doublement'])
+        etab = enr['sad_établissement']
+        classe_pre = enr['sad_classe']
+        if enr['doublement'] == 1: # Parfois, ces informations ne sont pas redonnées dans SIECLE
+            classe_pre = classe
+            etab = nom_etablissement
+        y = self.ecrire_affectation(
+                ine,    date.year-1,   classe_pre,  etab,   9)
+        # En cas de problème, annulation des modifications précédentes
+        if x == self.FAILED:
+            raison.append('Pb affectation année en cours')
+        if y == self.FAILED:
+            #raison.append('Pb affectation année précédente')
+            logging.warning(u"{0}".format(enr))
+        if len(raison) > 0:
+            self.conn.rollback()
+            self.ecrire_en_pending(enr, date.year, ', '.join(raison))
+            inc_list(self.importations, self.PENDING)
+            return self.PENDING
+
+        # Validation de l'écriture et de l'affectation à deux classes
+        self.conn.commit()
+        inc_list(self.importations, ofthejedi)
+        return ofthejedi
+
     def ecrire_affectation(self, ine, annee, classe, etab, doublement):
         """
             Ajoute une affectations (un élève, dans une classe, dans un établissement)
@@ -90,86 +186,36 @@ class Database():
               + 'VALUES ("{0}", {1}, "{2}", "{3}", {4})'.format( ine, annee, classe, etab, doublement )
         try:
             self.curs.execute(req)
-        except sqlite3.Error as e:
-            logging.warning(u"Erreur lors de l'affectation de la classe pour {0}:\n{1}".format(ine, e.args[0]))
-            # En cas de redoublement, une erreur d'insertion sur l'année précédente (code 9)
-            # indique que l'élève est déjà connu -> on l'ignore
-            if doublement != 9:
-                return False
-        return True
-
-    def ecrire(self, enr, date, nom_etablissement):
-        """
-            Ajoute les informations d'un élève à la bdd
-
-        :param enr: les données à enregistrer
-        :param date: l'objet date de référence pour l'importation
-        :param nom_etablissement: le nom de l'établissement [sic]
-        :type enr: dict
-        :type date: datetime
-        :type nom_etablissement: str
-        """
-        ine = enr['ine']
-        classe = enr['classe']
-        enr[u'Diplômé'] = enr[u'Situation'] = enr['Lieu'] = '?'
-        raison = []
-        if ine is None:
-            raison.append("Pas d'INE")
-        if classe is None:
-            raison.append('Pas de classe')
-        if len(raison) > 0:
-            self.ecrire_en_pending(enr, date.year, ', '.join(raison))
-            return True
-        # On vérifie si l'élève est déjà présent dans la bdd pour cette année
-        req = u'SELECT COUNT(*) FROM Affectations WHERE ' \
-            + u'INE="{ine}" AND Année={annee}'.format(ine=ine, annee=date.year)
-        try:
-            self.curs.execute(req)
-        except sqlite3.Error as e:
-            logging.error(u"Impossible de savoir si l'élève est déjà dans la base :\n%s" % (e.args[0]))
-        r = self.curs.fetchone()
-        if r[0] == 0:
-            # Ajout de l'élève
-            req = u'INSERT INTO Élèves ' \
-                + u'(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu) ' \
-                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}")'.format(
-                        ine,                enr['nom'],         enr[u'prénom'],
-                        enr['naissance'],   int(enr['genre']),  enr['mail'],
-                        int(enr['entrée']), enr[u'Diplômé'],    enr['Situation'],
-                        enr['Lieu'])
+        except sqlite3.IntegrityError as e:
+             # L'affectation existe déjà -> maj
+            req = u'UPDATE Affectations SET ' \
+                  +  u'Classe="{0}", Établissement="{1}", Doublement={2}'.format( classe, etab, doublement ) \
+                  +  u' WHERE INE="{0}" AND Année={1}'.format( ine, annee )
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:
-                logging.error(u"Erreur lors de l'insertion :\n%s" % (e.args[0]))
-                return False
+                logging.error(u"Update d'une affectation : {0}\n{1}".format(e.args[0], req))
+                return self.FAILED
+            return self.UPDATE
+        except sqlite3.Error as e:
+            logging.error(u"Insertion d'une affectation : {0}\n{1}".format(e.args[0], req))
+            return self.FAILED
+        return self.INSERT
 
-            annee = date.year
-            x = self.ecrire_affectation(
-                    ine,    annee,     classe,  nom_etablissement,  enr['doublement'])
-            etab = enr['sad_établissement']
-            classe_pre = enr['sad_classe']
-            if enr['doublement'] == 1: # Parfois, ces informations ne sont pas redonnées dans SIECLE
-                classe_pre = classe
-                etab = nom_etablissement
-            y = self.ecrire_affectation(
-                    ine,    annee-1,   classe_pre,  etab,   9)
-            # En cas de problème, annulation des modifications précédentes
-            if not x:
-                raison.append('Pb affectation année en cours')
-            if not y:
-                #raison.append('Pb affectation année précédente')
-                logging.info(u"Pb affectation sur l'année précédente\n{0}".format(enr))
-            if len(raison) > 0:
-                self.conn.rollback()
-                self.ecrire_en_pending(enr, annee, ', '.join(raison))
-
-        else:
-            # L'élève est déjà présent dans la base
-            return False
-
-        # Validation de l'affectation à une classe
+    def ecrire_classes(self, classes):
+        """
+            Insère une liste de classes (fin d'importation)
+            
+        :param classes: les classes à créer
+        :type classes: list
+        """
+        for cla in classes:
+            req = u'INSERT INTO Classes VALUES ("{0}", "", "", "")'.format(cla)
+            try:
+                self.curs.execute(req)
+            except sqlite3.Error as e:
+                logging.info(u"Erreur lors de l'ajout de la classe {0}:\n{1}".format(cla, e.args[0]))
         self.conn.commit()
-        return True
 
     def ecrire_en_pending(self, enr, annee, raison=""):
         """
@@ -199,21 +245,6 @@ class Database():
         except sqlite3.Error as e:
             logging.error(u"Erreur lors de la mise en pending :\n%s" % (e.args[0]))
 
-    def ecrire_classes(self, classes):
-        """
-            Insère une liste de classes (fin d'importation)
-            
-        :param classes: les classes à créer
-        :type classes: list
-        """
-        for cla in classes:
-            req = u'INSERT INTO Classes VALUES ("{0}", "", "", "")'.format(cla)
-            try:
-                self.curs.execute(req)
-            except sqlite3.Error as e:
-                logging.info(u"Erreur lors de l'ajout de la classe {0}:\n{1}".format(cla, e.args[0]))
-        self.conn.commit()
-
     def lire(self):
         """
             Lit le contenu de la base
@@ -240,17 +271,17 @@ class Database():
                 data[ine] = d
         return data
 
-    def lire_pending(self):
+    def lire_affectations(self):
         """
-            Lit le contenu de la base
+            Lit le contenu de la table affectations et classes
         
         :rtype: dict
         """
         data = {}
-        req = u'SELECT * FROM Pending ORDER BY Nom,Prénom ASC, Année DESC'
+        req = u'SELECT * FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
-            key = d['INE']
+            key = d['INE']+'__'+str(d['Année'])
             data[key] = d
         return data
 
@@ -268,17 +299,17 @@ class Database():
             data[key] = d
         return data
 
-    def lire_affectations(self):
+    def lire_pending(self):
         """
-            Lit le contenu de la table affectations et classes
+            Lit le contenu de la base
         
         :rtype: dict
         """
         data = {}
-        req = u'SELECT * FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe'
+        req = u'SELECT * FROM Pending ORDER BY Nom,Prénom ASC, Année DESC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
-            key = d['INE']+'__'+str(d['Année'])
+            key = d['INE']
             data[key] = d
         return data
 

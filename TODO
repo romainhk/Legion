@@ -14,7 +14,7 @@
 * colonne Diplômé : importation automatisée depuis ...
 * Pending : ajout dans la base après validation
 * Pending : sad_etab et sad_classe ?
-* Importation : si l'élève est déjà présent -> mettre à jour ses informations
+* Importation : update pour le pending aussi
 * Stats : donner un équivalent SQL pour vérification
 
 ### HTML
@@ -22,4 +22,4 @@
 * filtre colonne année, doublement et étab : ne fonctionne que pour l'année en cours
 * les colonnes editables ne le sont plus après un changement d'onglet
 * possibilité d'ajouter un mail ?
-* Liste : limiter à une année scolaire (comme stats) ?
+* Liste : limiter à une année scolaire (comme stats) ? (pb du temps de chargement)

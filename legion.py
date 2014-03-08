@@ -22,17 +22,14 @@ class Legion(http.server.HTTPServer):
         # Création du server
         super().__init__(address, handler)
 
-        self.nb_import = 0
-        self.root = os.getcwd()
-        os.chdir(self.root + os.sep + 'web') # la partie html est dans le dossier web
-        # Fichier de config
-        config = configparser.ConfigParser()
-        config.read(self.root + os.sep + 'config.cfg')
-        self.nom_etablissement=config.get('General', 'nom de l\'etablissement')
-        self.situations=sorted([x.strip(' ') for x in config.get('General', 'situations').split(',')])
-        self.niveaux=sorted([x.strip(' ') for x in config.get('General', 'niveaux').split(',')])
-        self.filières=sorted([x.strip(' ') for x in config.get('General', 'filières').split(',')])
-        self.sections=sorted([x.strip(' ') for x in config.get('General', 'sections').split(',')])
+        global root, config
+        os.chdir(root + os.sep + 'web') # la partie html est dans le dossier web
+        # Lecture de la configuration
+        self.nom_etablissement=config.get('Base', 'nom de l\'etablissement')
+        self.situations=sorted([x.strip(' ') for x in config.get('Base', 'situations').split(',')])
+        self.niveaux=sorted([x.strip(' ') for x in config.get('Base', 'niveaux').split(',')])
+        self.filières=sorted([x.strip(' ') for x in config.get('Base', 'filières').split(',')])
+        self.sections=sorted([x.strip(' ') for x in config.get('Base', 'sections').split(',')])
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
                         [u'Prénom', 'A-z'], \
@@ -55,7 +52,7 @@ class Legion(http.server.HTTPServer):
         else:
             self.date = debut_AS(ajd.year)
         # DB
-        self.db = database.Database(self.root)
+        self.db = database.Database(root)
 
     def maj_date(self, date):
         """ Seter sur la date """
@@ -76,12 +73,17 @@ if __name__ == "__main__":
     steam_handler.setLevel(logging.DEBUG)
     logger.addHandler(steam_handler)
 
-    PORT = 5432
-    address = ("", PORT)
+    # Fichier de config
+    root = os.getcwd()
+    config = configparser.ConfigParser()
+    config.read(root + os.sep + 'config.cfg')
+
+    port=int(config.get('General', 'port'))
+    address = ("", port)
     server = Legion(address, httphandler.HttpHandler)
-    #open_browser(PORT)
+    #open_browser(port)
     thread = threading.Thread(target = server.serve_forever)
     thread.deamon = True
-    logging.info(u'Démarrage du serveur sur le port {0}'.format(PORT))
+    logging.info(u'Démarrage du serveur sur le port {0}'.format(port))
     time.sleep(0.2)
     thread.start()

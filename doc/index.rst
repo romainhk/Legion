@@ -32,6 +32,7 @@ Fonctions statiques
 .. autofunction:: liblegion.xstr
 .. autofunction:: liblegion.dict_from_row
 .. autofunction:: liblegion.dict_add
+.. autofunction:: liblegion.inc_list
 .. autofunction:: liblegion.open_browser
 .. autofunction:: liblegion.datefr
 .. autofunction:: liblegion.yearsago

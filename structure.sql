@@ -17,7 +17,7 @@ CREATE TABLE "Affectations" (
     "Année" INTEGER,
     "Classe" TEXT NOT NULL,
     "Établissement" TEXT DEFAULT (null),
-    "Doublement" INTEGER  DEFAULT (0), -- 0=non, 1=oui, 9=indéterminé
+    "Doublement" INTEGER  DEFAULT (9), -- 0=non, 1=oui, 9=indéterminé
     PRIMARY KEY(INE,Année)
 );
 CREATE TABLE "Pending" (

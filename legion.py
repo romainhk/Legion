@@ -25,11 +25,11 @@ class Legion(http.server.HTTPServer):
         global root, config
         os.chdir(root + os.sep + 'web') # la partie html est dans le dossier web
         # Lecture de la configuration
-        self.nom_etablissement=config.get('Base', 'nom de l\'etablissement')
-        self.situations=sorted([x.strip(' ') for x in config.get('Base', 'situations').split(',')])
-        self.niveaux=sorted([x.strip(' ') for x in config.get('Base', 'niveaux').split(',')])
-        self.filières=sorted([x.strip(' ') for x in config.get('Base', 'filières').split(',')])
-        self.sections=sorted([x.strip(' ') for x in config.get('Base', 'sections').split(',')])
+        self.nom_etablissement=config.get('Établissement', 'nom de l\'etablissement')
+        self.situations=sorted([x.strip(' ') for x in config.get('Établissement', 'situations').split(',')])
+        self.niveaux=sorted([x.strip(' ') for x in config.get('Établissement', 'niveaux').split(',')])
+        self.filières=sorted([x.strip(' ') for x in config.get('Établissement', 'filières').split(',')])
+        self.sections=sorted([x.strip(' ') for x in config.get('Établissement', 'sections').split(',')])
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
                         [u'Prénom', 'A-z'], \

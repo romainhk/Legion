@@ -48,7 +48,7 @@ class Database():
             # Si aucuns changements, on supprime la sauvegarde créé au lancement
             os.remove(self.old_db)
         else:
-            logging.info('Rapport de modifications sur la base : {0} échecs ; {1} insertions ; {2} majs ; {3} pending.'.format(
+            logging.info('Rapport de modifications : {0} échecs ; {1} insertions ; {2} majs ; {3} pending.'.format(
                 self.importations[self.FAILED],     self.importations[self.INSERT],
                 self.importations[self.UPDATE],     self.importations[self.PENDING]) )
         self.conn.close()

@@ -42,7 +42,7 @@ function fin_filtrage(e, filter){
         t = 'Résultats : ' + a + ' / ' + nb_eleves + ' élèves.';
     } else {
         id = 'totalPending';
-        t = a + ' élèves.';
+        t = a + ' enregistrements en attente.';
     }
     $("#"+id).html(t);
     // Reaffichage des childrows

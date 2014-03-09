@@ -100,9 +100,13 @@ class Database():
         if classe is None:
             raison.append('Pas de classe')
         if len(raison) > 0:
-            self.ecrire_en_pending(enr, date.year, ', '.join(raison))
-            inc_list(self.importations, self.PENDING)
-            return self.PENDING
+            if self.ecrire_en_pending(enr, date.year, ', '.join(raison)):
+                self.conn.commit()
+                inc_list(self.importations, self.PENDING)
+                return self.PENDING
+            else:
+                inc_list(self.importations, self.FAILED)
+                return self.FAILED
 
         # Ajout de l'élève
         req = u'INSERT INTO Élèves ' \
@@ -154,9 +158,13 @@ class Database():
             logging.warning(u"{0}".format(enr))
         if len(raison) > 0:
             self.conn.rollback()
-            self.ecrire_en_pending(enr, date.year, ', '.join(raison))
-            inc_list(self.importations, self.PENDING)
-            return self.PENDING
+            if self.ecrire_en_pending(enr, date.year, ', '.join(raison)):
+                self.conn.commit()
+                inc_list(self.importations, self.PENDING)
+                return self.PENDING
+            else:
+                inc_list(self.importations, self.FAILED)
+                return self.FAILED
 
         # Validation de l'écriture et de l'affectation à deux classes
         self.conn.commit()
@@ -227,23 +235,63 @@ class Database():
         :type enr: dict 
         :type annee: int
         :type raison: str
+        :rtype: booléen
         """
         # Protection contre des données qui seraient non valides
         for k, v in enr.items():
             if v is None: enr[k] = '0'
 
-        req = u'INSERT INTO Pending ' \
-            + u'(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu, Année, Classe, Établissement, Doublement, Raison) ' \
-            + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}", {10}, "{11}", "{12}", {13}, "{14}")'.format(
-                enr['ine'],             enr['nom'],             enr[u'prénom'],
-                enr['naissance'],       int(enr['genre']),      enr['mail'],
-                int(enr['entrée']),     enr[u'Diplômé'],        enr['Situation'],
-                enr['Lieu'],            annee,                  enr['classe'],
-                enr['sad_établissement'],   int(enr['doublement']),     raison)
-        try:
-            self.curs.execute(req)
-        except sqlite3.Error as e:
-            logging.error(u"Erreur lors de la mise en pending :\n%s" % (e.args[0]))
+        # On regarde si l'enregistrement est déjà présent
+        ine = enr['ine']
+        nom = enr['nom']
+        prenom = enr['prénom']
+        if ine != '0': # Par ine
+            condition = 'INE="{0}"'.format(ine)
+        elif nom !='0' and prenom != '0': # Par nom/prénom
+            condition = 'Nom="{0}" AND Prénom="{1}"'.format(nom, prenom)
+        else:
+            # Impossible de savoir si c'est un doublon -> on fait tout simplement une insertion
+            condition = ''
+            r = [0,0]
+        if condition != '':
+            req = u'SELECT rowid,COUNT(*) FROM Pending WHERE {0}'.format(condition)
+            try:
+                 self.curs.execute(req)
+            except sqlite3.Error as e:
+                logging.error(u"Test de duplicata en pending : {0}\n{1}".format(e.args[0], req))
+                return False
+            r = self.curs.fetchone()
+
+        if r[1] == 0:
+            req = u'INSERT INTO Pending ' \
+                + u'(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu, Année, Classe, Établissement, Doublement, Raison) ' \
+                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}", {10}, "{11}", "{12}", {13}, "{14}")'.format(
+                    enr['ine'],             enr['nom'],             enr[u'prénom'],
+                    enr['naissance'],       int(enr['genre']),      enr['mail'],
+                    int(enr['entrée']),     enr[u'Diplômé'],        enr['Situation'],
+                    enr['Lieu'],            annee,                  enr['classe'],
+                    enr['sad_établissement'],   int(enr['doublement']),     raison)
+            try:
+                self.curs.execute(req)
+            except sqlite3.Error as e:
+                logging.error(u"Insertion en pending : {0}\n{1}".format(e.args[0], req))
+                return False
+        else:
+             # Déjà en pending
+            req = u'UPDATE Pending SET ' \
+                + u'INE="{0}", Nom="{1}", Prénom="{2}", Naissance="{3}", Genre={4}, Mail="{5}", Entrée={6}, Diplômé="{7}", Situation="{8}", Lieu="{9}", Année={10}, Classe="{11}", Établissement="{12}", Doublement={13}, Raison="{14}" '.format(
+                    enr['ine'],             enr['nom'],             enr[u'prénom'],
+                    enr['naissance'],       int(enr['genre']),      enr['mail'],
+                    int(enr['entrée']),     enr[u'Diplômé'],        enr['Situation'],
+                    enr['Lieu'],            annee,                  enr['classe'],
+                    enr['sad_établissement'],   int(enr['doublement']),     raison) \
+                + 'WHERE rowid={rowid}'.format(rowid=r[0])
+            try:
+                self.curs.execute(req)
+            except sqlite3.Error as e:
+                logging.error(u"Update en pending : {0}\n{1}".format(e.args[0], req))
+                return False
+        return True
 
     def lire(self):
         """
@@ -306,10 +354,10 @@ class Database():
         :rtype: dict
         """
         data = {}
-        req = u'SELECT * FROM Pending ORDER BY Nom,Prénom ASC, Année DESC'
+        req = u'SELECT rowid,* FROM Pending ORDER BY Nom,Prénom ASC, Année DESC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
-            key = d['INE']
+            key = d['rowid']
             data[key] = d
         return data
 

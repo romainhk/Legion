@@ -22,7 +22,6 @@ CREATE TABLE "Affectations" (
 );
 CREATE TABLE "Pending" (
     -- Enregistrements en attende de validation
-    "ID" INTEGER  AUTO_INCREMENT,
     "INE" TEXT,
     "Nom" TEXT,
     "Prénom" TEXT,
@@ -37,8 +36,7 @@ CREATE TABLE "Pending" (
     "Classe" TEXT,
     "Établissement" TEXT DEFAULT (null),
     "Doublement" INTEGER  DEFAULT (0),
-    "Raison" TEXT DEFAULT (null),
-    PRIMARY KEY(ID)
+    "Raison" TEXT DEFAULT (null)
 );
 CREATE TABLE "Classes" (
     -- Classement des classes (sic)

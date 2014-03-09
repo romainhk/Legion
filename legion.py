@@ -32,18 +32,18 @@ class Legion(http.server.HTTPServer):
         self.sections=sorted([x.strip(' ') for x in config.get('Établissement', 'sections').split(',')])
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
-                        [u'Prénom', 'A-z'], \
-                        [u'Âge', ''], \
+                        ['Prénom', 'A-z'], \
+                        ['Âge', ''], \
                         ['Mail', ''], \
                         ['Genre', 'H/F'], \
                         ['Année', 'Toutes'], \
                         ['Classe', ''], \
                         ['Établissement', ''], \
                         ['Doublement', 'Oui/Non'], \
-                        [u'Entrée', 'Date'], \
-                        [u'Diplômé', 'A-z'], \
-                        [u'Situation', 'A-z'], \
-                        [u'Lieu', 'A-z'] \
+                        ['Entrée', 'Date'], \
+                        ['Diplômé', 'A-z'], \
+                        ['Situation', 'A-z'], \
+                        ['Lie', 'A-z'] \
                         ]
 
         ajd = datetime.date.today()
@@ -84,6 +84,6 @@ if __name__ == "__main__":
     #open_browser(port)
     thread = threading.Thread(target = server.serve_forever)
     thread.deamon = True
-    logging.info(u'Démarrage du serveur sur le port {0}'.format(port))
+    logging.info('Démarrage du serveur sur le port {0}'.format(port))
     time.sleep(0.2)
     thread.start()

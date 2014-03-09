@@ -68,7 +68,7 @@ class Database():
         """
         if table == 'Élèves':       col = 'INE'
         elif table == 'Classes':    col = 'Classe'
-        req = u'UPDATE {tab} SET {champ}="{d}" WHERE {col}="{ident}"'.format(tab=table, col=col, ident=ident, champ=champ, d=donnee)
+        req = 'UPDATE {tab} SET {champ}="{d}" WHERE {col}="{ident}"'.format(tab=table, col=col, ident=ident, champ=champ, d=donnee)
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
@@ -93,7 +93,7 @@ class Database():
         ofthejedi = self.INSERT # valeur de retour par défaut
         ine = enr['ine']
         classe = enr['classe']
-        enr[u'Diplômé'] = enr[u'Situation'] = enr['Lieu'] = '?'
+        enr['Diplômé'] = enr['Situation'] = enr['Lieu'] = '?'
         raison = []
         if ine is None:
             raison.append("Pas d'INE")
@@ -109,23 +109,23 @@ class Database():
                 return self.FAILED
 
         # Ajout de l'élève
-        req = u'INSERT INTO Élèves ' \
-            + u'(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu) ' \
+        req = 'INSERT INTO Élèves ' \
+            + '(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu) ' \
             + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}")'.format(
-                    ine,                enr['nom'],         enr[u'prénom'],
+                    ine,                enr['nom'],         enr['prénom'],
                     enr['naissance'],   int(enr['genre']),  enr['mail'],
-                    int(enr['entrée']), enr[u'Diplômé'],    enr['Situation'],
+                    int(enr['entrée']), enr['Diplômé'],    enr['Situation'],
                     enr['Lieu'])
         try:
             self.curs.execute(req)
         except sqlite3.IntegrityError:
             # L'élève est déjà présent dans la base
             # On met a jour les infos administratives mais pas les colonnes remplies à la main : Diplômé, Situation et Lieu
-            req = u'UPDATE Élèves SET ' \
-                + u'Nom="{0}", Prénom="{1}", Naissance="{2}", Genre={3}, Mail="{4}", Entrée={5}'.format(
-                        enr['nom'],         enr[u'prénom'],     enr['naissance'],
+            req = 'UPDATE Élèves SET ' \
+                + 'Nom="{0}", Prénom="{1}", Naissance="{2}", Genre={3}, Mail="{4}", Entrée={5}'.format(
+                        enr['nom'],         enr['prénom'],     enr['naissance'],
                         int(enr['genre']),  enr['mail'],        int(enr['entrée']) ) \
-                + u' WHERE INE="{ine}"'.format(ine=ine)
+                + ' WHERE INE="{ine}"'.format(ine=ine)
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:
@@ -189,16 +189,16 @@ class Database():
         if classe == "" or etab == "":
             logging.info("Erreur lors de l'affectation : classe ou établissement en défaut")
             return False
-        req = u'INSERT INTO Affectations ' \
-              +  u'(INE, Année, Classe, Établissement, Doublement) ' \
+        req = 'INSERT INTO Affectations ' \
+              +  '(INE, Année, Classe, Établissement, Doublement) ' \
               + 'VALUES ("{0}", {1}, "{2}", "{3}", {4})'.format( ine, annee, classe, etab, doublement )
         try:
             self.curs.execute(req)
         except sqlite3.IntegrityError as e:
              # L'affectation existe déjà -> maj
-            req = u'UPDATE Affectations SET ' \
-                  +  u'Classe="{0}", Établissement="{1}", Doublement={2}'.format( classe, etab, doublement ) \
-                  +  u' WHERE INE="{0}" AND Année={1}'.format( ine, annee )
+            req = 'UPDATE Affectations SET ' \
+                  +  'Classe="{0}", Établissement="{1}", Doublement={2}'.format( classe, etab, doublement ) \
+                  +  ' WHERE INE="{0}" AND Année={1}'.format( ine, annee )
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:
@@ -218,7 +218,7 @@ class Database():
         :type classes: list
         """
         for cla in classes:
-            req = u'INSERT INTO Classes VALUES ("{0}", "", "", "")'.format(cla)
+            req = 'INSERT INTO Classes VALUES ("{0}", "", "", "")'.format(cla)
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:
@@ -254,7 +254,7 @@ class Database():
             condition = ''
             r = [0,0]
         if condition != '':
-            req = u'SELECT rowid,COUNT(*) FROM Pending WHERE {0}'.format(condition)
+            req = 'SELECT rowid,COUNT(*) FROM Pending WHERE {0}'.format(condition)
             try:
                  self.curs.execute(req)
             except sqlite3.Error as e:
@@ -263,12 +263,12 @@ class Database():
             r = self.curs.fetchone()
 
         if r[1] == 0:
-            req = u'INSERT INTO Pending ' \
-                + u'(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu, Année, Classe, Établissement, Doublement, Raison) ' \
+            req = 'INSERT INTO Pending ' \
+                + '(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu, Année, Classe, Établissement, Doublement, Raison) ' \
                 + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}", {10}, "{11}", "{12}", {13}, "{14}")'.format(
-                    enr['ine'],             enr['nom'],             enr[u'prénom'],
+                    enr['ine'],             enr['nom'],             enr['prénom'],
                     enr['naissance'],       int(enr['genre']),      enr['mail'],
-                    int(enr['entrée']),     enr[u'Diplômé'],        enr['Situation'],
+                    int(enr['entrée']),     enr['Diplômé'],        enr['Situation'],
                     enr['Lieu'],            annee,                  enr['classe'],
                     enr['sad_établissement'],   int(enr['doublement']),     raison)
             try:
@@ -278,11 +278,11 @@ class Database():
                 return False
         else:
              # Déjà en pending
-            req = u'UPDATE Pending SET ' \
-                + u'INE="{0}", Nom="{1}", Prénom="{2}", Naissance="{3}", Genre={4}, Mail="{5}", Entrée={6}, Diplômé="{7}", Situation="{8}", Lieu="{9}", Année={10}, Classe="{11}", Établissement="{12}", Doublement={13}, Raison="{14}" '.format(
-                    enr['ine'],             enr['nom'],             enr[u'prénom'],
+            req = 'UPDATE Pending SET ' \
+                + 'INE="{0}", Nom="{1}", Prénom="{2}", Naissance="{3}", Genre={4}, Mail="{5}", Entrée={6}, Diplômé="{7}", Situation="{8}", Lieu="{9}", Année={10}, Classe="{11}", Établissement="{12}", Doublement={13}, Raison="{14}" '.format(
+                    enr['ine'],             enr['nom'],             enr['prénom'],
                     enr['naissance'],       int(enr['genre']),      enr['mail'],
-                    int(enr['entrée']),     enr[u'Diplômé'],        enr['Situation'],
+                    int(enr['entrée']),     enr['Diplômé'],        enr['Situation'],
                     enr['Lieu'],            annee,                  enr['classe'],
                     enr['sad_établissement'],   int(enr['doublement']),     raison) \
                 + 'WHERE rowid={rowid}'.format(rowid=r[0])
@@ -300,7 +300,7 @@ class Database():
         :rtype: dict
         """
         data = {}
-        req = u'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC, Année DESC'
+        req = 'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC, Année DESC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             ine = d['INE']
@@ -315,7 +315,7 @@ class Database():
             else:
                 d['Parcours'] = {annee: [ classe, etab, doub ]}
                 # Calcul de l'âge actuel
-                d[u'Âge'] = nb_annees(datefr(d['Naissance']))
+                d['Âge'] = nb_annees(datefr(d['Naissance']))
                 data[ine] = d
         return data
 
@@ -326,7 +326,7 @@ class Database():
         :rtype: dict
         """
         data = {}
-        req = u'SELECT * FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe'
+        req = 'SELECT * FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             key = d['INE']+'__'+str(d['Année'])
@@ -340,7 +340,7 @@ class Database():
         :rtype: dict
         """
         data = {}
-        req = u'SELECT * FROM Classes ORDER BY Classe ASC'
+        req = 'SELECT * FROM Classes ORDER BY Classe ASC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             key = d['Classe']
@@ -354,7 +354,7 @@ class Database():
         :rtype: dict
         """
         data = {}
-        req = u'SELECT rowid,* FROM Pending ORDER BY Nom,Prénom ASC, Année DESC'
+        req = 'SELECT rowid,* FROM Pending ORDER BY Nom,Prénom ASC, Année DESC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             key = d['rowid']
@@ -369,7 +369,7 @@ class Database():
         :type info: str
         :rtype: list
         """
-        req = u'SELECT DISTINCT {0} FROM Affectations ORDER BY {0} ASC'.format(info)
+        req = 'SELECT DISTINCT {0} FROM Affectations ORDER BY {0} ASC'.format(info)
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:

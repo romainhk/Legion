@@ -36,7 +36,7 @@ def inc_list(liste, index):
 def open_browser(port):
     """ Ouvre un navigateur web sur la bonne page """
     def _open_browser():
-        webbrowser.open(u'http://localhost:{port}'.format(port=port))
+        webbrowser.open('http://localhost:{port}'.format(port=port))
     thread = threading.Timer(0.5, _open_browser)
     thread.start()
 

@@ -301,7 +301,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE[TYPE_STRUCTURE='D']/CODE_STRUCTURE".format(eid))
             sad_etab = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/DENOM_COMPL')).title()
             sad_classe = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_STRUCTURE')).strip(' ')
-            enr = { 'eid': eid, 'ine': ine, 'nom': nom, u'prénom': prenom, \
+            enr = { 'eid': eid, 'ine': ine, 'nom': nom, 'prénom': prenom, \
                     'naissance': naissance, 'genre': genre, 'mail': mail, \
                     'doublement': doublement, 'classe': classe, 'entrée': entrée, \
                     'sad_établissement': sad_etab,   'sad_classe': sad_classe }

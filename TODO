@@ -22,4 +22,4 @@
 * les colonnes editables ne le sont plus après un changement d'onglet
 * possibilité d'ajouter un mail ?
 * Liste : limiter à une année scolaire (comme stats) ? (pb du temps de chargement)
-* chromium : trad_db_val is not defined ?!
+* chromium : les colonnes editables ne fonctionnent pas

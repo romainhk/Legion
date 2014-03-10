@@ -13,8 +13,9 @@ function coordonnees(cell) {
 
 /*
  * Renvoie la liste triée inversée des clés du dictionnaire donné
+ * - le booléen reversed permet de renverser le tri
  */
-function dict_key_sort(dict, reversered=false){
+function dict_key_sort(dict, reversered){
     var keys = new Array();
     for (k in dict) {
         if (dict.hasOwnProperty(k)) {

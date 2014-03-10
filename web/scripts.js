@@ -146,7 +146,7 @@ $.each( data['data'], function( key, value ) {
         annee = $('#stats-annee').val();
         $.get( "/stats?annee="+annee, function( data ) {
             $('#stats-etablissement > tbody').html('');
-            cles = dict_key_sort(data['établissement']);
+            cles = dict_key_sort(data['établissement'], false);
             $.each(cles, function(i,k) {
                 l = data['établissement'][k];
                 $('#stats-etablissement > tbody').append('<tr><td>'+k+'</td><td>'+l+'</td></tr>');

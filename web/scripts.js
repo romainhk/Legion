@@ -183,9 +183,8 @@ $.each( data['data'], function( key, value ) {
             $.each(affectations, function(i, j) {
                 var c = j['Classe'];
                 var n = j['Niveau'];
-                var f = j['Filière'];
                 var s = j['Section'];
-                tab += '<tr><td>'+c+'</td><td>'+n+'</td><td>'+f+'</td><td>'+s+'</td></tr>\n';
+                tab += '<tr><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
             });
             $('#options > tbody').html(tab);
             $("#options").tablesorter().delegate('td', 'click', cell_to_select);

@@ -43,6 +43,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 val = ''
             rep = self.server.db.maj_champ('Classes', classe, champ, val)
+            # En cas de la modification d'une section, il faux modifier la filière en conséquence
+            if champ == "Section":
+                index = self.server.sections.index(val)
+                print(index)
+                self.server.db.maj_champ('Classes', classe, "Filière", self.server.filières[index])
         elif params.path == '/pending':
             rep = self.server.db.lire_pending()
         elif params.path == '/liste-annees':
@@ -50,7 +55,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         elif params.path == '/options':
             rep = { 'affectations': self.server.db.lire_classes(), 
                 'niveaux': self.server.niveaux,
-                'filières': self.server.filières,
                 'sections': self.server.sections }
         elif params.path == '/init':
             rep = {'header': self.server.header, 'situations': self.server.situations }

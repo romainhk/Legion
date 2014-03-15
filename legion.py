@@ -28,8 +28,13 @@ class Legion(http.server.HTTPServer):
         self.nom_etablissement=config.get('Établissement', 'nom de l\'etablissement')
         self.situations=sorted([x.strip(' ') for x in config.get('Établissement', 'situations').split(',')])
         self.niveaux=sorted([x.strip(' ') for x in config.get('Établissement', 'niveaux').split(',')])
-        self.filières=sorted([x.strip(' ') for x in config.get('Établissement', 'filières').split(',')])
-        self.sections=sorted([x.strip(' ') for x in config.get('Établissement', 'sections').split(',')])
+        self.sections = []
+        self.filières = []
+        for a in sorted([x.strip(' ') for x in config.get('Établissement', 'sections').split('\n')]):
+            b = a.split(',')
+            if len(b) == 2:
+                self.sections.append(b[0].strip(' '))
+                self.filières.append(b[1].strip(' '))
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
                         ['Prénom', 'A-z'], \

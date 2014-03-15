@@ -15,7 +15,6 @@
 * Pending : ajout/supprimer dans la base après validation
 * Pending : sad_etab et sad_classe ?
 * Stats : donner un équivalent SQL pour vérification
-* Affectation des classes : une section est forcément liée à une filière 
 
 ### HTML
 * envoie de mail en masse : à tester

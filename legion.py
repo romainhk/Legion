@@ -43,7 +43,7 @@ class Legion(http.server.HTTPServer):
                         ['Entrée', 'Date'], \
                         ['Diplômé', 'A-z'], \
                         ['Situation', 'A-z'], \
-                        ['Lie', 'A-z'] \
+                        ['Lieu', 'A-z'] \
                         ]
 
         ajd = datetime.date.today()

@@ -227,7 +227,7 @@ function cell_to_select(e) {
                 // Au changement de valeur, on l'enregistre dans la base
                 val = $(this).val();
                 if (col == "Situation") {
-                    ine = cell.parentsUntil('table').find('tr').attr('id');
+                    ine = cell.closest('tr').attr('id');
                     params = "ine="+ine+"&champ="+col+"&d="+val;
                     url = "/maj?"+params;
                 } else {

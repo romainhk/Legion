@@ -72,7 +72,7 @@ class Database():
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
-            logging.error(u"Erreur lors de l'insertion de '{0}' :\n{1}".format(ine, e.args[0]))
+            logging.error(u"Mise à jour d'un champ : {0}\n{1}".format(e.args[0], req))
             return 'Non'
         self.conn.commit()
         return 'Oui'

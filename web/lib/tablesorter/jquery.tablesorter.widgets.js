@@ -1,4 +1,4 @@
-/*! tableSorter 2.8+ widgets - updated 2/21/2014 (v2.15.3)
+/*! tableSorter 2.15+ widgets - updated 3/12/2014 (v2.15.8)
  *
  * Column Styles
  * Column Filters
@@ -125,7 +125,7 @@ ts.storage = function(table, key, value, options) {
 			document.cookie = key + '=' + (JSON.stringify(values)).replace(/\"/g,'\"') + '; expires=' + date.toGMTString() + '; path=/';
 		}
 	} else {
-		return values && values[url] ? values[url][id] : {};
+		return values && values[url] ? values[url][id] : '';
 	}
 };
 
@@ -380,7 +380,7 @@ ts.addWidget({
 		$table
 			.removeClass('hasFilters')
 			// add .tsfilter namespace to all BUT search
-			.unbind('addRows updateCell update updateRows updateComplete appendCache filterReset filterEnd search '.split(' ').join('.tsfilter '))
+			.unbind('addRows updateCell update updateRows updateComplete appendCache filterReset filterEnd search '.split(' ').join(c.namespace + 'filter '))
 			.find('.' + ts.css.filterRow).remove();
 		for (tbodyIndex = 0; tbodyIndex < $tbodies.length; tbodyIndex++ ) {
 			$tbody = ts.processTbody(table, $tbodies.eq(tbodyIndex), true); // remove tbody
@@ -558,7 +558,7 @@ ts.filter = {
 			ts.filter.buildRow(table, c, wo);
 		}
 
-		c.$table.bind('addRows updateCell update updateRows updateComplete appendCache filterReset filterEnd search '.split(' ').join('.tsfilter '), function(event, filter) {
+		c.$table.bind('addRows updateCell update updateRows updateComplete appendCache filterReset filterEnd search '.split(' ').join(c.namespace + 'filter '), function(event, filter) {
 			c.$table.find('.' + ts.css.filterRow).toggle( !(wo.filter_hideEmpty && $.isEmptyObject(c.cache)) ); // fixes #450
 			if ( !/(search|filter)/.test(event.type) ) {
 				event.stopPropagation();
@@ -628,7 +628,7 @@ ts.filter = {
 
 		// show processing icon
 		if (c.showProcessing) {
-			c.$table.bind('filterStart.tsfilter filterEnd.tsfilter', function(event, columns) {
+			c.$table.bind('filterStart' + c.namespace + 'filter filterEnd' + c.namespace + 'filter', function(event, columns) {
 				// only add processing to certain columns to all columns
 				$header = (columns) ? c.$table.find('.' + ts.css.header).filter('[data-column]').filter(function() {
 					return columns[$(this).data('column')] !== '';
@@ -654,14 +654,20 @@ ts.filter = {
 		c.$table.trigger('filterInit');
 	},
 	setDefaults: function(table, c, wo) {
-		var isArray, saved,
+		var isArray, saved, indx,
 			// get current (default) filters
-			filters = ts.getFilters(table);
+			filters = ts.getFilters(table) || [];
 		if (wo.filter_saveFilters && ts.storage) {
 			saved = ts.storage( table, 'tablesorter-filters' ) || [];
 			isArray = $.isArray(saved);
 			// make sure we're not just getting an empty array
 			if ( !(isArray && saved.join('') === '' || !isArray) ) { filters = saved; }
+		}
+		// if no filters saved, then check default settings
+		if (filters.join('') === '') {
+			for (indx = 0; indx < c.columns; indx++) {
+				filters[indx] = c.$headers.filter('[data-column="' + indx + '"]:last').attr(wo.filter_defaultAttrib) || filters[indx];
+			}
 		}
 		c.$table.data('lastSearch', filters);
 		return filters;
@@ -745,9 +751,9 @@ ts.filter = {
 		$el
 		// use data attribute instead of jQuery data since the head is cloned without including the data/binding
 		.attr('data-lastSearchTime', new Date().getTime())
-		.unbind('keyup search change')
+		.unbind('keyup search change '.split(' ').join(c.namespace + 'filter '))
 		// include change for select - fixes #473
-		.bind('keyup search change', function(event, filters) {
+		.bind('keyup search change '.split(' ').join(c.namespace + 'filter '), function(event, filters) {
 			$(this).attr('data-lastSearchTime', new Date().getTime());
 			// emulate what webkit does.... escape clears the filter
 			if (event.which === 27) {
@@ -759,7 +765,7 @@ ts.filter = {
 					return;
 			}
 			// true flag tells getFilters to skip newest timed input
-			ts.filter.searching( table, '', true );
+			ts.filter.searching( table, true, true );
 		});
 		c.$table.bind('filterReset', function(){
 			$el.val('');
@@ -1010,6 +1016,7 @@ ts.filter = {
 		c.$table.trigger('filterEnd');
 	},
 	buildSelect: function(table, column, updating, onlyavail) {
+		if (!table.config.cache || $.isEmptyObject(table.config.cache)) { return; }
 		column = parseInt(column, 10);
 		var indx, rowIndex, tbodyIndex, len, currentValue, txt, $filters,
 			c = table.config,

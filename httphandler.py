@@ -132,6 +132,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             > SELECT Classe,Niveau,Filière,Section,count(*) NbIssueDePro FROM Affectations NATURAL JOIN Classes WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE  Année=2012 AND Filière='Pro') AND Année = 2013 GROUP BY Classe
         - Dénombrement des élèves / établissement d'origine
             > SELECT Établissement,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="Seconde" AND Année=<ANNEE>) AND Année=<ANNEE>-1 GROUP BY Établissement
+        - Dénombrement des élèves BTS / classe d'origine
+            > SELECT Classe,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="BTS" AND Année=2013) AND Année=2012 GROUP BY Classe
         - Nombre d'années de scolarisation / élève
             > SELECT INE,count(*) FROM Affectations WHERE Établissement="Jean Moulin" GROUP BY INE
         """
@@ -178,11 +180,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 'établissement': {},
                 'section': {}, 
                 'niveau': {},
-                'provenance': {} }
+                'provenance': {},
+                'provenance bts': {} }
         # Ordre d'affichage des colonnes
         rep['ordre']['niveau'] = ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
         rep['ordre']['section'] = ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
         rep['ordre']['provenance'] = ['total', 'en seconde']
+        rep['ordre']['provenance bts'] = ['total']
         # Calculs
         eff_total = sum([sum(x[:2]) for x in data.values()]) # Effectif total
         eff_total_bts = 0
@@ -248,23 +252,30 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         rep['établissement']['Années de scolarisation moyenne par élève'] = str(round(total_scol / eff_total, 1)) + ' ans'
         # Provenance
         aff = self.server.db.lire_affectations()
+        print(aff)
         annee_pre = annee-1
         for k,v in aff.items():
             annee_aff = v['Année']
             etab = v['Établissement']
+            index_pre = v['INE']+'__'+str(annee_pre)
             if not etab in rep['provenance']:
                 rep['provenance'][etab] = {'en seconde':0, 'total':0}
-            if annee_aff == annee_pre: # On ne compte que les affectations de l'année précédente
+            if annee_aff == annee_pre: # On ne totalise que les affectations de l'année précédente
                 dict_add(rep['provenance'][etab], 'total', 1)
             elif annee_aff == annee:
-                if v['Niveau'] == "Seconde": # Pour les élèves de seconde...
-                    a = v['INE']+'__'+str(annee_pre)
-                    if a in aff:
-                        #... on recherche l'établissement de l'année précédent (si possible)
-                        etab_pre = aff[a]['Établissement']
+                if index_pre in aff:
+                    #... on recherche l'établissement de l'année précédent (si possible)
+                    etab_pre = aff[index_pre]['Établissement']
+                    if v['Niveau'] == "Seconde": # Pour les élèves de seconde...
                         if not etab_pre in rep['provenance']:
                             rep['provenance'][etab_pre] = {'en seconde':0, 'total':0}
                         dict_add(rep['provenance'][etab_pre], 'en seconde', 1)
+                    if v['Niveau'] == "BTS": # Pour les élèves de BTS...
+                        classe = aff[index_pre]['Classe']
+                        if classe is None: classe = 'Inconnue'
+                        if not classe in rep['provenance bts']:
+                            rep['provenance bts'][classe] = {'total':0}
+                        dict_add(rep['provenance bts'][classe], 'total', 1)
         logging.debug(rep)
         return rep
 

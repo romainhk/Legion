@@ -1,12 +1,12 @@
 ### Statistiques
 * Moyenne annuelle / élève / an (-> importation depuis pronote ?)
-* Pouvoir répondre à : "Pour une année X, il y a Y élèves en BTS provenant de la section Z"
 * Taux de passage d'une année à l'autre (ex: % d'élève en 1GA passant en TGA)
 * Stats de décrochages (sortie en cours de formation) (-> contacter le cial)
 * Absentéisme : ratio du nombre d'heures de cours non suivi / nombre total d'heures de la section (-> cpe ; recoupement avec pronote ?)
 * Taux de réussite au BAC, au BTS
 * Représentation graphique des données
 * Pour les élèves sorties : durée de scolarisation
+* Passer la liste des résultats plutôt qu'un dénombrement ? (permet ainsi de donner une liste selon les critères)
 
 ### Python
 * Cohérente d importation : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ? ou supposer à l'importation une sortie en fin d'année ?
@@ -15,6 +15,7 @@
 * Pending : ajout/supprimer dans la base après validation
 * Pending : sad_etab et sad_classe ?
 * Stats : donner un équivalent SQL pour vérification
+* Affectation des classes : une section est forcément liée à une filière 
 
 ### HTML
 * envoie de mail en masse : à tester
@@ -22,4 +23,3 @@
 * les colonnes editables ne le sont plus après un changement d'onglet
 * possibilité d'ajouter un mail ?
 * Liste : limiter à une année scolaire (comme stats) ? (pb du temps de chargement)
-* chromium : les colonnes editables ne fonctionnent pas

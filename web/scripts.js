@@ -154,10 +154,12 @@ $.each( data['data'], function( key, value ) {
             dict_to_tab($('#stats-section'), data, 'section');
             dict_to_tab($('#stats-niveau'), data, 'niveau');
             dict_to_tab($('#stats-provenance'), data, 'provenance');
+            dict_to_tab($('#stats-provenance_bts'), data, 'provenance bts');
             $("#stats-etablissement").tablesorter();
             $("#stats-section").tablesorter();
             $("#stats-niveau").tablesorter();
             $("#stats-provenance").tablesorter();
+            $("#stats-provenance_bts").tablesorter();
         });
     } else if (nom == 'Pending') {
         page_active = 'Pending';

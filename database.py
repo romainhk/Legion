@@ -326,7 +326,7 @@ class Database():
         :rtype: dict
         """
         data = {}
-        req = 'SELECT * FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe'
+        req = 'SELECT INE, Année, A.Classe, Établissement, Doublement, Niveau, Filière, Section FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             key = d['INE']+'__'+str(d['Année'])

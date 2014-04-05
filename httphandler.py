@@ -137,7 +137,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         - Dénombrement des élèves / établissement d'origine
             > SELECT Établissement,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="Seconde" AND Année=<ANNEE>) AND Année=<ANNEE>-1 GROUP BY Établissement
         - Dénombrement des élèves BTS / classe d'origine
-            > SELECT Classe,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="BTS" AND Année=2013) AND Année=2012 GROUP BY Classe
+            > SELECT Classe,Établissement,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="BTS" AND Année=2013) AND Année=2012 GROUP BY Classe
+            SELECT Classe,Établissement,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="BTS" AND Année=2013 AND C.Classe="1BAM") AND Année=2012 GROUP BY Classe
         - Nombre d'années de scolarisation / élève
             > SELECT INE,count(*) FROM Affectations WHERE Établissement="Jean Moulin" GROUP BY INE
         """
@@ -277,6 +278,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     if v['Niveau'] == "BTS": # Pour les élèves de BTS...
                         classe = aff[index_pre]['Classe']
                         if classe is None: classe = 'Inconnue'
+                        if etab_pre != "Jean Moulin" : classe = '<i>Autre établissement</i>'
                         if not classe in rep['provenance bts']:
                             rep['provenance bts'][classe] = {'total':0}
                         dict_add(rep['provenance bts'][classe], 'total', 1)

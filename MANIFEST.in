@@ -1,0 +1,3 @@
+graft web
+include *.cfg
+include base.sqlite

@@ -373,6 +373,26 @@ class Database():
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
-            logging.error(u"Erreur lors du listage '{0}' :\n{1}".format(info, e.args[0]))
+            logging.error("Erreur lors du listage '{0}' :\n{1}".format(info, e.args[0]))
         return [item[0] for item in self.curs.fetchall()]
 
+    def stats(self, info):
+        """ Génère une liste avec les stats voulues
+        """
+        if info == "annees_scolarisation":
+            req = 'SELECT INE,count(*) Scolarisation FROM Affectations WHERE Établissement="Jean Moulin" GROUP BY INE'.format(info)
+            # -> statistics.mean()
+        elif info == "issue_pro":
+            req = "SELECT Classe,Niveau,Filière,Section,count(*) NbIssueDePro FROM Affectations NATURAL JOIN Classes WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Année=2012 AND Filière='Pro') AND Année = 2013 GROUP BY Classe"
+        else:
+            logging.error('Information "{0}" inconnue'.format(info))
+            return []
+        try:
+            self.curs.execute(req)
+        except sqlite3.Error as e:
+            logging.error("Erreur lors de la génération de stats '{0}' :\n{1}".format(info, e.args[0]))
+        data = []
+        for row in self.curs.execute(req).fetchall():
+            d = dict_from_row(row)
+            data.append(d)
+        return data

@@ -2,6 +2,7 @@
 # -*- coding: utf-8  -*-
 import time
 import logging
+import statistics
 #web
 import http.server
 import json
@@ -46,7 +47,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             # En cas de la modification d'une section, il faux modifier la filière en conséquence
             if champ == "Section":
                 index = self.server.sections.index(val)
-                print(index)
+                #print(index)
                 self.server.db.maj_champ('Classes', classe, "Filière", self.server.filières[index])
         elif params.path == '/pending':
             rep = self.server.db.lire_pending()
@@ -132,22 +133,17 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
 
         Validation des résultats par SQL
 
-        - Nb d'élèves issus de pro / classe
-            > SELECT Classe,Niveau,Filière,Section,count(*) NbIssueDePro FROM Affectations NATURAL JOIN Classes WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE  Année=2012 AND Filière='Pro') AND Année = 2013 GROUP BY Classe
         - Dénombrement des élèves / établissement d'origine
             > SELECT Établissement,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="Seconde" AND Année=<ANNEE>) AND Année=<ANNEE>-1 GROUP BY Établissement
         - Dénombrement des élèves BTS / classe d'origine
             > SELECT Classe,Établissement,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="BTS" AND Année=2013) AND Année=2012 GROUP BY Classe
             SELECT Classe,Établissement,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="BTS" AND Année=2013 AND C.Classe="1BAM") AND Année=2012 GROUP BY Classe
-        - Nombre d'années de scolarisation / élève
-            > SELECT INE,count(*) FROM Affectations WHERE Établissement="Jean Moulin" GROUP BY INE
         """
 
         # Récupération des infos : classes, effectif...
         classes = self.server.db.lire_classes()
         classes_pro = filtrer_dict(classes, 'Filière', 'Pro')
         data = {}
-        total_scol = 0
         # Pour chaque élève
         for d in self.server.db.lire().values():
             p = d['Parcours']
@@ -174,10 +170,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 data[classe] = [sum(x) for x in zip(data[classe], t)] # data[classe] += t
             else:
                 data[classe] = t
-            # Nombre d'années de scolarisation
-            for b in p.values():
-                if b[1] == self.server.nom_etablissement:
-                    total_scol = total_scol + 1
         logging.debug(data)
 
         # On génère maintenant le tableau de statistiques
@@ -254,10 +246,12 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         rep['établissement']['Proportion garçon (hors BTS)'] = en_pourcentage(a)
         rep['établissement']['Proportion doublant'] = en_pourcentage(total_doublant / eff_total)
         rep['établissement']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
-        rep['établissement']['Années de scolarisation moyenne par élève'] = str(round(total_scol / eff_total, 1)) + ' ans'
+        # Années de scolarisation moyenne par élève
+        a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees_scolarisation')])
+        rep['établissement']['Années de scolarisation moyenne par élève'] = str(round( a, 1 )) + ' ans'
         # Provenance
         aff = self.server.db.lire_affectations()
-        print(aff)
+        #print(aff)
         annee_pre = annee-1
         for k,v in aff.items():
             annee_aff = v['Année']
@@ -278,7 +272,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     if v['Niveau'] == "BTS": # Pour les élèves de BTS...
                         classe = aff[index_pre]['Classe']
                         if classe is None: classe = 'Inconnue'
-                        if etab_pre != "Jean Moulin" : classe = '<i>Autre établissement</i>'
+                        if etab_pre != self.server.nom_etablissement: classe = '<i>Autres établissements</i>'
                         if not classe in rep['provenance bts']:
                             rep['provenance bts'][classe] = {'total':0}
                         dict_add(rep['provenance bts'][classe], 'total', 1)

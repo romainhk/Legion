@@ -1,5 +1,5 @@
 /**!
-* TableSorter 2.15.10 - Client-side table sorting with ease!
+* TableSorter 2.15.13 - Client-side table sorting with ease!
 * @requires jQuery v1.2.6+
 *
 * Copyright (c) 2007 Christian Bach
@@ -24,7 +24,7 @@
 
 			var ts = this;
 
-			ts.version = "2.15.10";
+			ts.version = "2.15.13";
 
 			ts.parsers = [];
 			ts.widgets = [];
@@ -114,6 +114,7 @@
 			// the table and MUST only contain one class name - fixes #381
 			ts.css = {
 				table      : 'tablesorter',
+				cssHasChild: 'tablesorter-hasChildRow',
 				childRow   : 'tablesorter-childRow',
 				header     : 'tablesorter-header',
 				headerRow  : 'tablesorter-headerRow',
@@ -289,13 +290,24 @@
 							c = $(b[k].rows[i]);
 							cols = [];
 							// if this is a child row, add it to the last row's children and continue to the next row
-							if (c.hasClass(tc.cssChildRow)) {
+							// ignore child row class, if it is the first row
+							if (c.hasClass(tc.cssChildRow) && i !== 0) {
 								tc.cache[k].row[tc.cache[k].row.length - 1] = tc.cache[k].row[tc.cache[k].row.length - 1].add(c);
+								// add "hasChild" class name to parent row
+								if (!c.prev().hasClass(tc.cssChildRow)) {
+									c.prev().addClass(ts.css.cssHasChild);
+								}
 								// go to the next for loop
 								continue;
 							}
 							tc.cache[k].row.push(c);
 							for (j = 0; j < totalCells; ++j) {
+								if (typeof parsers[j] === 'undefined') {
+									if (tc.debug) {
+										log('No parser found for cell:', c[0].cells[j], 'does it have a header?');
+									}
+									continue;
+								}
 								t = getElementText(table, c[0].cells[j], j);
 								// allow parsing if the string is empty, previously parsing would change it to zero,
 								// in case the parser needs to extract data from the table cell attributes
@@ -381,14 +393,14 @@
 				var matrix = [],
 				lookup = {},
 				cols = 0, // determine the number of columns
-				trs = $(t).find('thead:eq(0), tfoot').children('tr'), // children tr in tfoot - see issue #196
+				trs = $(t).children('thead, tfoot').children('tr'), // children tr in tfoot - see issue #196 & #547
 				i, j, k, l, c, cells, rowIndex, cellId, rowSpan, colSpan, firstAvailCol, matrixrow;
 				for (i = 0; i < trs.length; i++) {
 					cells = trs[i].cells;
 					for (j = 0; j < cells.length; j++) {
 						c = cells[j];
 						rowIndex = c.parentNode.rowIndex;
-						cellId = rowIndex + "-" + c.cellIndex;
+						cellId = rowIndex + "-" + $(c).index();
 						rowSpan = c.rowSpan || 1;
 						colSpan = c.colSpan || 1;
 						if (typeof(matrix[rowIndex]) === "undefined") {
@@ -418,7 +430,6 @@
 				}
 				// may not be accurate if # header columns !== # tbody columns
 				t.config.columns = cols + 1; // add one because it's a zero-based index
-				return lookup;
 			}
 
 			function formatSortingOrder(v) {
@@ -427,13 +438,15 @@
 			}
 
 			function buildHeaders(table) {
-				var header_index = computeThIndexes(table), ch, $t,
-					h, i, t, lock, time, c = table.config;
+				var ch, $t,
+					h, i, t, lock, time,
+					c = table.config;
 				c.headerList = [];
 				c.headerContent = [];
 				if (c.debug) {
 					time = new Date();
 				}
+				computeThIndexes(table);
 				// add icon if cssIcon option exists
 				i = c.cssIcon ? '<i class="' + ( c.cssIcon === ts.css.icon ? ts.css.icon : c.cssIcon + ' ' + ts.css.icon ) + '"></i>' : '';
 				c.$headers = $(table).find(c.selectorHeaders).each(function(index) {
@@ -449,8 +462,7 @@
 					$(this).html('<div class="' + ts.css.headerIn + '">' + t + '</div>'); // faster than wrapInner
 
 					if (c.onRenderHeader) { c.onRenderHeader.apply($t, [index]); }
-
-					this.column = header_index[this.parentNode.rowIndex + "-" + this.cellIndex];
+					this.column = parseInt( $(this).attr('data-column'), 10);
 					this.order = formatSortingOrder( ts.getData($t, ch, 'sortInitialOrder') || c.sortInitialOrder ) ? [1,0,2] : [0,1,2];
 					this.count = -1; // set to -1 because clicking on the header automatically adds one
 					this.lockedOrder = false;
@@ -774,6 +786,7 @@
 						resortComplete($table, callback);
 					}, true]);
 				} else {
+					$table.trigger('applyWidgets');
 					resortComplete($table, callback);
 				}
 			}
@@ -823,9 +836,9 @@
 					// tbody may not exist if update is initialized while tbody is removed for processing
 					if ($tb.length && tbdy >= 0) {
 						row = $tb.eq(tbdy).find('tr').index( $row );
-						icell = cell.cellIndex;
+						icell = $(cell).index();
 						l = c.cache[tbdy].normalized[row].length - 1;
-						c.cache[tbdy].row[table.config.cache[tbdy].normalized[row][l]] = $row;
+						c.cache[tbdy].row[ c.cache[tbdy].normalized[row][l] ] = $row;
 						c.cache[tbdy].normalized[row][icell] = c.parsers[icell].format( getElementText(table, cell, icell), table, cell, icell );
 						checkResort($table, resort, callback);
 					}
@@ -880,7 +893,9 @@
 					// sort the table and append it to the dom
 					multisort(table);
 					appendToTable(table, init);
-					$table.trigger("sortEnd", this);
+					$table
+						.trigger("sortEnd", this)
+						.trigger('applyWidgets');
 					if (typeof callback === "function") {
 						callback(table);
 					}

@@ -1,4 +1,4 @@
-/*! tableSorter 2.15+ widgets - updated 3/12/2014 (v2.15.8)
+/*! tableSorter 2.15+ widgets - updated 4/3/2014 (v2.15.13)
  *
  * Column Styles
  * Column Filters
@@ -680,7 +680,7 @@ ts.filter = {
 		for (column = 0; column < columns; column++) {
 			buildFilter += '<td></td>';
 		}
-		c.$filters = $(buildFilter += '</tr>').appendTo( c.$table.find('thead').eq(0) ).find('td');
+		c.$filters = $(buildFilter += '</tr>').appendTo( c.$table.children('thead').eq(0) ).find('td');
 		// build each filter input
 		for (column = 0; column < columns; column++) {
 			disabled = false;
@@ -851,7 +851,7 @@ ts.filter = {
 			c = table.config,
 			wo = c.widgetOptions,
 			columns = c.columns,
-			$tbodies = c.$tbodies,
+			$tbodies = c.$table.children('tbody'), // target all tbodies #568
 			// anyMatch really screws up with these types of filters
 			anyMatchNotAllowedTypes = [ 'range', 'notMatch',  'operators' ],
 			// parse columns after formatter, in case the class is added at that point
@@ -862,13 +862,13 @@ ts.filter = {
 			}).get();
 		if (c.debug) { time = new Date(); }
 		for (tbodyIndex = 0; tbodyIndex < $tbodies.length; tbodyIndex++ ) {
-			if ($tbodies.eq(tbodyIndex).hasClass(ts.css.info)) { continue; } // ignore info blocks, issue #264
+			if ($tbodies.eq(tbodyIndex).hasClass(c.cssInfoBlock || ts.css.info)) { continue; } // ignore info blocks, issue #264
 			$tbody = ts.processTbody(table, $tbodies.eq(tbodyIndex), true);
 			// skip child rows & widget added (removable) rows - fixes #448 thanks to @hempel!
 			$rows = $tbody.children('tr').not(c.selectorRemove);
 			len = $rows.length;
 			if (combinedFilters === '' || wo.filter_serversideFiltering) {
-				$tbody.children().not('.' + c.cssChildRow).show().removeClass(wo.filter_filteredRow);
+				$tbody.children().removeClass(wo.filter_filteredRow).not('.' + c.cssChildRow).show();
 			} else {
 				// optimize searching only through already filtered rows - see #313
 				searchFiltered = true;
@@ -990,13 +990,11 @@ ts.filter = {
 							showRow = (result) ? showRow : false;
 						}
 					}
-					$rows[rowIndex].style.display = (showRow ? '' : 'none');
-					$rows.eq(rowIndex)[showRow ? 'removeClass' : 'addClass'](wo.filter_filteredRow);
+					$rows.eq(rowIndex)
+						.toggle(showRow)
+						.toggleClass(wo.filter_filteredRow, !showRow);
 					if (childRow.length) {
-						if (c.pager && c.pager.countChildRows || wo.pager_countChildRows || wo.filter_childRows) {
-							childRow[showRow ? 'removeClass' : 'addClass'](wo.filter_filteredRow); // see issue #396
-						}
-						childRow.toggle(showRow);
+						childRow.toggleClass(wo.filter_filteredRow, !showRow);
 					}
 					cacheIndex++;
 				}
@@ -1348,11 +1346,13 @@ ts.addWidget({
 	priority: 40,
 	options: {
 		resizable : true,
-		resizable_addLastColumn : false
+		resizable_addLastColumn : false,
+		resizable_widths : []
 	},
 	format: function(table, c, wo) {
 		if (c.$table.hasClass('hasResizable')) { return; }
 		c.$table.addClass('hasResizable');
+		ts.resizableReset(table, true); // set default widths
 		var $rows, $columns, $column, column,
 			storedSizes = {},
 			$table = c.$table,
@@ -1368,7 +1368,8 @@ ts.addWidget({
 					$target.width( storedSizes[$target.index()] );
 					$next.width( storedSizes[$next.index()] );
 					if (wo.resizable !== false) {
-						ts.storage(table, 'tablesorter-resizable', storedSizes);
+						// save all column widths
+						ts.storage(table, 'tablesorter-resizable', c.$headers.map(function(){ return $(this).width(); }).get() );
 					}
 				}
 				mouseXPosition = 0;
@@ -1463,10 +1464,23 @@ ts.addWidget({
 		ts.resizableReset(table);
 	}
 });
-ts.resizableReset = function(table) {
+ts.resizableReset = function(table, nosave) {
 	$(table).each(function(){
-		this.config.$headers.not('.resizable-false').css('width','');
-		if (ts.storage) { ts.storage(this, 'tablesorter-resizable', {}); }
+		var $t,
+			c = this.config,
+			wo = c && c.widgetOptions;
+		if (table && c) {
+			c.$headers.each(function(i){
+				$t = $(this);
+				if (wo.resizable_widths[i]) {
+					$t.css('width', wo.resizable_widths[i]);
+				} else if (!$t.hasClass('resizable-false')) {
+					// don't clear the width of any column that is not resizable
+					$t.css('width','');
+				}
+			});
+			if (ts.storage && !nosave) { ts.storage(this, 'tablesorter-resizable', {}); }
+		}
 	});
 };
 

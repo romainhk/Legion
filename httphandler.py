@@ -135,11 +135,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
 
         - Dénombrement des élèves / établissement d'origine
             > SELECT Établissement,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="Seconde" AND Année=<ANNEE>) AND Année=<ANNEE>-1 GROUP BY Établissement
-        - Dénombrement des élèves BTS / classe d'origine
-            > SELECT Classe,Établissement,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="BTS" AND Année=2013) AND Année=2012 GROUP BY Classe
-            SELECT Classe,Établissement,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="BTS" AND Année=2013 AND C.Classe="1BAM") AND Année=2012 GROUP BY Classe
         """
-
         # Récupération des infos : classes, effectif...
         classes = self.server.db.lire_classes()
         classes_pro = filtrer_dict(classes, 'Filière', 'Pro')
@@ -177,13 +173,12 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 'établissement': {},
                 'section': {}, 
                 'niveau': {},
-                'provenance': {},
-                'provenance bts': {} }
+                'provenance': {} }
         # Ordre d'affichage des colonnes
         rep['ordre']['niveau'] = ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
         rep['ordre']['section'] = ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
         rep['ordre']['provenance'] = ['total', 'en seconde']
-        rep['ordre']['provenance bts'] = ['total']
+        rep['ordre']['provenance bts'] = ['classe de bts', 'provenance', 'établissement', 'total']
         # Calculs
         eff_total = sum([sum(x[:2]) for x in data.values()]) # Effectif total
         eff_total_bts = self.server.db.stats('effectif_bts', annee)
@@ -264,14 +259,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         if not etab_pre in rep['provenance']:
                             rep['provenance'][etab_pre] = {'en seconde':0, 'total':0}
                         dict_add(rep['provenance'][etab_pre], 'en seconde', 1)
-                    if v['Niveau'] == "BTS": # Pour les élèves de BTS...
-                        classe = aff[index_pre]['Classe']
-                        if classe is None: classe = 'Inconnue'
-                        if etab_pre != self.server.nom_etablissement: classe = '<i>Autres établissements</i>'
-                        if not classe in rep['provenance bts']:
-                            rep['provenance bts'][classe] = {'total':0}
-                        dict_add(rep['provenance bts'][classe], 'total', 1)
         logging.debug(rep)
+        rep['provenance bts'] = self.server.db.stats('provenance_bts', annee)
         return rep
 
     def importer_xml(self, data):

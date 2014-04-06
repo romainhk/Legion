@@ -129,6 +129,30 @@ function dict_to_tab(cell, dict, donnee) {
     });
 }
 
+/* 
+ * Convertir une liste en tableau complet
+ * cell: le tableau visé, list: toutes les donnees, donnee: id de la donnée voulue
+ */
+function list_to_tab(cell, list, donnee) {
+    // Pour l'en-tête
+    cell.find('thead').remove();
+    var thead = $('<thead>').appendTo(cell);
+    $.each( list['ordre'][donnee], function( key, value ) {
+        thead.append('<th>'+value+'</th>');
+    });
+    // Pour les données
+    cell.find('tbody').remove();
+    var tbody = $('<tbody>').appendTo(cell);
+    $.each( list[donnee], function( key, value ) {
+        vals = "";
+        $.each( list['ordre'][donnee], function( i, j ) {
+            vals += "<td>"+value[j]+"</td>";
+        });
+        tbody.append('<tr>'+vals+'</tr>');
+    });
+}
+
+
 /*
  * Conversion d'un tableau html en fichier CSV
  * FROM http://jsfiddle.net/terryyounghk/KPEGU/

@@ -186,10 +186,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         rep['ordre']['provenance bts'] = ['total']
         # Calculs
         eff_total = sum([sum(x[:2]) for x in data.values()]) # Effectif total
-        eff_total_bts = 0
-        total_garcon = 0
-        total_garcon_bts = 0
-        total_doublant = 0
+        eff_total_bts = self.server.db.stats('effectif_bts', annee)
+        total_garcon = self.server.db.stats('garcons', annee)
+        total_garcon_bts = self.server.db.stats('garcons_en_bts', annee)
+        total_doublant = self.server.db.stats('total_doublant', annee)
         total_issue_de_pro = 0
         # Pour chaque classe
         for cla, val in sorted(data.items()):
@@ -197,8 +197,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             eff = g + f
             section_classe = classes[cla]['Section']
             niveau_classe = classes[cla]['Niveau']+' '+classes[cla]['Filière']
-            total_garcon = total_garcon + g
-            total_doublant = total_doublant + doub
             total_issue_de_pro = total_issue_de_pro + frompro
             #tp = self.server.db.taux_de_passage(cla)
 
@@ -216,9 +214,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             if niveau_classe:
                 if not niveau_classe in rep['niveau']:
                     rep['niveau'][niveau_classe] = {}
-                if niveau_classe == "BTS":
-                    total_garcon_bts = total_garcon_bts + g
-                    eff_total_bts = eff_total_bts + eff
                 dict_add(rep['niveau'][niveau_classe], 'effectif', eff)
                 dict_add(rep['niveau'][niveau_classe], 'garçon', g)
                 dict_add(rep['niveau'][niveau_classe], 'doublant', doub)
@@ -247,7 +242,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         rep['établissement']['Proportion doublant'] = en_pourcentage(total_doublant / eff_total)
         rep['établissement']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
         # Années de scolarisation moyenne par élève
-        a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees_scolarisation')])
+        a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees_scolarisation', annee)])
         rep['établissement']['Années de scolarisation moyenne par élève'] = str(round( a, 1 )) + ' ans'
         # Provenance
         aff = self.server.db.lire_affectations()

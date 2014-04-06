@@ -376,16 +376,29 @@ class Database():
             logging.error("Erreur lors du listage '{0}' :\n{1}".format(info, e.args[0]))
         return [item[0] for item in self.curs.fetchall()]
 
-    def stats(self, info):
+    def stats(self, info, annee):
         """ Génère une liste avec les stats voulues
         """
+        retourner_uniquement = None # Pour ne retourner que la valeur désignée
         if info == "annees_scolarisation":
             req = 'SELECT INE,count(*) Scolarisation FROM Affectations WHERE Établissement="Jean Moulin" GROUP BY INE'.format(info)
-            # -> statistics.mean()
         elif info == "issue_pro":
-            req = "SELECT Classe,Niveau,Filière,Section,count(*) NbIssueDePro FROM Affectations NATURAL JOIN Classes WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Année=2012 AND Filière='Pro') AND Année = 2013 GROUP BY Classe"
+            req = "SELECT Classe,Niveau,Filière,Section,count(*) NbIssueDePro FROM Affectations NATURAL JOIN Classes WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Année={1} AND Filière='Pro') AND Année = {0} GROUP BY Classe".format(annee, annee-1)
+            retourner_uniquement = 'NbIssueDePro'
+        elif info == "effectif_bts":
+            req = 'SELECT count(*) Nb FROM Affectations A LEFT JOIN Classes C ON A.Classe=C.Classe WHERE Année={0} AND Niveau=="BTS"'.format(annee)
+            retourner_uniquement = 'Nb'
+        elif info == "garcons":
+            req = 'SELECT count(*) Nb FROM Élèves E LEFT JOIN Affectations A ON E.INE=A.INE WHERE Genre="1" AND Année={0}'.format(annee)
+            retourner_uniquement = 'Nb'
+        elif info == "garcons_en_bts":
+            req = 'SELECT count(*) Nb FROM Élèves E LEFT JOIN Affectations A ON E.INE=A.INE LEFT JOIN Classes C ON A.Classe=C.Classe WHERE Genre="1" AND Année={0} AND Niveau="BTS"'.format(annee)
+            retourner_uniquement = 'Nb'
+        elif info == "total_doublant":
+            req = 'SELECT count(*) Nb FROM Élèves E LEFT JOIN Affectations A ON E.INE=A.INE LEFT JOIN Classes C ON A.Classe=C.Classe WHERE Doublement="1" AND Année={0}'.format(annee)
+            retourner_uniquement = 'Nb'
         else:
-            logging.error('Information "{0}" inconnue'.format(info))
+            logging.error('Information "{0}" non disponible'.format(info))
             return []
         try:
             self.curs.execute(req)
@@ -395,4 +408,7 @@ class Database():
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             data.append(d)
+        if retourner_uniquement is not None:
+            data = data.pop()[retourner_uniquement]
+        logging.debug(data)
         return data

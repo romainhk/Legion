@@ -129,12 +129,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             - _idem_
         - provenance
             - établissement : total d'élèves, total d'élèves actuellement en seconde
-
-
-        Validation des résultats par SQL
-
-        - Dénombrement des élèves / établissement d'origine
-            > SELECT Établissement,count(*) NbÉlèvesEnProvenance FROM Affectations WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Niveau="Seconde" AND Année=<ANNEE>) AND Année=<ANNEE>-1 GROUP BY Établissement
         """
         # Récupération des infos : classes, effectif...
         classes = self.server.db.lire_classes()
@@ -177,8 +171,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         # Ordre d'affichage des colonnes
         rep['ordre']['niveau'] = ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
         rep['ordre']['section'] = ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
-        rep['ordre']['provenance'] = ['total', 'en seconde']
-        rep['ordre']['provenance bts'] = ['classe de bts', 'provenance', 'établissement', 'total']
+        rep['ordre']['provenance'] = ['Établissement', 'total', 'en seconde']
+        rep['ordre']['provenance bts'] = ['classe de bts', 'provenance', 'Établissement', 'total']
         # Calculs
         eff_total = sum([sum(x[:2]) for x in data.values()]) # Effectif total
         eff_total_bts = self.server.db.stats('effectif_bts', annee)
@@ -238,29 +232,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         rep['établissement']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
         # Années de scolarisation moyenne par élève
         a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees_scolarisation', annee)])
-        rep['établissement']['Années de scolarisation moyenne par élève'] = str(round( a, 1 )) + ' ans'
+        rep['établissement']['Années de scolarisation moyenne par élève'] = str(round( a, 2 )) + ' ans'
         # Provenance
-        aff = self.server.db.lire_affectations()
-        #print(aff)
-        annee_pre = annee-1
-        for k,v in aff.items():
-            annee_aff = v['Année']
-            etab = v['Établissement']
-            index_pre = v['INE']+'__'+str(annee_pre)
-            if not etab in rep['provenance']:
-                rep['provenance'][etab] = {'en seconde':0, 'total':0}
-            if annee_aff == annee_pre: # On ne totalise que les affectations de l'année précédente
-                dict_add(rep['provenance'][etab], 'total', 1)
-            elif annee_aff == annee:
-                if index_pre in aff:
-                    #... on recherche l'établissement de l'année précédent (si possible)
-                    etab_pre = aff[index_pre]['Établissement']
-                    if v['Niveau'] == "Seconde": # Pour les élèves de seconde...
-                        if not etab_pre in rep['provenance']:
-                            rep['provenance'][etab_pre] = {'en seconde':0, 'total':0}
-                        dict_add(rep['provenance'][etab_pre], 'en seconde', 1)
-        logging.debug(rep)
+        rep['provenance'] = self.server.db.stats('provenance', annee)
         rep['provenance bts'] = self.server.db.stats('provenance_bts', annee)
+        logging.debug(rep)
         return rep
 
     def importer_xml(self, data):

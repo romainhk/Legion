@@ -31,6 +31,7 @@ footer .copyleft {
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
     display: inline-block;
+    margin-top:1ex;
 }
 
 /* Tableaux */

@@ -40,12 +40,12 @@ function fin_filtrage(e, filter){
     if (page_active == 'Liste') {
         id = 'totalListe';
         t = 'Résultats : ' + a + ' / ' + nb_eleves + ' élèves.';
-    } else {
+    } else if (page_active == 'Pending') {
         id = 'totalPending';
         t = a + ' enregistrements en attente.';
     }
     $("#"+id).html(t);
-    // Reaffichage des childrows
+    // Réaffichage des childrows
     $.each($(this).find('tr.tablesorter-childRow'), function(i, cr) {
         cr = $(cr);
         if (cr.prev().css('display') == 'table-row') {
@@ -164,7 +164,7 @@ $.each( data['data'], function( key, value ) {
     } else if (nom == 'Pending') {
         page_active = 'Pending';
         $.get( "/pending", function( data ) {
-            $('#pending > tbody').html( list_to_tab(data, champs_pending) );
+            $('#pending > tbody').html( list_to_tab_simple(data, champs_pending) );
             $("#pending").tablesorter({
                 sortList: [ [1,0] ]
             }).bind('filterEnd', fin_filtrage

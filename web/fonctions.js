@@ -91,7 +91,7 @@ function trad_db_val(v, j) {
 /* 
  * Convertir une liste en lignes de tableau (tr)
  */
-function list_to_tab(liste, champs) {
+function list_to_tab_simple(liste, champs) {
     var lignes = "";
     $.each( liste, function( key, value ) {
         var vals = "";

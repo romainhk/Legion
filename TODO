@@ -1,12 +1,13 @@
 ### Statistiques
 * Moyenne annuelle / élève / an (-> importation depuis pronote ?)
-* Taux de passage d'une année à l'autre (ex: % d'élève en 1GA passant en TGA)
 * Stats de décrochages (sortie en cours de formation)
 * Absentéisme : ratio du nombre d'heures de cours non suivi / nombre total d'heures de la section (-> cpe ; recoupement avec pronote ?)
 * Taux de réussite au BAC, au BTS
 * Représentation graphique des données
 * Pour les élèves sorties : durée de scolarisation
 * Passer la liste des résultats plutôt qu'un dénombrement ? (permet ainsi de donner une liste selon les critères)
+* valider les statistiques générées
+** provenance bts : ajouter les 'inconnus'
 
 ### Python
 * Cohérente d importation : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ? ou supposer à l'importation une sortie en fin d'année ?

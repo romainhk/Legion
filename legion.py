@@ -27,7 +27,8 @@ class Legion(http.server.HTTPServer):
         # Lecture de la configuration
         self.nom_etablissement=config.get('Établissement', 'nom de l\'etablissement')
         self.situations=sorted([x.strip(' ') for x in config.get('Établissement', 'situations').split(',')])
-        self.niveaux=sorted([x.strip(' ') for x in config.get('Établissement', 'niveaux').split(',')])
+        #self.niveaux=sorted([x.strip(' ') for x in config.get('Établissement', 'niveaux').split(',')])
+        self.niveaux=['Seconde', 'Première', 'Terminale', 'BTS', 'Formation']
         self.sections = []
         self.filières = []
         for a in sorted([x.strip(' ') for x in config.get('Établissement', 'sections').split('\n')]):

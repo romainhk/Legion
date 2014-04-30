@@ -401,6 +401,8 @@ class Database():
             req = 'SELECT A2.Établissement,count(*) total,sum(CASE WHEN Niveau="Seconde" THEN 1 ELSE 0 END) "en seconde" FROM Affectations A LEFT JOIN Affectations A2 ON A.INE=A2.INE LEFT JOIN Classes C ON A.Classe = C.Classe WHERE A.Année={0} AND A2.Année={1} GROUP BY A2.Établissement'.format(annee, annee-1)
         elif info == "provenance_bts":
             req = 'SELECT C.Classe "classe de bts",A2.Classe provenance,A2.Établissement,count(*) total FROM Classes C LEFT JOIN Affectations A ON C.Classe=A.Classe LEFT JOIN Élèves E ON A.INE=E.INE LEFT JOIN Affectations A2 ON A2.INE=A.INE WHERE Niveau="BTS" AND A.Année={0} AND A2.Année={1} GROUP BY A2.Classe ORDER BY C.Classe,A2.Établissement,A2.Classe'.format(annee, annee-1)
+        elif info == "taux de passage":
+            req = "SELECT Section,Niveau,INE,Année FROM Affectations A LEFT JOIN Classes C ON A.Classe=C.Classe WHERE Section<>'' ORDER BY Section,Niveau"
         else:
             logging.error('Information "{0}" non disponible'.format(info))
             return []
@@ -414,5 +416,5 @@ class Database():
             data.append(d)
         if retourner_uniquement is not None:
             data = data.pop()[retourner_uniquement]
-        logging.debug(data)
+        #logging.debug(data)
         return data

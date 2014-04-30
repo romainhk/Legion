@@ -155,11 +155,13 @@ $.each( data['data'], function( key, value ) {
             dict_to_tab($('#stats-niveau'), data, 'niveau');
             list_to_tab($('#stats-provenance'), data, 'provenance');
             list_to_tab($('#stats-provenance_bts'), data, 'provenance bts');
+            list_to_tab($('#stats-tauxdepassage'), data, 'taux de passage');
             $("#stats-etablissement").tablesorter();
             $("#stats-section").tablesorter();
             $("#stats-niveau").tablesorter();
             $("#stats-provenance").tablesorter();
             $("#stats-provenance_bts").tablesorter();
+            $("#stats-tauxdepassage").tablesorter();
         });
     } else if (nom == 'Pending') {
         page_active = 'Pending';

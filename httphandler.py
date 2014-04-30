@@ -129,6 +129,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             - _idem_
         - provenance
             - établissement : total d'élèves, total d'élèves actuellement en seconde
+        - taux de passage :
+            - le taux de passage pour chaque transition de classe dans une même section
         """
         # Récupération des infos : classes, effectif...
         classes = self.server.db.lire_classes()
@@ -160,19 +162,21 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 data[classe] = [sum(x) for x in zip(data[classe], t)] # data[classe] += t
             else:
                 data[classe] = t
-        logging.debug(data)
+        #logging.debug(data)
 
         # On génère maintenant le tableau de statistiques
         rep = { 'ordre': {},
                 'établissement': {},
                 'section': {}, 
                 'niveau': {},
-                'provenance': {} }
+                'provenance': {},
+                'taux de passage' : {} }
         # Ordre d'affichage des colonnes
         rep['ordre']['niveau'] = ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
         rep['ordre']['section'] = ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
         rep['ordre']['provenance'] = ['Établissement', 'total', 'en seconde']
         rep['ordre']['provenance bts'] = ['classe de bts', 'provenance', 'Établissement', 'total']
+        rep['ordre']['taux de passage'] = ['section', 'passage', 'taux']
         # Calculs
         eff_total = sum([sum(x[:2]) for x in data.values()]) # Effectif total
         eff_total_bts = self.server.db.stats('effectif_bts', annee)
@@ -187,7 +191,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             section_classe = classes[cla]['Section']
             niveau_classe = classes[cla]['Niveau']+' '+classes[cla]['Filière']
             total_issue_de_pro = total_issue_de_pro + frompro
-            #tp = self.server.db.taux_de_passage(cla)
 
             # Par Section
             if section_classe:
@@ -236,7 +239,29 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         # Provenance
         rep['provenance'] = self.server.db.stats('provenance', annee)
         rep['provenance bts'] = self.server.db.stats('provenance_bts', annee)
-        logging.debug(rep)
+
+        # Taux de passage
+        rep['taux de passage'] = []
+        passage = self.server.db.stats('taux de passage', annee)
+        for sect in self.server.sections:
+            # On filtre les éléments de data concernant la section voulue
+            e = [dictio for dictio in passage if dictio['Section'] == sect]
+            for i in range(1,len(self.server.niveaux)):
+                niv = self.server.niveaux[i]
+                niv_pre = self.server.niveaux[i-1]
+                # Élèves au niveau niv de la section sect pour l'année en cours
+                f = [dictio['INE'] for dictio in e if dictio['Niveau'] == niv and dictio['Année'] == annee]
+                # Élèves au niveau précédent de la même section pour l'année passée
+                g = [dictio['INE'] for dictio in e if dictio['Niveau'] == niv_pre and dictio['Année'] == annee-1]
+                if len(f) > 0 and len(g) > 0:
+                    # On a des élèves dans deux années successives d'une même section !
+                    clef = '{0} : {1} >> {2}'.format(sect, niv_pre, niv)
+                    # On calcul l'intersection des deux années
+                    communs = list (set(g) & set(f))
+                    taux = en_pourcentage( float(len(communs)) / float(len(g)) )
+                    v = { 'section': sect, 'passage': niv_pre+' > '+niv, 'taux': taux}
+                    rep['taux de passage'].append(v)
+        #logging.debug(rep)
         return rep
 
     def importer_xml(self, data):

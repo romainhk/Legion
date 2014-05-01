@@ -46,9 +46,12 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             rep = self.server.db.maj_champ('Classes', classe, champ, val)
             # En cas de la modification d'une section, il faux modifier la filière en conséquence
             if champ == "Section":
-                index = self.server.sections.index(val)
-                #print(index)
-                self.server.db.maj_champ('Classes', classe, "Filière", self.server.filières[index])
+                if val != '?':
+                    index = self.server.sections.index(val)
+                    fil = self.server.filières[index]
+                else:
+                    fil = 'Inconnue'
+                self.server.db.maj_champ('Classes', classe, "Filière", fil)
         elif params.path == '/pending':
             rep = self.server.db.lire_pending()
         elif params.path == '/liste-annees':
@@ -189,28 +192,29 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             g, f, doub, nouveau, frompro = val
             eff = g + f
             section_classe = classes[cla]['Section']
+            if not section_classe or section_classe == '?':
+                section_classe = 'Inconnue'
             niveau_classe = classes[cla]['Niveau']+' '+classes[cla]['Filière']
+            if not niveau_classe or '?' in niveau_classe:
+                niveau_classe = 'Inconnu'
             total_issue_de_pro = total_issue_de_pro + frompro
 
             # Par Section
-            if section_classe:
-                if not section_classe in rep['section']:
-                    rep['section'][section_classe] = {}
-                dict_add(rep['section'][section_classe], 'effectif', eff)
-                dict_add(rep['section'][section_classe], 'garçon', g)
-                dict_add(rep['section'][section_classe], 'doublant', doub)
-                dict_add(rep['section'][section_classe], 'nouveau', nouveau)
-                dict_add(rep['section'][section_classe], 'issue de pro', frompro)
-                #dict_add(rep['section'][section_classe], 'taux de passage', tp)
+            if not section_classe in rep['section']:
+                rep['section'][section_classe] = {}
+            dict_add(rep['section'][section_classe], 'effectif', eff)
+            dict_add(rep['section'][section_classe], 'garçon', g)
+            dict_add(rep['section'][section_classe], 'doublant', doub)
+            dict_add(rep['section'][section_classe], 'nouveau', nouveau)
+            dict_add(rep['section'][section_classe], 'issue de pro', frompro)
             # Par Niveau
-            if niveau_classe:
-                if not niveau_classe in rep['niveau']:
-                    rep['niveau'][niveau_classe] = {}
-                dict_add(rep['niveau'][niveau_classe], 'effectif', eff)
-                dict_add(rep['niveau'][niveau_classe], 'garçon', g)
-                dict_add(rep['niveau'][niveau_classe], 'doublant', doub)
-                dict_add(rep['niveau'][niveau_classe], 'nouveau', nouveau)
-                dict_add(rep['niveau'][niveau_classe], 'issue de pro', frompro)
+            if not niveau_classe in rep['niveau']:
+                rep['niveau'][niveau_classe] = {}
+            dict_add(rep['niveau'][niveau_classe], 'effectif', eff)
+            dict_add(rep['niveau'][niveau_classe], 'garçon', g)
+            dict_add(rep['niveau'][niveau_classe], 'doublant', doub)
+            dict_add(rep['niveau'][niveau_classe], 'nouveau', nouveau)
+            dict_add(rep['niveau'][niveau_classe], 'issue de pro', frompro)
 
         # Calcul des proportions : Poids, Garçon, Doublant
         for key, val in rep['section'].items():
@@ -255,9 +259,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 g = [dictio['INE'] for dictio in e if dictio['Niveau'] == niv_pre and dictio['Année'] == annee-1]
                 if len(f) > 0 and len(g) > 0:
                     # On a des élèves dans deux années successives d'une même section !
-                    clef = '{0} : {1} >> {2}'.format(sect, niv_pre, niv)
-                    # On calcul l'intersection des deux années
-                    communs = list (set(g) & set(f))
+                    communs = list (set(g) & set(f)) # l'intersection des deux années
                     taux = en_pourcentage( float(len(communs)) / float(len(g)) )
                     v = { 'section': sect, 'passage': niv_pre+' > '+niv, 'taux': taux}
                     rep['taux de passage'].append(v)

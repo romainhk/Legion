@@ -7,7 +7,6 @@
 * Pour les élèves sorties : durée de scolarisation
 * Passer la liste des résultats plutôt qu'un dénombrement ? (permet ainsi de donner une liste selon les critères)
 * valider les statistiques générées
-** provenance bts : ajouter les 'inconnus'
 
 ### Python
 * Cohérente d importation : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ? ou supposer à l'importation une sortie en fin d'année ?

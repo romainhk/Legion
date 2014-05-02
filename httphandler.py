@@ -195,7 +195,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             if not section_classe or section_classe == '?':
                 section_classe = 'Inconnue'
             niveau_classe = classes[cla]['Niveau']+' '+classes[cla]['Filière']
-            if not niveau_classe or '?' in niveau_classe:
+            if niveau_classe == ' ' or '?' in niveau_classe:
                 niveau_classe = 'Inconnu'
             total_issue_de_pro = total_issue_de_pro + frompro
 

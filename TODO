@@ -11,7 +11,7 @@
 * Cohérente d importation : pour tous les élèves non modifiés : mettre la date de sortie à l'année précédente ? ou supposer à l'importation une sortie en fin d'année ?
 * date de sortie plutôt qu'une durée ?
 * colonne Diplômé : importation automatisée depuis ...
-* Pending : ajout/supprimer dans la base après validation
+* Pending : ajout/supprimer dans la base après validation ?
 * Pending : sad_etab et sad_classe ?
 
 ### HTML

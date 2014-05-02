@@ -35,9 +35,6 @@ footer .copyleft {
 }
 
 /* Tableaux */
-table {
-    margin-top:0.5ex;
-}
 table > caption {
     font-style:italic;
     background-color: rgba(255, 255, 255, 0.4);
@@ -45,10 +42,6 @@ table > caption {
 }
 th {
     text-align:center;
-    text-transform:capitalize;
-}
-th, td {
-    padding:8px;
 }
 /* pour les select dans un table */
 td select {
@@ -154,4 +147,18 @@ a.export, a.export:visited {
   outline: #08f 1px solid;
   background: #eee !important;
   resize: none;
+}
+/* recherche de statistiques */
+.stats {
+    margin: 1ex auto;
+    padding: 2ex;
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 5ex;
+}
+.stats td,th {
+    text-align:center;
+    padding:0.5ex 2ex;
+}
+.stats select {
+    background-color:transparent;
 }

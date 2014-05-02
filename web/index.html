@@ -44,7 +44,44 @@
         </table>
     </div>
     <div id="Statistiques">
-        <h3>Statistiques : pour l'année <select id="stats-annee" onChange="function(){$('#onglets li:last-child').trigger('click');};"></select></h3>
+        <h3>Statistiques</h3>
+        <table class="stats">
+            <tr>
+                <th>Statistiques désirées</th>
+                <th>Année</th>
+                <th colspan="5">Les niveaux à prendre en compte</th>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>Seconde</td>
+                <td>Première</td>
+                <td>Terminale</td>
+                <td>BTS</td>
+                <td>Formation</td>
+            </tr>
+            <tr>
+                <td><select value="stat">
+                    <option>Général</option>
+                    <option>Par niveau</option>
+                    <option>Par section</option>
+                    <option>Provenance</option>
+                    <option>Provenance (classe)</option>
+                    <option>Taux de passage</option>
+                </select></td>
+                <td>
+                    <select id="stats-annee" value="annee" onChange="function(){$('#onglets li:last-child').trigger('click');};">
+                </select></td>
+                <td><input type="checkbox" checked="checked" value="nivsec" /></td>
+                <td><input type="checkbox" checked="checked" value="nivprem" /></td>
+                <td><input type="checkbox" checked="checked" value="nivterm" /></td>
+                <td><input type="checkbox" checked="checked" value="nivbts" /></td>
+                <td><input type="checkbox" value="nivform" /></td>
+                <td><button type="button">Rechercher</button></td>
+            </tr>
+            <tr></tr>
+        </table>
+ 
        <div style="float: left; width:64%">
             <table id="stats-niveau" border="1">
                 <caption>Par niveau - filière</caption>

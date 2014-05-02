@@ -46,11 +46,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             rep = self.server.db.maj_champ('Classes', classe, champ, val)
             # En cas de la modification d'une section, il faux modifier la filière en conséquence
             if champ == "Section":
-                if val != '?':
+                if val == '?':
+                    fil = ''
+                else:
                     index = self.server.sections.index(val)
                     fil = self.server.filières[index]
-                else:
-                    fil = 'Inconnue'
                 self.server.db.maj_champ('Classes', classe, "Filière", fil)
         elif params.path == '/pending':
             rep = self.server.db.lire_pending()

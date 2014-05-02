@@ -46,11 +46,6 @@
     <div id="Statistiques">
         <h3>Statistiques : pour l'année <select id="stats-annee" onChange="function(){$('#onglets li:last-child').trigger('click');};"></select></h3>
        <div style="float: left; width:64%">
-            <table id="stats-etablissement" border="1">
-                <caption>Pour l'établissement</caption>
-                <thead></thead>
-                <tbody></tbody>
-            </table>
             <table id="stats-niveau" border="1">
                 <caption>Par niveau - filière</caption>
             </table>
@@ -62,8 +57,13 @@
             </table>
         </div>
         <div style="float: right; width:35%">
+            <table id="stats-etablissement" border="1">
+                <caption>Pour l'établissement</caption>
+                <thead></thead>
+                <tbody></tbody>
+            </table>
             <table id="stats-tauxdepassage" border="1">
-                <caption>Taux de passage pour cette année</caption>
+                <caption>Taux de passage</caption>
             </table>
             <table id="stats-provenance" style="width:auto; margin:auto;" border="1">
                 <caption>Établissement d'origine des élèves</caption>

@@ -93,7 +93,7 @@ class Database():
         ofthejedi = self.INSERT # valeur de retour par défaut
         ine = enr['ine']
         classe = enr['classe']
-        enr['Diplômé'] = enr['Situation'] = enr['Lieu'] = '?'
+        enr['Diplômé'] = enr['Situation'] = enr['Lieu'] = ''
         raison = []
         if ine is None:
             raison.append("Pas d'INE")

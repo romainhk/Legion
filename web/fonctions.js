@@ -56,6 +56,51 @@ function envoie_du_fichier(event) {
 }
 
 /*
+ * Recherche dans les statistiques
+ */
+function stats_recherche() {
+    var stat = $('#stats-liste option:selected').text();
+    var annee = $('#stats-annee option:selected').text();
+    var niveaux = '?';
+    params = "stat="+stat+"&annee="+annee+"&niveaux="+niveaux;
+    console.log(params);
+    // On masque la recherche précédente
+    $.each(les_stats, function( i, p ) {
+        $("#stats-"+p.replace(/ |\(|\)/g, '')).hide();
+    });
+    $.get( "/stats?"+params, function( data ) {
+        if (stat == "Général") {
+            var id = "#stats-Général";
+            $(id+' > tbody').html('');
+            cles = dict_key_sort(data['établissement'], false);
+            $.each(cles, function(i,k) {
+                l = data['établissement'][k];
+                $(id+' > tbody').append('<tr><td>'+k+'</td><td>'+l+'</td></tr>');
+            });
+        } else if (stat == "Par niveau") {
+            var id = "#stats-Parniveau";
+            dict_to_tab($(id), data, 'niveau');
+        } else if (stat == "Par section") {
+            var id = "#stats-Parsection";
+            dict_to_tab($(id), data, 'section');
+        } else if (stat == "Provenance") {
+            var id = "#stats-Provenance";
+            list_to_tab($(id), data, 'provenance');
+        } else if (stat == "Provenance (classe)") {
+            var id = "#stats-Provenanceclasse";
+            list_to_tab($(id), data, 'provenance bts');
+        } else if (stat == "Taux de passage") {
+            var id = "#stats-Tauxdepassage";
+            list_to_tab($(id), data, 'taux de passage');
+        } else {
+            console.log("Stat inconnue");
+        }
+        $(id).tablesorter();
+        $(id).show();
+    });
+}
+
+/*
  * Mise à jour d'un des champs autorisé
  */
 function maj_cellule(cell) {

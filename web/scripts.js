@@ -15,11 +15,25 @@ var situations = new Array();
 var niveaux = new Array();
 var filières = new Array();
 var sections = new Array();
+// Les statistiques disponibles
+var les_stats = ['Général', 'Par niveau', 'Par section', 'Provenance', 'Provenance (classe)', 'Taux de passage'];
 
 /*
- * Mets à jour la liste des années connues sur la page de stats
+ * Mets à jour les listes de la page de statistiques
  */
-function stats_annees() {
+function stats_listes() {
+    // Masquage des tableaux de résultat, sauf Général
+    $.each(les_stats, function( i, p ) {
+        $("#stats-"+p.replace(/ |\(|\)/g, '')).hide();
+    });
+    //$("#stats-Général").show();
+    // Choix de la statistiques à recherche
+    var options = "";
+    $.each(les_stats, function( i, s ) {
+        options += "<option>"+s+"</option>\n";
+    });
+    $('#stats-liste').html( options );
+    // Choix de l'année
     $.get( "/liste-annees", function( data ) {
         var options = "";
         $.each(data, function( i, an ) {
@@ -143,26 +157,6 @@ $.each( data['data'], function( key, value ) {
         });
     } else if (nom == 'Statistiques') {
         page_active = 'Statistiques';
-        annee = $('#stats-annee').val();
-        $.get( "/stats?annee="+annee, function( data ) {
-            $('#stats-etablissement > tbody').html('');
-            cles = dict_key_sort(data['établissement'], false);
-            $.each(cles, function(i,k) {
-                l = data['établissement'][k];
-                $('#stats-etablissement > tbody').append('<tr><td>'+k+'</td><td>'+l+'</td></tr>');
-            });
-            dict_to_tab($('#stats-section'), data, 'section');
-            dict_to_tab($('#stats-niveau'), data, 'niveau');
-            list_to_tab($('#stats-provenance'), data, 'provenance');
-            list_to_tab($('#stats-provenance_bts'), data, 'provenance bts');
-            list_to_tab($('#stats-tauxdepassage'), data, 'taux de passage');
-            $("#stats-etablissement").tablesorter();
-            $("#stats-section").tablesorter();
-            $("#stats-niveau").tablesorter();
-            $("#stats-provenance").tablesorter();
-            $("#stats-provenance_bts").tablesorter();
-            $("#stats-tauxdepassage").tablesorter();
-        });
     } else if (nom == 'Pending') {
         page_active = 'Pending';
         $.get( "/pending", function( data ) {
@@ -275,7 +269,7 @@ $(document).ready(function() {
             return false;
         });
     });
-    stats_annees();
+    stats_listes();
     // Chargement de la première page
     $("#onglets li:first-child").trigger("click");
 });

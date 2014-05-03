@@ -28,9 +28,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         if params.path == '/liste':
             rep = { 'annee': self.server.date.year, 'data': self.server.db.lire() }
         elif params.path == '/stats':
+            stat = query['stat'].pop()
             annee = query['annee'].pop()
-            if annee == 'null': annee = self.server.date.year
-            rep = self.generer_stats(int(annee))
+            niveaux = query['niveaux'].pop()
+            rep = self.generer_stats(stat, int(annee), niveaux)
         elif params.path == '/maj':
             ine = query['ine'].pop()
             champ = query['champ'].pop()
@@ -105,12 +106,16 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         logging.info('Extinction du serveur')
         eteindre_serveur(self.server)
 
-    def generer_stats(self, annee):
+    def generer_stats(self, stat, annee, niveaux):
         """
             Génère des statistiques sur la base
 
-        :param annee: Statistiques pour cette année
+        :param stat: La stat recherchée
+        :param annee: L'année de recherche
+        :param niveaux: Les niveaux sur lesquels faire la recherche
+        :type stat: str
         :type annee: int
+        :type niveaux: 
 
         :return: un dictionnaire des valeurs triées par catégories
 
@@ -135,6 +140,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         - taux de passage :
             - le taux de passage pour chaque transition de classe dans une même section
         """
+        print(stat)
+        print(niveaux)
         # Récupération des infos : classes, effectif...
         classes = self.server.db.lire_classes()
         classes_pro = filtrer_dict(classes, 'Filière', 'Pro')

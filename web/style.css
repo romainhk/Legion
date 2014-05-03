@@ -148,7 +148,10 @@ a.export, a.export:visited {
   background: #eee !important;
   resize: none;
 }
-/* recherche de statistiques */
+/* champs de recherche pour les statistiques */
+#Statistiques table {
+    margin:2ex auto 0;
+}
 .stats {
     margin: 1ex auto;
     padding: 2ex;

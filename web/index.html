@@ -61,52 +61,38 @@
                 <td>Formation</td>
             </tr>
             <tr>
-                <td><select value="stat">
-                    <option>Général</option>
-                    <option>Par niveau</option>
-                    <option>Par section</option>
-                    <option>Provenance</option>
-                    <option>Provenance (classe)</option>
-                    <option>Taux de passage</option>
-                </select></td>
-                <td>
-                    <select id="stats-annee" value="annee" onChange="function(){$('#onglets li:last-child').trigger('click');};">
-                </select></td>
+                <td><select id="stats-liste"></select></td>
+                <td><select id="stats-annee" value="annee"></select></td>
                 <td><input type="checkbox" checked="checked" value="nivsec" /></td>
                 <td><input type="checkbox" checked="checked" value="nivprem" /></td>
                 <td><input type="checkbox" checked="checked" value="nivterm" /></td>
                 <td><input type="checkbox" checked="checked" value="nivbts" /></td>
                 <td><input type="checkbox" value="nivform" /></td>
-                <td><button type="button">Rechercher</button></td>
+                <td><input type="button" value="Rechercher" onClick="stats_recherche();"></td>
             </tr>
             <tr></tr>
         </table>
  
-       <div style="float: left; width:64%">
-            <table id="stats-niveau" border="1">
-                <caption>Par niveau - filière</caption>
-            </table>
-            <table id="stats-section" border="1">
-                <caption>Par section</caption>
-            </table>
-            <table id="stats-provenance_bts" style="width:auto; margin:auto; margin-top:15px;" border="1">
-                <caption>Classe d'origine des BTS</caption>
-            </table>
-        </div>
-        <div style="float: right; width:35%">
-            <table id="stats-etablissement" border="1">
-                <caption>Pour l'établissement</caption>
-                <thead></thead>
-                <tbody></tbody>
-            </table>
-            <table id="stats-tauxdepassage" border="1">
-                <caption>Taux de passage</caption>
-            </table>
-            <table id="stats-provenance" style="width:auto; margin:auto;" border="1">
-                <caption>Établissement d'origine des élèves</caption>
-            </table>
-        </div>
-        <div style="clear:both;"></div>
+        <table id="stats-Général" border="1">
+            <caption>Pour l'établissement</caption>
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+        <table id="stats-Parniveau" border="1">
+            <caption>Par niveau - filière</caption>
+        </table>
+        <table id="stats-Parsection" border="1">
+            <caption>Par section</caption>
+        </table>
+        <table id="stats-Provenance" border="1">
+            <caption>Établissement d'origine des élèves</caption>
+        </table>
+        <table id="stats-Provenanceclasse" border="1">
+            <caption>Classe d'origine des BTS</caption>
+        </table>
+        <table id="stats-Tauxdepassage" border="1">
+            <caption>Taux de passage</caption>
+        </table>
     </div>
     <div id="Pending">
         <div style="width:100%;">
@@ -132,7 +118,7 @@
         <div style="float:right; width:49%">
             <h4>Affectations</h4>
             <table id="options" border="1">
-                <caption>Veuillez affecter les classes à leurs groupes</caption>
+                <caption>Veuillez affecter les classes à leur niveau et section</caption>
                 <thead>
                     <tr>
                         <th>Classe</th>

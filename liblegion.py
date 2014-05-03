@@ -9,7 +9,9 @@ import datetime
 """
 
 def xstr(s):
-    """ Converti un None en chaine vide """
+    """
+        Converti un None en chaine vide
+    """
     if s is None:
         return ''
     return str(s)
@@ -23,18 +25,24 @@ def dict_from_row(row):
     return dict(zip(row.keys(), row))
 
 def dict_add(dictionnaire, index, val):
-    """ Ajoute val à la clé 'index' du dictionnaire, si l'entrée existe """
+    """
+        Ajoute val à la clé 'index' du dictionnaire, si l'entrée existe
+    """
     if index in dictionnaire:
         dictionnaire[index] = dictionnaire[index] + val
     else:
         dictionnaire[index] = val
 
 def inc_list(liste, index):
-    """ Incrémente un élément de la liste """
+    """
+        Incrémente un élément de la liste
+    """
     liste[index] = liste[index] + 1
 
 def open_browser(port):
-    """ Ouvre un navigateur web sur la bonne page """
+    """
+        Ouvre un navigateur web sur la bonne page
+    """
     def _open_browser():
         webbrowser.open('http://localhost:{port}'.format(port=port))
     thread = threading.Timer(0.5, _open_browser)
@@ -49,7 +57,8 @@ def datefr(chaine):
     return datetime.datetime.strptime(chaine, "%d/%m/%Y")
 
 def yearsago(years, from_date=None):
-    """ La date d'il y a quelques années
+    """
+        La date d'il y a quelques années
     """
     if from_date is None:
         from_date = datetime.datetime.now()

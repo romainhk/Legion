@@ -13,10 +13,10 @@ import xml.etree.ElementTree as ET
 from liblegion import *
 
 class HttpHandler(http.server.SimpleHTTPRequestHandler):
-    """ Classe HttpHandler
-    Traite les requêtes HTTP issues du serveur web
+    """
+        Traite les requêtes HTTP issues du serveur web
 
-    self.server est une référence vers le serveur d'origine
+        self.server est une référence vers le serveur d'origine
     """
     def do_GET(self):
         """ Traitement des GET """
@@ -303,7 +303,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     'naissance': naissance, 'genre': genre, 'mail': mail, \
                     'doublement': doublement, 'classe': classe, 'entrée': entrée, \
                     'sad_établissement': sad_etab,   'sad_classe': sad_classe }
-            self.server.db.ecrire(enr, self.server.date, self.server.nom_etablissement)
+            self.server.db.ecrire(enr, self.server.date)
             if not (classe in les_classes or classe in classes_a_ajouter or classe is None) :
                 classes_a_ajouter.append(classe)
         # Ici, les données élèves ont été importé ; il ne reste qu'à ajouter les classes inconnues

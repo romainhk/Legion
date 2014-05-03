@@ -16,7 +16,7 @@ from liblegion import *
 class Legion(http.server.HTTPServer):
     """
         Legion est la classe principale.
-        C'est le serveur web qui lance le traitement des requêtes HTTP et instancie la base sqlite
+        C'est le serveur web ; il lance le traitement des requêtes HTTP et instancie la base sqlite.
     """
     def __init__(self, address, handler):
         # Création du server
@@ -58,10 +58,10 @@ class Legion(http.server.HTTPServer):
         else:
             self.date = debut_AS(ajd.year)
         # DB
-        self.db = database.Database(root)
+        self.db = database.Database(root, self.nom_etablissement)
 
     def maj_date(self, date):
-        """ Seter sur la date """
+        """ Seter sur la date (date d'importation) """
         self.date = date
 
 if __name__ == "__main__":

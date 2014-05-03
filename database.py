@@ -8,7 +8,11 @@ import os
 from liblegion import *
 
 class Database():
-    def __init__(self, root):
+    """
+        La base de donnée [sic]
+    """
+    def __init__(self, root, nom_etablissement):
+        self.nom_etablissement = nom_etablissement
         self.nom_base = 'base.sqlite'
         bdd = root + os.sep + self.nom_base
         if os.path.isfile(bdd):
@@ -77,16 +81,14 @@ class Database():
         self.conn.commit()
         return 'Oui'
 
-    def ecrire(self, enr, date, nom_etablissement):
+    def ecrire(self, enr, date):
         """
             Ajoute les informations d'un élève à la bdd
 
         :param enr: les données à enregistrer
         :param date: l'objet date de référence pour l'importation
-        :param nom_etablissement: le nom de l'établissement [sic]
         :type enr: dict
         :type date: datetime
-        :type nom_etablissement: str
         :return: define du type d'importation effectuée
         :rtype: int
         """
@@ -142,12 +144,12 @@ class Database():
 
         # Reste à affecter notre élève à sa classe de cette année et de l'année dernière
         x = self.ecrire_affectation(
-                ine,    date.year,     classe,  nom_etablissement,  enr['doublement'])
+                ine,    date.year,     classe,  self.nom_etablissement,  enr['doublement'])
         etab = enr['sad_établissement']
         classe_pre = enr['sad_classe']
         if enr['doublement'] == 1: # Parfois, ces informations ne sont pas redonnées dans SIECLE
             classe_pre = classe
-            etab = nom_etablissement
+            etab = self.nom_etablissement
         y = self.ecrire_affectation(
                 ine,    date.year-1,   classe_pre,  etab,   9)
         # En cas de problème, annulation des modifications précédentes
@@ -155,7 +157,7 @@ class Database():
             raison.append('Pb affectation année en cours')
         if y == self.FAILED:
             #raison.append('Pb affectation année précédente')
-            logging.warning(u"{0}".format(enr))
+            logging.info(u"{0}".format(enr))
         if len(raison) > 0:
             self.conn.rollback()
             if self.ecrire_en_pending(enr, date.year, ', '.join(raison)):
@@ -295,7 +297,7 @@ class Database():
 
     def lire(self):
         """
-            Lit le contenu de la base
+            Lit le contenu de la base élève
         
         :rtype: dict
         """
@@ -349,7 +351,7 @@ class Database():
 
     def lire_pending(self):
         """
-            Lit le contenu de la base
+            Lit le contenu de la base des élèves en pending
         
         :rtype: dict
         """
@@ -381,7 +383,10 @@ class Database():
         """
         retourner_uniquement = None # Pour ne retourner que la valeur désignée
         if info == "annees_scolarisation":
-            req = 'SELECT INE,count(*) Scolarisation FROM Affectations WHERE Établissement="Jean Moulin" GROUP BY INE'.format(info)
+            req = 'SELECT INE,count(*) Scolarisation FROM Affectations WHERE Établissement="{0}" GROUP BY INE'.format(self.nom_etablissement)
+            # Autre calcul utilisant la date d'entrée
+            #(pb: l'élèves a pu partir puis revenir l'année suivante)
+            #req = 'SELECT A.INE,{0}-Entrée+1 AS Scolarisation FROM Affectations A JOIN Élèves E ON A.INE=E.INE WHERE Établissement="Jean Moulin"'.format(annee)
         elif info == "issue_pro":
             req = "SELECT Classe,Niveau,Filière,Section,count(*) NbIssueDePro FROM Affectations NATURAL JOIN Classes WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Année={1} AND Filière='Pro') AND Année = {0} GROUP BY Classe".format(annee, annee-1)
             retourner_uniquement = 'NbIssueDePro'

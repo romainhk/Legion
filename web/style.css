@@ -151,6 +151,7 @@ a.export, a.export:visited {
 /* champs de recherche pour les statistiques */
 #Statistiques table {
     margin:2ex auto 0;
+    width: auto;
 }
 .stats {
     margin: 1ex auto;

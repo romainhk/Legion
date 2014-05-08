@@ -7,10 +7,23 @@
 * Pour les élèves sorties : durée de scolarisation
 * Passer la liste des résultats plutôt qu'un dénombrement ? (permet ainsi de donner une liste selon les critères)
 
+* Revoir la clareté des intitulés
+* Issue de Pro : la proportion est faible (13%)
+** la stat est intéressante pour les BTS uniquement
+* Par niveau :
+** Remplacer Général par GT
+** Affectation section-filière pas utile pour le supérieur
+* Niveaux : 2,1,T,1BTS,2BTS,Bac+1,Bac+3
+* Filières :  Pro, GT, Enseignement Supérieur
+* Sections : GA/ACC/BSP, S/ES/STMG/ST2S, MUC/NRC/CGO/AM/ASS/ECOM/Sécu...
+
 ### Python
 * colonne Diplômé : importation automatisée depuis ...
 * Pending : ajout/supprimer dans la base après validation ?
 * Pending : sad_etab et sad_classe ?
+
+* Pending : peut contenir dans inscriptions sans suite
+=> vérifier la date de sortie, et les champs CODE_MOTIF_SORTIE
 
 ### HTML
 * envoie de mail en masse : à tester
@@ -20,3 +33,4 @@
 * Liste : limiter à une année scolaire (comme stats) ? (pb du temps de chargement)
 ** > page d'accueil
 * exportation : bouton "copier dans le presse-papier"
+* Ajouter des tutoriels sur l'importation (quand les faire ?...)

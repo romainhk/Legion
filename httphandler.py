@@ -23,7 +23,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         # Analyse de l'url
         params = urlparse(self.path)
         query = parse_qs(params.query)
-        #logging.debug("GET {0} ? {1}".format(params, query))
         rep = "";
         if params.path == '/liste':
             rep = { 'annee': self.server.date.year, 'data': self.server.db.lire() }
@@ -36,12 +35,15 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             ine = query['ine'].pop()
             champ = query['champ'].pop()
             donnee = query['d'].pop()
+            if champ == 'Situations': donnee = self.server.situations[int(donnee)]
             rep = self.server.db.maj_champ('Élèves', ine, champ, donnee)
         elif params.path == '/maj_classe':
             classe = query['classe'].pop()
             champ = query['champ'].pop()
             if 'val' in query: # val peut être vide
                 val = query['val'].pop()
+                if int(val) < len(self.server.niveaux):
+                    val = self.server.niveaux[int(val)]
             else:
                 val = ''
             rep = self.server.db.maj_champ('Classes', classe, champ, val)
@@ -62,7 +64,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 'niveaux': self.server.niveaux,
                 'sections': self.server.sections }
         elif params.path == '/init':
-            rep = {'header': self.server.header, 'situations': self.server.situations }
+            rep = {
+                    'header': self.server.header,
+                    'situations': self.server.situations,
+                    'niveaux' : self.server.niveaux }
         elif params.path == '/quitter':
             self.quitter()
             return
@@ -140,8 +145,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         - taux de passage :
             - le taux de passage pour chaque transition de classe dans une même section
         """
-        print(stat)
-        print(niveaux)
         # Récupération des infos : classes, effectif...
         classes = self.server.db.lire_classes()
         classes_pro = filtrer_dict(classes, 'Filière', 'Pro')

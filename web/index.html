@@ -51,23 +51,10 @@
                 <th>Année</th>
                 <th colspan="5">Les niveaux à prendre en compte</th>
             </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td>Seconde</td>
-                <td>Première</td>
-                <td>Terminale</td>
-                <td>BTS</td>
-                <td>Formation</td>
-            </tr>
-            <tr>
+            <tr id="stats-niveaux"><td></td><td></td></tr>
+            <tr id="stats-options">
                 <td><select id="stats-liste"></select></td>
                 <td><select id="stats-annee" value="annee"></select></td>
-                <td><input type="checkbox" checked="checked" value="nivsec" /></td>
-                <td><input type="checkbox" checked="checked" value="nivprem" /></td>
-                <td><input type="checkbox" checked="checked" value="nivterm" /></td>
-                <td><input type="checkbox" checked="checked" value="nivbts" /></td>
-                <td><input type="checkbox" value="nivform" /></td>
                 <td><input type="button" value="Rechercher" onClick="stats_recherche();"></td>
             </tr>
             <tr></tr>

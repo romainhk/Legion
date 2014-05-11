@@ -290,11 +290,12 @@ function cell_to_select(e) {
             $.each(valeurs, function(i, j) {
                 pardefaut = "";
                 if (j == selected) { pardefaut = ' selected="selected"' ; }
-                sel.append('<option value="'+j+'"'+pardefaut+'>'+j+'</option>');
+                sel.append('<option value="'+i+'"'+pardefaut+'>'+j+'</option>');
             });
             sel.change( function(){
                 // Au changement de valeur, on l'enregistre dans la base
                 val = $(this).val();
+                txt = $('option:selected', this).text(); // option sélectionnée fils de l'élément this
                 if (col == "Situation") {
                     ine = cell.closest('tr').attr('id');
                     params = "ine="+ine+"&champ="+col+"&d="+val;
@@ -308,10 +309,18 @@ function cell_to_select(e) {
                     c = cell.parents('td');
                     if (data == 'Oui') { c.addClass("maj_oui"); }
                     else if (data == 'Non') { c.addClass("maj_non"); }
-                    c.html(val); // Et on retire le select
+                    c.html(txt); // Et on retire le select
                 });
             });
         }
     }
 }
  
+/*
+function htmlEncode(value){
+    return $('<div/>').text(value).html();
+}
+function htmlDecode(value){
+    return $('<div/>').html(value).text();
+}
+*/

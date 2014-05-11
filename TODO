@@ -7,15 +7,16 @@
 * Pour les élèves sorties : durée de scolarisation
 * Passer la liste des résultats plutôt qu'un dénombrement ? (permet ainsi de donner une liste selon les critères)
 
-* Revoir la clareté des intitulés
+* Revoir la clarté des intitulés
 * Issue de Pro : la proportion est faible (13%)
 ** la stat est intéressante pour les BTS uniquement
 * Par niveau :
-** Remplacer Général par GT
 ** Affectation section-filière pas utile pour le supérieur
-* Niveaux : 2,1,T,1BTS,2BTS,Bac+1,Bac+3
 * Filières :  Pro, GT, Enseignement Supérieur
 * Sections : GA/ACC/BSP, S/ES/STMG/ST2S, MUC/NRC/CGO/AM/ASS/ECOM/Sécu...
+
+* Lors d'une importation, l'ajout de l'année scolaire n'est pas repris sur la page de stats
+=> Recharger la page ?
 
 ### Python
 * colonne Diplômé : importation automatisée depuis ...

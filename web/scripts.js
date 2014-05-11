@@ -232,6 +232,11 @@ $(document).ready(function() {
         var entete = "";
         var filtre = "";
         situations = data['situations'];
+        niveaux = data['niveaux'];
+        $.each(niveaux, function( i, j ) {
+            $("#stats-niveaux").append('<td>'+j+'</td>');
+            $("#stats-options td").last().before('<td><input type="checkbox" checked="checked" value="'+i+'" /></td>');
+        });
         $.each(data['header'], function( i, j ) {
             champ = j[0];
             champs_vue.push(champ);

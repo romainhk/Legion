@@ -42,6 +42,7 @@ table > caption {
 }
 th {
     text-align:center;
+    text-transform: capitalize;
 }
 /* pour les select dans un table */
 td select {

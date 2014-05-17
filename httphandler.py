@@ -296,6 +296,12 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         self.server.maj_date( debut_AS( int(root.findtext('.//PARAMETRES/ANNEE_SCOLAIRE')) ) )
         date = root.findtext('.//PARAMETRES/DATE_EXPORT')
         for eleve in root.iter('ELEVE'):
+            sortie = eleve.findtext('DATE_SORTIE')
+            if sortie and sortie.split('/')[1] == '09':
+                # Si la date de sortie est en septembre, il s'agit d'un élève affecté automatiquement au lycée
+                # mais qui est parti dans un autre
+                # => On laisse tomber
+                continue
             eid = eleve.get('ELEVE_ID')
             ine = eleve.findtext('ID_NATIONAL')
             nom = eleve.findtext('NOM')
@@ -305,7 +311,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             mail = xstr(eleve.findtext('MEL'))
             doublement = eleve.findtext('DOUBLEMENT')
             j, m, entrée = eleve.findtext('DATE_ENTREE').split('/')
-            sortie = eleve.findtext('DATE_SORTIE')
             classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE[TYPE_STRUCTURE='D']/CODE_STRUCTURE".format(eid))
             sad_etab = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/DENOM_COMPL')).title()
             sad_classe = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_STRUCTURE')).strip(' ')

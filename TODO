@@ -20,8 +20,7 @@
 * Pending : ajout/supprimer dans la base après validation ?
 * Pending : sad_etab et sad_classe ?
 
-* Pending : peut contenir dans inscriptions sans suite
-=> vérifier la date de sortie, et les champs CODE_MOTIF_SORTIE
+* Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 
 ### HTML
 * envoie de mail en masse : à tester

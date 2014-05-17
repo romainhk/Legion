@@ -51,7 +51,8 @@ function envoie_du_fichier(event) {
     $.post('/importation', { data: result, name: fileName }, function(reponse) {
         $("#progress").hide();
         $( "#onglets li:first-child" ).trigger( "click" );
-        stats_annees(); // Une nouvelle année est peut-être disponible...
+        // Mise à jour générale
+        location.reload(true);
     });
 }
 

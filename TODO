@@ -15,9 +15,6 @@
 * Filières :  Pro, GT, Enseignement Supérieur
 * Sections : GA/ACC/BSP, S/ES/STMG/ST2S, MUC/NRC/CGO/AM/ASS/ECOM/Sécu...
 
-* Lors d'une importation, l'ajout de l'année scolaire n'est pas repris sur la page de stats
-=> Recharger la page ?
-
 ### Python
 * colonne Diplômé : importation automatisée depuis ...
 * Pending : ajout/supprimer dans la base après validation ?

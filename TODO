@@ -31,3 +31,8 @@
 ** > page d'accueil
 * exportation : bouton "copier dans le presse-papier"
 * Ajouter des tutoriels sur l'importation (quand les faire ?...)
+
+### Extension EPS
+* Pour chaque élève, pouvoir affecter 3 activités en 1er et 2 en Terminale, avec notations
+* Calculer la note du bac de l'élève : moyenne des 3 meilleures notes dont au moins une en terminale
+* Générer des stats transversales : moyenne par activités...

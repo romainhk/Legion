@@ -62,9 +62,11 @@ function envoie_du_fichier(event) {
 function stats_recherche() {
     var stat = $('#stats-liste option:selected').text();
     var annee = $('#stats-annee option:selected').text();
-    var niveaux = '?';
+    var niveaux = [];
+    $('#stats-options td input:checked').each(function(i, j) {
+        niveaux.push($(j).val());
+    }); // S'il te plaît, n'ajoute pas d'autres checkbox à stats-options
     params = "stat="+stat+"&annee="+annee+"&niveaux="+niveaux;
-    console.log(params);
     // On masque la recherche précédente
     $.each(les_stats, function( i, p ) {
         $("#stats-"+p.replace(/ |\(|\)/g, '')).hide();

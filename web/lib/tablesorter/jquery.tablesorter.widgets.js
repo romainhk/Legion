@@ -1,4 +1,4 @@
-/*! tableSorter 2.16+ widgets - updated 4/27/2014 (v2.16.2)
+/*! tableSorter 2.16+ widgets - updated 5/22/2014 (v2.17.0)
  *
  * Column Styles
  * Column Filters
@@ -438,16 +438,18 @@ ts.filter = {
 					query = ts.formatFloat( iFilter.replace(ts.filter.regex.operators, ''), table ),
 					parser = c.parsers[index],
 					savedSearch = query;
-					// parse filter value in case we're comparing numbers (dates)
+				// parse filter value in case we're comparing numbers (dates)
 				if (parsed[index] || parser.type === 'numeric') {
-					cachedValue = parser.format( '' + iFilter.replace(ts.filter.regex.operators, ''), table, c.$headers.eq(index), index );
-					query = ( typeof query === "number" && cachedValue !== '' && !isNaN(cachedValue) ) ? cachedValue : query;
+					result = parser.format( $.trim('' + iFilter.replace(ts.filter.regex.operators, '')), table, [], index );
+					query = ( typeof result === "number" && result !== '' && !isNaN(result) ) ? result : query;
 				}
+
 				// iExact may be numeric - see issue #149;
 				// check if cached is defined, because sometimes j goes out of range? (numeric columns)
-				cachedValue = ( parsed[index] || parser.type === 'numeric' ) && !isNaN(query) && cached ? cached :
+				cachedValue = ( parsed[index] || parser.type === 'numeric' ) && !isNaN(query) && typeof cached !== 'undefined' ? cached :
 					isNaN(iExact) ? ts.formatFloat( iExact.replace(ts.filter.regex.nondigit, ''), table) :
 					ts.formatFloat( iExact, table );
+
 				if ( />/.test(iFilter) ) { result = />=/.test(iFilter) ? cachedValue >= query : cachedValue > query; }
 				if ( /</.test(iFilter) ) { result = /<=/.test(iFilter) ? cachedValue <= query : cachedValue < query; }
 				// keep showing all rows if nothing follows the operator
@@ -476,8 +478,8 @@ ts.filter = {
 		},
 		// Look for an AND or && operator (logical and)
 		and : function( filter, iFilter, exact, iExact ) {
-			if ( /\s+(AND|&&)\s+/g.test(filter) ) {
-				var query = iFilter.split( /(?:\s+(?:and|&&)\s+)/g ),
+			if ( ts.filter.regex.andTest.test(filter) ) {
+				var query = iFilter.split( ts.filter.regex.andSplit ),
 					result = iExact.search( $.trim(query[0]) ) >= 0,
 					indx = query.length - 1;
 				while (result && indx) {
@@ -490,10 +492,11 @@ ts.filter = {
 		},
 		// Look for a range (using " to " or " - ") - see issue #166; thanks matzhu!
 		range : function( filter, iFilter, exact, iExact, cached, index, table, wo, parsed ) {
-			if ( /\s+(-|to)\s+/.test(iFilter) ) {
+			if ( ts.filter.regex.toTest.test(iFilter) ) {
 				var result, tmp,
 					c = table.config,
-					query = iFilter.split(/(?: - | to )/), // make sure the dash is for a range and not indicating a negative number
+					// make sure the dash is for a range and not indicating a negative number
+					query = iFilter.split( ts.filter.regex.toSplit ),
 					range1 = ts.formatFloat(query[0].replace(ts.filter.regex.nondigit, ''), table),
 					range2 = ts.formatFloat(query[1].replace(ts.filter.regex.nondigit, ''), table);
 					// parse filter value in case we're comparing numbers (dates)
@@ -513,9 +516,9 @@ ts.filter = {
 		},
 		// Look for wild card: ? = single, * = multiple, or | = logical OR
 		wild : function( filter, iFilter, exact, iExact, cached, index, table, wo, parsed, rowArray ) {
-			if ( /[\?|\*]/.test(iFilter) || /\s+OR\s+/i.test(filter) ) {
+			if ( /[\?|\*]/.test(iFilter) || ts.filter.regex.orReplace.test(filter) ) {
 				var c = table.config,
-					query = iFilter.replace(/\s+OR\s+/gi,"|");
+					query = iFilter.replace(ts.filter.regex.orReplace, "|");
 				// look for an exact match with the "or" unless the "filter-match" class is found
 				if (!c.$headers.filter('[data-column="' + index + '"]:last').hasClass('filter-match') && /\|/.test(query)) {
 					query = $.isArray(rowArray) ? '(' + query + ')' : '^(' + query + ')$';
@@ -545,14 +548,30 @@ ts.filter = {
 		}
 	},
 	init: function(table, c, wo) {
-		var options, string, $header, column, filters, time;
+		// filter language options
+		ts.language = $.extend(true, {}, {
+			to  : 'to',
+			or  : 'or',
+			and : 'and'
+		}, ts.language);
+
+		var options, string, $header, column, filters, time, fxn,
+			regex = ts.filter.regex;
 		if (c.debug) {
 			time = new Date();
 		}
 		c.$table.addClass('hasFilters');
 
-		ts.filter.regex.child = new RegExp(c.cssChildRow);
-		ts.filter.regex.filtered = new RegExp(wo.filter_filteredRow);
+		$.extend( regex, {
+			child : new RegExp(c.cssChildRow),
+			filtered : new RegExp(wo.filter_filteredRow),
+			alreadyFiltered : new RegExp('(\\s+(' + ts.language.or + '|-|' + ts.language.to + ')\\s+)', 'i'),
+			toTest : new RegExp('\\s+(-|' + ts.language.to + ')\\s+', 'i'),
+			toSplit : new RegExp('(?:\\s+(?:-|' + ts.language.to + ')\\s+)' ,'gi'),
+			andTest : new RegExp('\\s+(' + ts.language.and + '|&&)\\s+', 'i'),
+			andSplit : new RegExp('(?:\\s+(?:' + ts.language.and + '|&&)\\s+)', 'gi'),
+			orReplace : new RegExp('\\s+(' + ts.language.or + ')\\s+', 'gi')
+		});
 
 		// don't build filter row if columnFilters is false or all columns are set to "filter-false" - issue #156
 		if (wo.filter_columnFilters !== false && c.$headers.filter('.filter-false').length !== c.$headers.length) {
@@ -576,6 +595,7 @@ ts.filter = {
 				if (/(update|add)/.test(event.type) && event.type !== "updateComplete") {
 					// force a new search since content has changed
 					c.lastCombinedFilter = null;
+					c.lastSearch = [];
 				}
 				// pass true (skipFirst) to prevent the tablesorter.setFilters function from skipping the first input
 				// ensures all inputs are updated when a search is triggered on the table $('table').trigger('search', [...]);
@@ -602,16 +622,16 @@ ts.filter = {
 			}
 		}
 		if (wo.filter_functions) {
-			// column = column # (string)
-			for (column in wo.filter_functions) {
-				if (wo.filter_functions.hasOwnProperty(column) && typeof column === 'string') {
+			for (column = 0; column < c.columns; column++) {
+				fxn = ts.getColumnData( table, wo.filter_functions, column );
+				if (fxn) {
 					$header = c.$headers.filter('[data-column="' + column + '"]:last');
 					options = '';
-					if (wo.filter_functions[column] === true && !$header.hasClass('filter-false')) {
+					if (fxn === true && !$header.hasClass('filter-false')) {
 						ts.filter.buildSelect(table, column);
-					} else if (typeof column === 'string' && !$header.hasClass('filter-false')) {
+					} else if (typeof fxn === 'object' && !$header.hasClass('filter-false')) {
 						// add custom drop down list
-						for (string in wo.filter_functions[column]) {
+						for (string in fxn) {
 							if (typeof string === 'string') {
 								options += options === '' ?
 									'<option value="">' + ($header.data('placeholder') || $header.attr('data-placeholder') || wo.filter_placeholder.select || '') + '</option>' : '';
@@ -683,7 +703,7 @@ ts.filter = {
 		return filters;
 	},
 	buildRow: function(table, c, wo) {
-		var column, $header, buildSelect, disabled, name,
+		var column, $header, buildSelect, disabled, name, ffxn,
 			// c.columns defined in computeThIndexes()
 			columns = c.columns,
 			buildFilter = '<tr class="' + ts.css.filterRow + '">';
@@ -696,22 +716,18 @@ ts.filter = {
 			disabled = false;
 			// assuming last cell of a column is the main column
 			$header = c.$headers.filter('[data-column="' + column + '"]:last');
-			buildSelect = (wo.filter_functions && wo.filter_functions[column] && typeof wo.filter_functions[column] !== 'function') ||
+			ffxn = ts.getColumnData( table, wo.filter_functions, column );
+			buildSelect = (wo.filter_functions && ffxn && typeof ffxn !== "function" ) ||
 				$header.hasClass('filter-select');
 			// get data from jQuery data, metadata, headers option or header class name
-			if (ts.getData) {
-				// get data from jQuery data, metadata, headers option or header class name
-				disabled = ts.getData($header[0], c.headers[column], 'filter') === 'false';
-			} else {
-				// only class names and header options - keep this for compatibility with tablesorter v2.0.5
-				disabled = (c.headers[column] && c.headers[column].hasOwnProperty('filter') && c.headers[column].filter === false) ||
-					$header.hasClass('filter-false');
-			}
+			disabled = ts.getData($header[0], ts.getColumnData( table, c.headers, column ), 'filter') === 'false';
+
 			if (buildSelect) {
 				buildFilter = $('<select>').appendTo( c.$filters.eq(column) );
 			} else {
-				if (wo.filter_formatter && $.isFunction(wo.filter_formatter[column])) {
-					buildFilter = wo.filter_formatter[column]( c.$filters.eq(column), column );
+				ffxn = ts.getColumnData( table, wo.filter_formatter, column );
+				if (ffxn) {
+					buildFilter = ffxn( c.$filters.eq(column), column );
 					// no element returned, so lets go find it
 					if (buildFilter && buildFilter.length === 0) {
 						buildFilter = c.$filters.eq(column).children('input');
@@ -761,7 +777,7 @@ ts.filter = {
 		$el
 		// use data attribute instead of jQuery data since the head is cloned without including the data/binding
 		.attr('data-lastSearchTime', new Date().getTime())
-		.unbind('keyup search change '.split(' ').join(c.namespace + 'filter '))
+		.unbind('keypress keyup search change '.split(' ').join(c.namespace + 'filter '))
 		// include change for select - fixes #473
 		.bind('keyup search change '.split(' ').join(c.namespace + 'filter '), function(event) {
 			$(this).attr('data-lastSearchTime', new Date().getTime());
@@ -774,8 +790,14 @@ ts.filter = {
 				( event.which >= 37 && event.which <= 40 ) || (event.which !== 13 && wo.filter_liveSearch === false) ) ) ) {
 					return;
 			}
-			// true flag tells getFilters to skip newest timed input
-			ts.filter.searching( table, true, true );
+			// change event = no delay; last true flag tells getFilters to skip newest timed input
+			ts.filter.searching( table, event.type !== 'change', true );
+		})
+		.bind('keypress.' + c.namespace + 'filter', function(event){
+			if (event.which === 13) {
+				event.preventDefault();
+				$(this).blur();
+			}
 		});
 		c.$table.bind('filterReset', function(){
 			$el.val('');
@@ -787,6 +809,8 @@ ts.filter = {
 			filterArray = $.isArray(filter),
 			filters = (filterArray) ? filter : ts.getFilters(table, true),
 			combinedFilters = (filters || []).join(''); // combined filter values
+		// prevent errors if delay init is set
+		if ($.isEmptyObject(c.cache)) { return; }
 		// add filter array back into inputs
 		if (filterArray) {
 			ts.setFilters( table, filters, false, skipFirst !== true );
@@ -802,6 +826,7 @@ ts.filter = {
 		} else if (filter === false) {
 			// force filter refresh
 			c.lastCombinedFilter = null;
+			c.lastSearch = [];
 		}
 		c.$table.trigger('filterStart', [filters]);
 		if (c.showProcessing) {
@@ -817,7 +842,7 @@ ts.filter = {
 	},
 	hideFilters: function(table, c) {
 		var $filterRow, $filterRow2, timer;
-		c.$table
+		$(table)
 			.find('.' + ts.css.filterRow)
 			.addClass('hideme')
 			.bind('mouseenter mouseleave', function(e) {
@@ -846,7 +871,7 @@ ts.filter = {
 				var event = e;
 				timer = setTimeout(function() {
 					// don't hide row if any filter has a value
-					if (ts.getFilters(table).join('') === '') {
+					if (ts.getFilters(c.$table).join('') === '') {
 						$filterRow2[ event.type === 'focus' ? 'removeClass' : 'addClass']('hideme');
 					}
 				}, 200);
@@ -854,10 +879,11 @@ ts.filter = {
 	},
 	findRows: function(table, filters, combinedFilters) {
 		if (table.config.lastCombinedFilter === combinedFilters) { return; }
-		var cached, len, $rows, cacheIndex, rowIndex, tbodyIndex, $tbody, $cells, columnIndex,
+		var cached, len, $rows, rowIndex, tbodyIndex, $tbody, $cells, columnIndex,
 			childRow, childRowText, exact, iExact, iFilter, lastSearch, matches, result,
-			notFiltered, searchFiltered, filterMatched, showRow, time,
-			anyMatch, iAnyMatch, rowArray, rowText, iRowText, rowCache,
+			notFiltered, searchFiltered, filterMatched, showRow, time, val, indx,
+			anyMatch, iAnyMatch, rowArray, rowText, iRowText, rowCache, fxn,
+			regex = ts.filter.regex,
 			c = table.config,
 			wo = c.widgetOptions,
 			columns = c.columns,
@@ -866,9 +892,10 @@ ts.filter = {
 			anyMatchNotAllowedTypes = [ 'range', 'notMatch',  'operators' ],
 			// parse columns after formatter, in case the class is added at that point
 			parsed = c.$headers.map(function(columnIndex) {
-				return c.parsers && c.parsers[columnIndex] && c.parsers[columnIndex].parsed || ( ts.getData ?
-					ts.getData(c.$headers.filter('[data-column="' + columnIndex + '"]:last'), c.headers[columnIndex], 'filter') === 'parsed' :
-					$(this).hasClass('filter-parsed') );
+				return c.parsers && c.parsers[columnIndex] && c.parsers[columnIndex].parsed ||
+					// getData won't return "parsed" if other "filter-" class names exist (e.g. <th class="filter-select filter-parsed">)
+					ts.getData && ts.getData(c.$headers.filter('[data-column="' + columnIndex + '"]:last'), ts.getColumnData( table, c.headers, columnIndex ), 'filter') === 'parsed' ||
+					$(this).hasClass('filter-parsed');
 			}).get();
 		if (c.debug) { time = new Date(); }
 		for (tbodyIndex = 0; tbodyIndex < $tbodies.length; tbodyIndex++ ) {
@@ -878,26 +905,34 @@ ts.filter = {
 			// $rows = $tbody.children('tr').not(c.selectorRemove);
 			columnIndex = c.columns;
 			// convert stored rows into a jQuery object
-			$rows = true ? $( $.map(c.cache[tbodyIndex].normalized, function(el){ return el[columnIndex].$row.get(); }) ) : $tbody.children('tr').not(c.selectorRemove);
-			len = $rows.length;
+			$rows = $( $.map(c.cache[tbodyIndex].normalized, function(el){ return el[columnIndex].$row.get(); }) );
+
 			if (combinedFilters === '' || wo.filter_serversideFiltering) {
 				$rows.removeClass(wo.filter_filteredRow).not('.' + c.cssChildRow).show();
 			} else {
+				// filter out child rows
+				$rows = $rows.not('.' + c.cssChildRow);
+				len = $rows.length;
 				// optimize searching only through already filtered rows - see #313
 				searchFiltered = true;
 				lastSearch = c.lastSearch || c.$table.data('lastSearch') || [];
-				$.each(filters, function(indx, val) {
+				for (indx = 0; indx < columnIndex; indx++) {
+					val = filters[indx] || '';
+					// break out of loop if we've already determined not to search filtered rows
+					if (!searchFiltered) { indx = columnIndex; }
 					// search already filtered rows if...
-					searchFiltered = searchFiltered &&
-						// there are changes from beginning of filter
-						(val || '').indexOf(lastSearch[indx]) === 0 &&
-						// if there is not a logical "or" in the string
-						!/(\s+or\s+|\|)/g.test(val || '') &&
-						// if we are not doing exact matches
-						!/[=\"]/.test(lastSearch[indx]) &&
+					searchFiltered = searchFiltered && lastSearch.length &&
+						// there are no changes from beginning of filter
+						val.indexOf(lastSearch[indx] || '') === 0 &&
+						// if there is NOT a logical "or", or range ("to" or "-") in the string
+						!regex.alreadyFiltered.test(val) &&
+						// if we are not doing exact matches, using "|" (logical or) or not "!"
+						!/[=\"\|!]/.test(val) &&
+						// don't search only filtered if the value is negative ('> -10' => '> -100' will ignore hidden rows)
+						!(/(>=?\s*-\d)/.test(val) || /(<=?\s*\d)/.test(val)) && 
 						// if filtering using a select without a "filter-match" class (exact match) - fixes #593
-						!( val !== '' && wo.filter_functions && wo.filter_functions[indx] === true && !c.$headers.filter('[data-column="' + indx + '"]:last').hasClass('filter-match') );
-				});
+						!( val !== '' && c.$filters && c.$filters.eq(indx).find('select').length && !c.$headers.filter('[data-column="' + indx + '"]:last').hasClass('filter-match') );
+				}
 				notFiltered = $rows.not('.' + wo.filter_filteredRow).length;
 				// can't search when all rows are hidden - this happens when looking for exact matches
 				if (searchFiltered && notFiltered === 0) { searchFiltered = false; }
@@ -913,11 +948,10 @@ ts.filter = {
 					iAnyMatch = anyMatch.toLowerCase();
 				}
 				// loop through the rows
-				cacheIndex = 0;
 				for (rowIndex = 0; rowIndex < len; rowIndex++) {
 					childRow = $rows[rowIndex].className;
 					// skip child rows & already filtered rows
-					if ( ts.filter.regex.child.test(childRow) || (searchFiltered && ts.filter.regex.filtered.test(childRow)) ) { continue; }
+					if ( regex.child.test(childRow) || (searchFiltered && regex.filtered.test(childRow)) ) { continue; }
 					showRow = true;
 					// *** nextAll/nextUntil not supported by Zepto! ***
 					childRow = $rows.eq(rowIndex).nextUntil('tr:not(.' + c.cssChildRow + ')');
@@ -932,7 +966,7 @@ ts.filter = {
 						rowArray = $cells.map(function(i){
 							var txt;
 							if (parsed[i]) {
-								txt = c.cache[tbodyIndex].normalized[cacheIndex][i];
+								txt = c.cache[tbodyIndex].normalized[rowIndex][i];
 							} else {
 								txt = wo.filter_ignoreCase ? $(this).text().toLowerCase() : $(this).text();
 								if (c.sortLocaleCompare) {
@@ -943,7 +977,7 @@ ts.filter = {
 						}).get();
 						rowText = rowArray.join(' ');
 						iRowText = rowText.toLowerCase();
-						rowCache = c.cache[tbodyIndex].normalized[cacheIndex].slice(0,-1).join(' ');
+						rowCache = c.cache[tbodyIndex].normalized[rowIndex].slice(0,-1).join(' ');
 						filterMatched = null;
 						$.each(ts.filter.types, function(type, typeFunction) {
 							if ($.inArray(type, anyMatchNotAllowedTypes) < 0) {
@@ -964,7 +998,7 @@ ts.filter = {
 					for (columnIndex = 0; columnIndex < columns; columnIndex++) {
 						// ignore if filter is empty or disabled
 						if (filters[columnIndex]) {
-							cached = c.cache[tbodyIndex].normalized[cacheIndex][columnIndex];
+							cached = c.cache[tbodyIndex].normalized[rowIndex][columnIndex];
 							// check if column data should be from the cell or from parsed data
 							if (wo.filter_useParsedData || parsed[columnIndex]) {
 								exact = cached;
@@ -973,24 +1007,25 @@ ts.filter = {
 								exact = $.trim($cells.eq(columnIndex).text());
 								exact = c.sortLocaleCompare ? ts.replaceAccents(exact) : exact; // issue #405
 							}
-							iExact = !ts.filter.regex.type.test(typeof exact) && wo.filter_ignoreCase ? exact.toLocaleLowerCase() : exact;
+							iExact = !regex.type.test(typeof exact) && wo.filter_ignoreCase ? exact.toLocaleLowerCase() : exact;
 							result = showRow; // if showRow is true, show that row
 
 							// replace accents - see #357
 							filters[columnIndex] = c.sortLocaleCompare ? ts.replaceAccents(filters[columnIndex]) : filters[columnIndex];
 							// val = case insensitive, filters[columnIndex] = case sensitive
 							iFilter = wo.filter_ignoreCase ? (filters[columnIndex] || '').toLocaleLowerCase() : filters[columnIndex];
-							if (wo.filter_functions && wo.filter_functions[columnIndex]) {
-								if (wo.filter_functions[columnIndex] === true) {
+							fxn = ts.getColumnData( table, wo.filter_functions, columnIndex );
+							if (fxn) {
+								if (fxn === true) {
 									// default selector; no "filter-select" class
 									result = (c.$headers.filter('[data-column="' + columnIndex + '"]:last').hasClass('filter-match')) ?
 										iExact.search(iFilter) >= 0 : filters[columnIndex] === exact;
-								} else if (typeof wo.filter_functions[columnIndex] === 'function') {
+								} else if (typeof fxn === 'function') {
 									// filter callback( exact cell content, parser normalized content, filter input value, column index, jQuery row object )
-									result = wo.filter_functions[columnIndex](exact, cached, filters[columnIndex], columnIndex, $rows.eq(rowIndex));
-								} else if (typeof wo.filter_functions[columnIndex][filters[columnIndex]] === 'function') {
+									result = fxn(exact, cached, filters[columnIndex], columnIndex, $rows.eq(rowIndex));
+								} else if (typeof fxn[filters[columnIndex]] === 'function') {
 									// selector option function
-									result = wo.filter_functions[columnIndex][filters[columnIndex]](exact, cached, filters[columnIndex], columnIndex, $rows.eq(rowIndex));
+									result = fxn[filters[columnIndex]](exact, cached, filters[columnIndex], columnIndex, $rows.eq(rowIndex));
 								}
 							} else {
 								filterMatched = null;
@@ -1020,7 +1055,6 @@ ts.filter = {
 					if (childRow.length) {
 						childRow.toggleClass(wo.filter_filteredRow, !showRow);
 					}
-					cacheIndex++;
 				}
 			}
 			ts.processTbody(table, $tbody, false);
@@ -1040,18 +1074,21 @@ ts.filter = {
 		}, 0);
 	},
 	getOptionSource: function(table, column, onlyAvail) {
-		var c = table.config,
+		var cts,
+			c = table.config,
 			wo = c.widgetOptions,
+			parsed = [],
 			arry = false,
-			source = wo.filter_selectSource;
+			source = wo.filter_selectSource,
+			fxn = $.isFunction(source) ? true : ts.getColumnData( table, source, column );
 
 		// filter select source option
-		if ($.isFunction(source)) {
+		if (fxn === true) {
 			// OVERALL source
 			arry = source(table, column, onlyAvail);
-		} else if ($.type(source) === 'object' && source.hasOwnProperty(column)) {
+		} else if ($.type(source) === 'object' && fxn) {
 			// custom select source function for a SPECIFIC COLUMN
-			arry = source[column](table, column, onlyAvail);
+			arry = fxn(table, column, onlyAvail);
 		}
 		if (arry === false) {
 			// fall back to original method
@@ -1064,7 +1101,43 @@ ts.filter = {
 		arry = $.grep(arry, function(value, indx) {
 			return $.inArray(value, arry) === indx;
 		});
-		return (ts.sortNatural) ? arry.sort(function(a, b) { return ts.sortNatural(a, b); }) : arry.sort(true);
+
+		if (c.$headers.filter('[data-column="' + column + '"]:last').hasClass('filter-select-nosort')) {
+			// unsorted select options
+			return arry;
+		} else {
+			// parse select option values
+			$.each(arry, function(i, v){
+				// parse array data using set column parser; this DOES NOT pass the original
+				// table cell to the parser format function
+				parsed.push({ t : v, p : c.parsers && c.parsers[column].format( v, table, [], column ) || v });
+			});
+
+			// sort parsed select options
+			cts = c.textSorter || '';
+			parsed.sort(function(a, b){
+				// sortNatural breaks if you don't pass it strings
+				var x = a.p.toString(), y = b.p.toString();
+				if ($.isFunction(cts)) {
+					// custom OVERALL text sorter
+					return cts(x, y, true, column, table);
+				} else if (typeof(cts) === 'object' && cts.hasOwnProperty(column)) {
+					// custom text sorter for a SPECIFIC COLUMN
+					return cts[column](x, y, true, column, table);
+				} else if (ts.sortNatural) {
+					// fall back to natural sort
+					return ts.sortNatural(x, y);
+				}
+				// using an older version! do a basic sort
+				return true;
+			});
+			// rebuild arry from sorted parsed data
+			arry = [];
+			$.each(parsed, function(i, v){
+				arry.push(v.t);
+			});
+			return arry;
+		}
 	},
 	getOptions: function(table, column, onlyAvail) {
 		var rowIndex, tbodyIndex, len, row, cache, cell,
@@ -1122,6 +1195,8 @@ ts.filter = {
 			$filters = $filters && $filters.length ? $filters.add(wo.filter_$externalFilters) : wo.filter_$externalFilters;
 		}
 		$filters.filter('select[data-column="' + column + '"]')[ updating ? 'html' : 'append' ](options);
+		if (!wo.filter_functions) { wo.filter_functions = {}; }
+		wo.filter_functions[column] = true;
 	},
 	buildDefault: function(table, updating) {
 		var columnIndex, $header,
@@ -1132,10 +1207,7 @@ ts.filter = {
 		for (columnIndex = 0; columnIndex < columns; columnIndex++) {
 			$header = c.$headers.filter('[data-column="' + columnIndex + '"]:last');
 			// look for the filter-select class; build/update it if found
-			if (($header.hasClass('filter-select') || wo.filter_functions && wo.filter_functions[columnIndex] === true) &&
-				!$header.hasClass('filter-false')) {
-				if (!wo.filter_functions) { wo.filter_functions = {}; }
-				wo.filter_functions[columnIndex] = true; // make sure this select gets processed by filter_functions
+			if (($header.hasClass('filter-select') || ts.getColumnData( table, wo.filter_functions, columnIndex ) === true) && !$header.hasClass('filter-false')) {
 				ts.filter.buildSelect(table, columnIndex, updating, $header.hasClass(wo.filter_onlyAvail));
 			}
 		}
@@ -1207,6 +1279,7 @@ ts.setFilters = function(table, filter, apply, skipFirst) {
 	if (c && apply) {
 		// ensure new set filters are applied, even if the search is the same
 		c.lastCombinedFilter = null;
+		c.lastSearch = [];
 		ts.filter.searching(c.$table[0], filter, skipFirst);
 		c.$table.trigger('filterFomatterUpdate');
 	}
@@ -1282,10 +1355,7 @@ ts.addWidget({
 						// some wibbly-wobbly... timey-wimey... stuff, to make columns line up in Firefox
 						offset = nonwkie && $(this).attr('data-column') === ( '' + parseInt(c.columns/2, 10) ) ? 1 : 0;
 					$(this)
-						.css({
-							width: $cell.width() - spacing,
-							height: $cell.height()
-						})
+						.css({ width: $cell.width() - spacing })
 						.find(innerHeader).width( $cell.find(innerHeader).width() - offset );
 				});
 			};
@@ -1364,6 +1434,10 @@ ts.addWidget({
 				}
 			});
 			ts.filter.bindSearch( $table, $stickyCells.find('.' + ts.css.filter) );
+			// support hideFilters
+			if (wo.filter_hideFilters) {
+				ts.filter.hideFilters($stickyTable, c);
+			}
 		}
 
 		$table.trigger('stickyHeadersInit');
@@ -1437,7 +1511,7 @@ ts.addWidget({
 			var canResize,
 				$column = $(this);
 			column = $column.attr('data-column');
-			canResize = ts.getData( $column, c.headers[column], 'resizable') === "false";
+			canResize = ts.getData( $column, ts.getColumnData( table, c.headers, column ), 'resizable') === "false";
 			$rows.children().filter('[data-column="' + column + '"]')[canResize ? 'addClass' : 'removeClass']('resizable-false');
 		});
 		// add wrapper inside each cell to allow for positioning of the resizable target block
@@ -1477,7 +1551,7 @@ ts.addWidget({
 		})
 		.find('.' + ts.css.resizer + ',.' + ts.css.grip)
 		.bind('mousedown', function(event) {
-			// save header cell and mouse position; closest() not supported by jQuery v1.2.6
+			// save header cell and mouse position
 			$target = $(event.target).closest('th');
 			var $header = c.$headers.filter('[data-column="' + $target.attr('data-column') + '"]');
 			if ($header.length > 1) { $target = $target.add($header); }

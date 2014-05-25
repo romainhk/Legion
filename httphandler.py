@@ -126,17 +126,16 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         :type annee: int
         :type niveaux: array(str)
 
-        :return: un dictionnaire des valeurs triées par catégories
+        :return: dict(  'data'  : [ les données à afficher ],
+                        'ordre' : [ ordre d'affichage des colonnes ] }
 
-        - ordre
-            - pour chaque type de donnée (section, niveau...), l'ordre d'affichage voulu
         - pour l'établissement
             - effectif total
             - proportion de garçon
             - De même, hors BTS
             - proportion d'élèves issus de filière pro
         - par section
-            - effectif total (ce qui donne reponse['section'][SECTION]['effectif'] = TOTAL)
+            - effectif total
             - poids / étab
             - proportion de redoublants
             - proportion de garçon
@@ -144,141 +143,87 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             - proportion d'élèves issus de section pro dans l'établissement
         - par niveau
             - _idem_
-        - provenance
+        - provenance et provenance par classe
             - établissement : total d'élèves, total d'élèves actuellement en seconde
         - taux de passage :
             - le taux de passage pour chaque transition de classe dans une même section
         """
         # Liste des niveaux à prendre en compte au format textuel
         les_niveaux = [self.server.niveaux[int(n)] for n in niveaux]
-        # Récupération des infos : classes, effectif...
-        classes = self.server.db.lire_classes()
-        classes_pro = filtrer_dict(classes, 'Filière', 'Pro')
-        data = {}
-        # Pour chaque élève
-        for d in self.server.db.lire().values():
-            p = d['Parcours']
-            if d['Genre'] == 2: # une femme
-                h = (0,1)
-            else: # == 1
-                h = (1,0)
-            doub = p[annee][2]
-            if doub == 9: doub = 0
+        totaux = self.server.db.stats('totaux', annee, les_niveaux).pop()
+        eff_total = totaux['total'] # Effectif total
 
-            nouveau = 0
-            frompro = 0
-            if annee-1 in p:
-                etab_1 = p[annee-1][1]
-                if etab_1 != self.server.nom_etablissement:
-                    nouveau = 1
-                else:
-                    classe = p[annee-1][0]
-                    if classe in classes_pro: frompro = 1
+        rep = { 'ordre': {}, 'data': {} }
+        if stat == 'Général':
+            total_homme = totaux['homme'] # Nombre total d'hommes
+            total_doublant = totaux['doublant']
+            #total_nouveau = totaux['nouveau']
+            total_issue_de_pro = totaux['issue de pro']
+            # TODO : pour cette stat, ajouter un taux de confiance
 
-            t = [ h[0], h[1], doub, nouveau, frompro ] # Nb : garçon, fille, doublant, nouveau, issu de pro
-            classe = p[annee][0]
-            if classe in data:
-                data[classe] = [sum(x) for x in zip(data[classe], t)] # data[classe] += t
-            else:
-                data[classe] = t
-        #logging.debug(data)
+            #rep['ordre'] = []
+            rep['data']['Effectif'] = eff_total
+            rep['data']['Proportion garçon'] = en_pourcentage(total_homme / eff_total)
+            rep['data']['Proportion doublant'] = en_pourcentage(total_doublant / eff_total)
+            rep['data']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
+            # Années de scolarisation moyenne par élève
+            a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, les_niveaux)])
+            rep['data']['Années de scolarisation moyenne par élève'] = str(round( a, 2 )) + ' ans'
+        elif stat == 'Par niveau':
+            rep['ordre'] = ['niveau', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
+            rep['data'] = []
+            for d in self.server.db.stats('par niveau', annee, les_niveaux):
+                a = {}
+                a['niveau'] = d['Niveau']
+                a['effectif'] = d['effectif']
+                a['poids'] = en_pourcentage(d['effectif'] / eff_total)
+                a['homme'] = en_pourcentage(d['homme'] / d['effectif'])
+                a['doublant'] = en_pourcentage(d['doublant'] / d['effectif'])
+                a['nouveau'] = en_pourcentage(d['nouveau'] / d['effectif'])
+                a['issue de pro'] = en_pourcentage(d['issue de pro'] / d['effectif'])
+                rep['data'].append(a)
+        elif stat == 'Par section':
+            rep['ordre'] = ['section', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
+            rep['data'] = []
+            for d in self.server.db.stats('par section', annee, les_niveaux):
+                a = {}
+                a['section'] = d['Section']
+                a['effectif'] = d['effectif']
+                a['poids'] = en_pourcentage(d['effectif'] / eff_total)
+                a['homme'] = en_pourcentage(d['homme'] / d['effectif'])
+                a['doublant'] = en_pourcentage(d['doublant'] / d['effectif'])
+                a['nouveau'] = en_pourcentage(d['nouveau'] / d['effectif'])
+                a['issue de pro'] = en_pourcentage(d['issue de pro'] / d['effectif'])
+                rep['data'].append(a)
+        elif stat == 'Provenance':
+            rep['ordre'] = ['Établissement', 'total', 'en seconde']
+            rep['data'] = self.server.db.stats('provenance', annee, les_niveaux)
+        elif stat == 'Provenance (classe)':
+            rep['ordre'] = ['classe', 'provenance', 'Établissement', 'total']
+            rep['data'] = self.server.db.stats('provenance classe', annee, les_niveaux)
+        elif stat == 'Taux de passage':
+            rep['ordre'] = ['section', 'passage', 'taux']
+            rep['data'] = []
+            passage = self.server.db.stats('taux de passage', annee, les_niveaux)
+            for sect in self.server.sections:
+                # On filtre les éléments de data concernant la section voulue
+                e = [dictio for dictio in passage if dictio['Section'] == sect]
+                for i in range(1,len(self.server.niveaux)):
+                    niv = self.server.niveaux[i]
+                    niv_pre = self.server.niveaux[i-1]
+                    # Élèves au niveau niv de la section sect pour l'année en cours
+                    f = [dictio['INE'] for dictio in e if dictio['Niveau'] == niv and dictio['Année'] == annee]
+                    # Élèves au niveau précédent de la même section pour l'année passée
+                    g = [dictio['INE'] for dictio in e if dictio['Niveau'] == niv_pre and dictio['Année'] == annee-1]
+                    if len(f) > 0 and len(g) > 0:
+                        # On a des élèves dans deux années successives d'une même section !
+                        communs = list (set(g) & set(f)) # l'intersection des deux années
+                        taux = en_pourcentage( float(len(communs)) / float(len(g)) )
+                        v = { 'section': sect, 'passage': niv_pre+' > '+niv, 'taux': taux}
+                        rep['data'].append(v)
+        else:
+            logging.error('Statistique {0} inconnue'.format(stat))
 
-        # On génère maintenant le tableau de statistiques
-        rep = { 'ordre': {},
-                'établissement': {},
-                'section': {}, 
-                'niveau': {},
-                'provenance': {},
-                'taux de passage' : {} }
-        # Ordre d'affichage des colonnes
-        rep['ordre']['niveau'] = ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
-        rep['ordre']['section'] = ['effectif', 'poids', 'garçon', 'doublant', 'nouveau', 'issue de pro']
-        rep['ordre']['provenance'] = ['Établissement', 'total', 'en seconde']
-        rep['ordre']['provenance bts'] = ['classe de bts', 'provenance', 'Établissement', 'total']
-        rep['ordre']['taux de passage'] = ['section', 'passage', 'taux']
-        # Calculs
-        eff_total = sum([sum(x[:2]) for x in data.values()]) # Effectif total
-        eff_total_bts = self.server.db.stats('effectif_bts', annee, ['1BTS', '2BTS'])
-        total_garcon = self.server.db.stats('garcons', annee, les_niveaux)
-        total_garcon_bts = self.server.db.stats('garcons', annee, ['1BTS', '2BTS'])
-        total_doublant = self.server.db.stats('total_doublant', annee, les_niveaux)
-        total_issue_de_pro = 0
-        # Pour chaque classe
-        for cla, val in sorted(data.items()):
-            g, f, doub, nouveau, frompro = val
-            eff = g + f
-            section_classe = classes[cla]['Section']
-            if not section_classe or section_classe == '?':
-                section_classe = 'Inconnue'
-            niveau_classe = classes[cla]['Niveau']+' '+classes[cla]['Filière']
-            if niveau_classe == ' ' or '?' in niveau_classe:
-                niveau_classe = 'Inconnu'
-            total_issue_de_pro = total_issue_de_pro + frompro
-
-            # Par Section
-            if not section_classe in rep['section']:
-                rep['section'][section_classe] = {}
-            dict_add(rep['section'][section_classe], 'effectif', eff)
-            dict_add(rep['section'][section_classe], 'garçon', g)
-            dict_add(rep['section'][section_classe], 'doublant', doub)
-            dict_add(rep['section'][section_classe], 'nouveau', nouveau)
-            dict_add(rep['section'][section_classe], 'issue de pro', frompro)
-            # Par Niveau
-            if not niveau_classe in rep['niveau']:
-                rep['niveau'][niveau_classe] = {}
-            dict_add(rep['niveau'][niveau_classe], 'effectif', eff)
-            dict_add(rep['niveau'][niveau_classe], 'garçon', g)
-            dict_add(rep['niveau'][niveau_classe], 'doublant', doub)
-            dict_add(rep['niveau'][niveau_classe], 'nouveau', nouveau)
-            dict_add(rep['niveau'][niveau_classe], 'issue de pro', frompro)
-
-        # Calcul des proportions : Poids, Garçon, Doublant
-        for key, val in rep['section'].items():
-            rep['section'][key]['poids'] = en_pourcentage(val['effectif']/eff_total)
-            rep['section'][key]['garçon'] = en_pourcentage(val['garçon']/val['effectif'])
-            rep['section'][key]['doublant'] = en_pourcentage(val['doublant']/val['effectif'])
-            rep['section'][key]['nouveau'] = en_pourcentage(val['nouveau']/val['effectif'])
-            rep['section'][key]['issue de pro'] = en_pourcentage(val['issue de pro']/val['effectif'])
-        for key, val in rep['niveau'].items():
-            rep['niveau'][key]['poids'] = en_pourcentage(val['effectif']/eff_total)
-            rep['niveau'][key]['garçon'] = en_pourcentage(val['garçon']/val['effectif'])
-            rep['niveau'][key]['doublant'] = en_pourcentage(val['doublant']/val['effectif'])
-            rep['niveau'][key]['nouveau'] = en_pourcentage(val['nouveau']/val['effectif'])
-            rep['niveau'][key]['issue de pro'] = en_pourcentage(val['issue de pro']/val['effectif'])
-        # Pour l'établissement
-        eff_hors_bts = eff_total - eff_total_bts
-        rep['établissement']['Effectif total'] = eff_total
-        rep['établissement']['Proportion garçon'] = en_pourcentage(total_garcon / eff_total)
-        a = (total_garcon - total_garcon_bts)/eff_hors_bts
-        rep['établissement']['Proportion garçon (hors BTS)'] = en_pourcentage(a)
-        rep['établissement']['Proportion doublant'] = en_pourcentage(total_doublant / eff_total)
-        rep['établissement']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
-        # Années de scolarisation moyenne par élève
-        a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees_scolarisation', annee, les_niveaux)])
-        rep['établissement']['Années de scolarisation moyenne par élève'] = str(round( a, 2 )) + ' ans'
-        # Provenance
-        rep['provenance'] = self.server.db.stats('provenance', annee, les_niveaux)
-        rep['provenance bts'] = self.server.db.stats('provenance_bts', annee, ['1BTS', '2BTS'])
-
-        # Taux de passage
-        rep['taux de passage'] = []
-        passage = self.server.db.stats('taux de passage', annee, les_niveaux)
-        for sect in self.server.sections:
-            # On filtre les éléments de data concernant la section voulue
-            e = [dictio for dictio in passage if dictio['Section'] == sect]
-            for i in range(1,len(self.server.niveaux)):
-                niv = self.server.niveaux[i]
-                niv_pre = self.server.niveaux[i-1]
-                # Élèves au niveau niv de la section sect pour l'année en cours
-                f = [dictio['INE'] for dictio in e if dictio['Niveau'] == niv and dictio['Année'] == annee]
-                # Élèves au niveau précédent de la même section pour l'année passée
-                g = [dictio['INE'] for dictio in e if dictio['Niveau'] == niv_pre and dictio['Année'] == annee-1]
-                if len(f) > 0 and len(g) > 0:
-                    # On a des élèves dans deux années successives d'une même section !
-                    communs = list (set(g) & set(f)) # l'intersection des deux années
-                    taux = en_pourcentage( float(len(communs)) / float(len(g)) )
-                    v = { 'section': sect, 'passage': niv_pre+' > '+niv, 'taux': taux}
-                    rep['taux de passage'].append(v)
         #logging.debug(rep)
         return rep
 

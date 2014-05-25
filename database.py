@@ -390,32 +390,24 @@ class Database():
         :type niveaux: array(str)
         """
         les_niveaux = '('+' OR '.join(['CN.Niveau="'+s+'"' for s in niveaux])+')'
-        retourner_uniquement = None # Pour ne retourner que la valeur désignée
-        if info == "annees_scolarisation":
+        if info == "totaux": # totaux
+            # Calcul des totaux :
+            # Nombre d'élèves, d'hommes, doublants, nouveaux, issues de pro
+            req = 'SELECT count(*) total, sum(CASE WHEN Genre="1" THEN 1 ELSE 0 END) homme, sum(CASE WHEN Doublement="1" THEN 1 ELSE 0 END) doublant, sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année={0} AND Établissement<>"{etab}") THEN 1 ELSE 0 END) nouveau, sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END) "issue de pro" FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe JOIN Élèves E ON A.INE=E.INE WHERE Établissement="{etab}" AND Année={0} AND {niv}'.format(annee, etab=self.nom_etablissement, niv=les_niveaux)
+        elif info == "par niveau": # par niveau
+            req = 'SELECT Niveau, count(A.INE) effectif, sum(CASE WHEN Genre="1" THEN 1 ELSE 0 END) homme, sum(CASE WHEN Doublement="1" THEN 1 ELSE 0 END) doublant, sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année={1} AND Établissement<>"{etab}") THEN 1 ELSE 0 END) nouveau, sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END) "issue de pro" FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe JOIN Élèves E ON A.INE=E.INE WHERE Établissement="{etab}" AND Année={0} GROUP BY Niveau'.format(annee, annee-1, etab=self.nom_etablissement)
+        elif info == "par section": # par section
+            req = 'SELECT Section, count(A.INE) effectif, sum(CASE WHEN Genre="1" THEN 1 ELSE 0 END) homme, sum(CASE WHEN Doublement="1" THEN 1 ELSE 0 END) doublant, sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année={1} AND Établissement<>"{etab}") THEN 1 ELSE 0 END) nouveau, sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END) "issue de pro" FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe JOIN Élèves E ON A.INE=E.INE WHERE Établissement="{etab}" AND Année={0} GROUP BY Section'.format(annee, annee-1, etab=self.nom_etablissement)
+        elif info == "annees scolarisation": # annees scolarisation
             req = 'SELECT INE,count(*) Scolarisation FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe WHERE Établissement="{0}" AND {niv} GROUP BY INE'.format(self.nom_etablissement, niv=les_niveaux)
             # Autre calcul utilisant la date d'entrée
             #(pb: l'élèves a pu partir puis revenir l'année suivante)
             #req = 'SELECT A.INE,{0}-Entrée+1 AS Scolarisation FROM Affectations A JOIN Élèves E ON A.INE=E.INE WHERE Établissement="Jean Moulin"'.format(annee)
-        elif info == "issue_pro":
-            req = "SELECT Classe,Niveau,Filière,Section,count(*) NbIssueDePro FROM Affectations NATURAL JOIN Classes CN WHERE INE IN (SELECT INE FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe WHERE Année={1} AND Filière='Pro') AND Année = {0} AND {niv} GROUP BY Classe".format(annee, annee-1, niv=les_niveaux)
-            retourner_uniquement = 'NbIssueDePro'
-        elif info == "effectif_bts":
-            req = 'SELECT count(*) Nb FROM Affectations A LEFT JOIN Classes CN ON A.Classe=CN.Classe WHERE Année={0} AND {niv}'.format(annee, niv=les_niveaux)
-            retourner_uniquement = 'Nb'
-        elif info == "garcons":
-            req = 'SELECT count(*) Nb FROM Élèves E LEFT JOIN Affectations A ON E.INE=A.INE LEFT JOIN Classes CN ON A.Classe=CN.Classe WHERE Genre="1" AND Année={0} AND {niv}'.format(annee, niv=les_niveaux)
-            retourner_uniquement = 'Nb'
-        #elif info == "garcons_en_bts":
-        #    req = 'SELECT count(*) Nb FROM Élèves E LEFT JOIN Affectations A ON E.INE=A.INE LEFT JOIN Classes C ON A.Classe=C.Classe WHERE Genre="1" AND Année={0} AND Niveau="BTS"'.format(annee)
-            retourner_uniquement = 'Nb'
-        elif info == "total_doublant":
-            req = 'SELECT count(*) Nb FROM Élèves E LEFT JOIN Affectations A ON E.INE=A.INE LEFT JOIN Classes CN ON A.Classe=CN.Classe WHERE Doublement="1" AND Année={0} AND {niv}'.format(annee, niv=les_niveaux)
-            retourner_uniquement = 'Nb'
-        elif info == "provenance":
+        elif info == "provenance": # provenance
             req = 'SELECT A2.Établissement,count(*) total,sum(CASE WHEN CN.Niveau="Seconde" THEN 1 ELSE 0 END) "en seconde" FROM Affectations A LEFT JOIN Affectations A2 ON A.INE=A2.INE LEFT JOIN Classes CN ON A.Classe = CN.Classe WHERE A.Année={0} AND A2.Année={1} AND {niv} GROUP BY A2.Établissement'.format(annee, annee-1, niv=les_niveaux)
-        elif info == "provenance_bts":
-            req = 'SELECT CN.Classe "classe de bts",A2.Classe provenance,A2.Établissement,count(*) total FROM Classes CN LEFT JOIN Affectations A ON CN.Classe=A.Classe LEFT JOIN Élèves E ON A.INE=E.INE LEFT JOIN Affectations A2 ON A2.INE=A.INE WHERE A.Année={0} AND A2.Année={1} AND {niv} GROUP BY A2.Classe ORDER BY CN.Classe,A2.Établissement,A2.Classe'.format(annee, annee-1, niv=les_niveaux)
-        elif info == "taux de passage":
+        elif info == "provenance classe": # provenance classe
+            req = 'SELECT CN.Classe classe,A2.Classe provenance,A2.Établissement,count(*) total FROM Classes CN LEFT JOIN Affectations A ON CN.Classe=A.Classe LEFT JOIN Élèves E ON A.INE=E.INE LEFT JOIN Affectations A2 ON A2.INE=A.INE WHERE A.Année={0} AND A2.Année={1} AND {niv} GROUP BY A2.Classe ORDER BY CN.Classe,A2.Établissement,A2.Classe'.format(annee, annee-1, niv=les_niveaux)
+        elif info == "taux de passage": # taux de passage
             req = "SELECT Section,Niveau,INE,Année FROM Affectations A LEFT JOIN Classes CN ON A.Classe=CN.Classe WHERE Section<>'' AND {niv} ORDER BY Section,Niveau".format(niv=les_niveaux)
         else:
             logging.error('Information "{0}" non disponible'.format(info))
@@ -429,7 +421,5 @@ class Database():
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             data.append(d)
-        if retourner_uniquement is not None:
-            data = data.pop()[retourner_uniquement]
         #logging.debug(data)
         return data

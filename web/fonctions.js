@@ -75,26 +75,26 @@ function stats_recherche() {
         if (stat == "Général") {
             var id = "#stats-Général";
             $(id+' > tbody').html('');
-            cles = dict_key_sort(data['établissement'], false);
+            cles = dict_key_sort(data['data'], false);
             $.each(cles, function(i,k) {
-                l = data['établissement'][k];
+                l = data['data'][k];
                 $(id+' > tbody').append('<tr><td>'+k+'</td><td>'+l+'</td></tr>');
             });
         } else if (stat == "Par niveau") {
             var id = "#stats-Parniveau";
-            dict_to_tab($(id), data, 'niveau');
+            list_to_tab($(id), data);
         } else if (stat == "Par section") {
             var id = "#stats-Parsection";
-            dict_to_tab($(id), data, 'section');
+            list_to_tab($(id), data);
         } else if (stat == "Provenance") {
             var id = "#stats-Provenance";
-            list_to_tab($(id), data, 'provenance');
+            list_to_tab($(id), data);
         } else if (stat == "Provenance (classe)") {
             var id = "#stats-Provenanceclasse";
-            list_to_tab($(id), data, 'provenance bts');
+            list_to_tab($(id), data);
         } else if (stat == "Taux de passage") {
             var id = "#stats-Tauxdepassage";
-            list_to_tab($(id), data, 'taux de passage');
+            list_to_tab($(id), data);
         } else {
             console.log("Stat inconnue");
         }
@@ -154,46 +154,22 @@ function list_to_tab_simple(liste, champs) {
 }
 
 /* 
- * Convertir un dictionnaire en tableau complet
- * cell: le tableau visé, dict: toutes les donnees, donnee: la clé de dict voulue
- */
-function dict_to_tab(cell, dict, donnee) {
-    // Pour l'en-tête
-    cell.find('thead').remove();
-    var thead = $('<thead>').appendTo(cell);
-    thead.append('<th>'+donnee+'</th>');
-    $.each( dict['ordre'][donnee], function( key, value ) {
-        thead.append('<th>'+value+'</th>');
-    });
-    // Pour les données
-    cell.find('tbody').remove();
-    var tbody = $('<tbody>').appendTo(cell);
-    $.each( dict[donnee], function( key, value ) {
-        vals = "<td>"+key+"</td>";
-        $.each( dict['ordre'][donnee], function( i, j ) {
-            vals += "<td>"+value[j]+"</td>";
-        });
-        tbody.append('<tr>'+vals+'</tr>');
-    });
-}
-
-/* 
  * Convertir une liste en tableau complet
  * cell: le tableau visé, list: toutes les donnees, donnee: id de la donnée voulue
  */
-function list_to_tab(cell, list, donnee) {
+function list_to_tab(cell, list) {
     // Pour l'en-tête
     cell.find('thead').remove();
     var thead = $('<thead>').appendTo(cell);
-    $.each( list['ordre'][donnee], function( key, value ) {
+    $.each( list['ordre'], function( key, value ) {
         thead.append('<th>'+value+'</th>');
     });
     // Pour les données
     cell.find('tbody').remove();
     var tbody = $('<tbody>').appendTo(cell);
-    $.each( list[donnee], function( key, value ) {
+    $.each( list['data'], function( key, value ) {
         vals = "";
-        $.each( list['ordre'][donnee], function( i, j ) {
+        $.each( list['ordre'], function( i, j ) {
             vals += "<td>"+value[j]+"</td>";
         });
         tbody.append('<tr>'+vals+'</tr>');

@@ -235,7 +235,8 @@ $(document).ready(function() {
         niveaux = data['niveaux'];
         $.each(niveaux, function( i, j ) {
             $("#stats-niveaux").append('<td>'+j+'</td>');
-            $("#stats-options td").last().before('<td><input type="checkbox" checked="checked" value="'+i+'" /></td>');
+            if (i < 3) { checked = ' checked="checked"'; } else { checked = ''; }
+            $("#stats-options td").last().before('<td><input type="checkbox"'+checked+' value="'+i+'" /></td>');
         });
         $.each(data['header'], function( i, j ) {
             champ = j[0];

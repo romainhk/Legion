@@ -34,7 +34,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         elif params.path == '/maj':
             ine = query['ine'].pop()
             champ = query['champ'].pop()
-            donnee = query['d'].pop()
+            if 'd' in query:
+                donnee = query['d'].pop()
+            else:
+                donnee = ''
             if champ == 'Situations': donnee = self.server.situations[int(donnee)]
             rep = self.server.db.maj_champ('Élèves', ine, champ, donnee)
         elif params.path == '/maj_classe':
@@ -45,7 +48,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 if champ == 'Niveau':    les = self.server.niveaux
                 elif champ == 'Section': les = self.server.sections
                 val = query['val'].pop()
-                if int(val) < len(les):
+                if val != '' and int(val) < len(les):
                     val = les[int(val)]
             else:
                 val = ''

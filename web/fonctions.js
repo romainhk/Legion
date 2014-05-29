@@ -265,7 +265,7 @@ function cell_to_select(e) {
             selected = cell.html();
             cell.html('');
             var sel = $('<select>').appendTo(cell);
-            sel.append('<option value="?">...</option>'); // Option vide
+            sel.append('<option value="">...</option>'); // Option vide
             $.each(valeurs, function(i, j) {
                 pardefaut = "";
                 if (j == selected) { pardefaut = ' selected="selected"' ; }
@@ -277,7 +277,7 @@ function cell_to_select(e) {
                 txt = $('option:selected', this).text(); // option sélectionnée fils de l'élément this
                 if (col == "Situation") {
                     ine = cell.closest('tr').attr('id');
-                    params = "ine="+ine+"&champ="+col+"&d="+val;
+                    params = "ine="+ine+"&d="+val+"&champ="+col;
                     url = "/maj?"+params;
                 } else {
                     row = cell.parents('tr').find('td').first().html();

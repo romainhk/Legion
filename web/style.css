@@ -40,6 +40,17 @@ table > caption {
     background-color: rgba(255, 255, 255, 0.4);
     padding: 3px;
 }
+table > caption ul {
+    margin:1ex 1ex 1ex 2ex;
+    padding:0;
+    text-align:left;
+    font-style:normal;
+    list-style-type:square;
+}
+table > caption li {
+    margin: 1ex;
+    padding: 0;
+}
 th {
     text-align:center;
     text-transform: capitalize;

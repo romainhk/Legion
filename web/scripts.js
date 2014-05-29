@@ -233,6 +233,8 @@ $(document).ready(function() {
         var filtre = "";
         situations = data['situations'];
         niveaux = data['niveaux'];
+        $('#stats-recherche th').css({'text-transform':'none'});
+        $('#stats-recherche th').last().attr('colspan', niveaux.length);
         $.each(niveaux, function( i, j ) {
             $("#stats-niveaux").append('<td>'+j+'</td>');
             if (i < 3) { checked = ' checked="checked"'; } else { checked = ''; }

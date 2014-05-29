@@ -15,7 +15,6 @@
 * Pending : sad_etab et sad_classe ?
 
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
-* Modifier l'ordre de déclaration des sections pourrait corrompre la base !
 
 ### HTML
 * envoie de mail en masse : à tester
@@ -26,6 +25,7 @@
 ** > page d'accueil
 * exportation : bouton "copier dans le presse-papier"
 * Ajouter des tutoriels sur l'importation (quand les faire ?...)
+** importation de la base
 
 ### Extension EPS
 * Pour chaque élève, pouvoir affecter 3 activités en 1er et 2 en Terminale, avec notations

@@ -56,8 +56,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 if val == '?':
                     fil = ''
                 else:
-                    index = self.server.sections.index(val)
-                    fil = self.server.filières[index]
+                    fil = self.server.section_filière[val]
                 self.server.db.maj_champ('Classes', classe, "Filière", fil)
         elif params.path == '/pending':
             rep = self.server.db.lire_pending()

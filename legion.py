@@ -29,13 +29,15 @@ class Legion(http.server.HTTPServer):
         self.situations=sorted([x.strip(' ') for x in config.get('Établissement', 'situations').split(',')])
         #self.niveaux=sorted([x.strip(' ') for x in config.get('Établissement', 'niveaux').split(',')])
         self.niveaux=['Seconde', 'Première', 'Terminale', '1BTS', '2BTS', 'Bac+1', 'Bac+3']
+        self.filières = ['GT', 'Pro', 'Enseignement supérieur']
         self.sections = []
-        self.filières = []
-        for a in sorted([x.strip(' ') for x in config.get('Établissement', 'sections').split('\n')]):
-            b = a.split(',')
-            if len(b) == 2:
-                self.sections.append(b[0].strip(' '))
-                self.filières.append(b[1].strip(' '))
+        self.section_filière = {}
+        for f in self.filières:
+            for a in sorted([x.strip(' ') for x in config.get('Établissement', 'sections_'+f).split('\n')]):
+                for b in a.split(','):
+                    c = b.strip(' ')
+                    self.sections.append(c)
+                    self.section_filière[c] = f
         # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
         self.header = [ ['Nom', 'A-z'], \
                         ['Prénom', 'A-z'], \

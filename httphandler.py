@@ -177,6 +177,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             for d in self.server.db.stats('par niveau', annee, les_niveaux):
                 a = {}
                 a['niveau'] = d['Niveau']
+                if a['niveau'] == '': a['niveau'] = '<i>Inconnu</i>'
                 a['effectif'] = d['effectif']
                 a['poids'] = en_pourcentage(d['effectif'] / eff_total)
                 a['homme'] = en_pourcentage(d['homme'] / d['effectif'])
@@ -193,6 +194,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             for d in self.server.db.stats('par section', annee, les_niveaux):
                 a = {}
                 a['section'] = d['Section']
+                if a['section'] == '': a['section'] = '<i>Inconnue</i>'
                 a['effectif'] = d['effectif']
                 a['poids'] = en_pourcentage(d['effectif'] / eff_total)
                 a['homme'] = en_pourcentage(d['homme'] / d['effectif'])

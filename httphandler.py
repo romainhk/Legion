@@ -164,7 +164,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             rep['data']['Effectif'] = eff_total
             rep['data']['Proportion garçon'] = en_pourcentage(total_homme / eff_total)
             rep['data']['Proportion doublant'] = en_pourcentage(total_doublant / eff_total)
-            rep['data']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
+            #rep['data']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
             # Années de scolarisation moyenne par élève
             a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, les_niveaux)])
             rep['data']['Années de scolarisation moyenne par élève'] = str(round( a, 2 )) + ' ans'
@@ -179,7 +179,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 a['homme'] = en_pourcentage(d['homme'] / d['effectif'])
                 a['doublant'] = en_pourcentage(d['doublant'] / d['effectif'])
                 a['nouveau'] = en_pourcentage(d['nouveau'] / d['effectif'])
-                a['issue de pro'] = en_pourcentage(d['issue de pro'] / d['effectif'])
+                if a['niveau'] == '1BTS' or a['niveau'] == '2BTS':
+                    a['issue de pro'] = en_pourcentage(d['issue de pro'] / d['effectif'])
+                else:
+                    a['issue de pro'] = ''
                 rep['data'].append(a)
         elif stat == 'Par section':
             rep['ordre'] = ['section', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
@@ -192,7 +195,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 a['homme'] = en_pourcentage(d['homme'] / d['effectif'])
                 a['doublant'] = en_pourcentage(d['doublant'] / d['effectif'])
                 a['nouveau'] = en_pourcentage(d['nouveau'] / d['effectif'])
-                a['issue de pro'] = en_pourcentage(d['issue de pro'] / d['effectif'])
+                sf = self.server.section_filière
+                if a['section'] in sf and sf[a['section']] == 'Enseignement supérieur':
+                    a['issue de pro'] = en_pourcentage(d['issue de pro'] / d['effectif'])
+                else:
+                    a['issue de pro'] = ''
                 rep['data'].append(a)
         elif stat == 'Provenance':
             rep['ordre'] = ['Établissement', 'total', 'en seconde']

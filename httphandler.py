@@ -163,14 +163,16 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             total_issue_de_pro = totaux['issue de pro']
             # TODO : pour cette stat, ajouter un taux de confiance
 
-            #rep['ordre'] = []
-            rep['data']['Effectif'] = eff_total
-            rep['data']['Proportion garçon'] = en_pourcentage(total_homme / eff_total)
-            rep['data']['Proportion doublant'] = en_pourcentage(total_doublant / eff_total)
-            #rep['data']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
-            # Années de scolarisation moyenne par élève
-            a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, les_niveaux)])
-            rep['data']['Années de scolarisation moyenne par élève'] = str(round( a, 2 )) + ' ans'
+            accord = ''
+            if eff_total > 1: accord = 's'
+            rep['data']['Effectif global'] = str(eff_total) + ' élève'+accord
+            if eff_total != 0:
+                rep['data']['Parité homme/femme'] = en_pourcentage(total_homme / eff_total)+' / '+en_pourcentage(1 - (total_homme/eff_total))
+                rep['data']['Proportion de doublants'] = en_pourcentage(total_doublant / eff_total)
+                #rep['data']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
+                # Années de scolarisation moyenne par élève
+                a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, les_niveaux)])
+                rep['data']['Nb moyen d\'années de scolarisation par élève'] = str(round( a, 2 )) + ' ans'
         elif stat == 'Par niveau':
             rep['ordre'] = ['niveau', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
             rep['data'] = []

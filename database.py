@@ -458,3 +458,15 @@ class Database():
             data.append(d)
         #logging.debug(data)
         return data
+
+    def vider_pending(self):
+        """
+            Vide le contenu de la table Pending (avant un nouvel import)
+        """
+        req = 'DELETE FROM Pending'
+        try:
+            self.curs.execute(req)
+        except sqlite3.Error as e:
+            logging.error(u"Delete du pending : {0}\n{1}".format(e.args[0], req))
+            return False
+        return True

@@ -254,6 +254,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         f = open(fichier_tmp, 'w', encoding='ISO-8859-15')
         f.write(data)
         f.close()
+        # Nettoyage
+        self.server.db.vider_pending()
         # Parsing
         tree = ET.parse(fichier_tmp)
         root = tree.getroot()

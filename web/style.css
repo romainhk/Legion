@@ -16,7 +16,8 @@ h3 {
     margin-top:1em;
 }
 h4 {
-    margin-left:4em;
+    margin-left:6em;
+    text-decoration:underline;
 }
 input {
     margin:0.5ex;
@@ -32,6 +33,9 @@ footer .copyleft {
     transform: scaleX(-1);
     display: inline-block;
     margin-top:1ex;
+}
+p {
+    text-indent:4ex;
 }
 #Accueil {
     padding:2ex 3ex;

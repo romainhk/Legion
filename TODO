@@ -6,12 +6,12 @@
 * Représentation graphique des données
 * Pour les élèves sorties : durée de scolarisation
 
-* Revoir la clarté des intitulés
 * Issue de Pro : la proportion est faible (13%)
 
 ### Python
 * colonne Diplômé : importation automatisée depuis ...
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
+* importation : vider le pending
 
 ### HTML
 * envoie de mail en masse : à tester

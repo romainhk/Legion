@@ -26,7 +26,6 @@ function stats_listes() {
     $.each(les_stats, function( i, p ) {
         $("#stats-"+p.replace(/ |\(|\)/g, '')).hide();
     });
-    //$("#stats-Général").show();
     // Choix de la statistiques à recherche
     var options = "";
     $.each(les_stats, function( i, s ) {

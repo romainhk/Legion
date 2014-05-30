@@ -46,17 +46,6 @@ table > caption {
     background-color: rgba(255, 255, 255, 0.4);
     padding: 3px;
 }
-table > caption ul {
-    margin:1ex 1ex 1ex 2ex;
-    padding:0;
-    text-align:left;
-    font-style:normal;
-    list-style-type:square;
-}
-table > caption li {
-    margin: 1ex;
-    padding: 0;
-}
 th {
     text-align:center;
     text-transform: capitalize;
@@ -71,6 +60,20 @@ td select {
 }
 .even td select {
     background-color:#EBF2FA;
+}
+/* légende des statisitques */
+.legende {
+    margin:1ex 15%;
+}
+.legende h3 {
+    margin-left:8ex;
+}
+.legende dt {
+    font-style:italic;
+    margin-top:0.7ex;
+}
+.legende dd {
+    margin-left:9ex;
 }
 
 /* Classes */

@@ -74,31 +74,31 @@ function stats_recherche() {
     $.get( "/stats?"+params, function( data ) {
         if (stat == "Général") {
             var id = "#stats-Général";
-            $(id+' > tbody').html('');
+            $(id+' tbody').html('');
             cles = dict_key_sort(data['data'], false);
             $.each(cles, function(i,k) {
                 l = data['data'][k];
-                $(id+' > tbody').append('<tr><td>'+k+'</td><td>'+l+'</td></tr>');
+                $(id+' tbody').append('<tr><td>'+k+'</td><td>'+l+'</td></tr>');
             });
         } else if (stat == "Par niveau") {
             var id = "#stats-Parniveau";
-            list_to_tab($(id), data);
+            list_to_tab($(id+' table'), data);
         } else if (stat == "Par section") {
             var id = "#stats-Parsection";
-            list_to_tab($(id), data);
+            list_to_tab($(id+' table'), data);
         } else if (stat == "Provenance") {
             var id = "#stats-Provenance";
-            list_to_tab($(id), data);
+            list_to_tab($(id+' table'), data);
         } else if (stat == "Provenance (classe)") {
             var id = "#stats-Provenanceclasse";
-            list_to_tab($(id), data);
+            list_to_tab($(id+' table'), data);
         } else if (stat == "Taux de passage") {
             var id = "#stats-Tauxdepassage";
-            list_to_tab($(id), data);
+            list_to_tab($(id+' table'), data);
         } else {
             console.log("Stat inconnue");
         }
-        $(id).tablesorter();
+        $(id+' table').tablesorter();
         $(id).show();
     });
 }

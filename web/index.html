@@ -62,38 +62,118 @@
             <tr></tr>
         </table>
  
-        <table id="stats-Général" border="1">
-            <caption>Pour l'établissement</caption>
-            <thead></thead>
-            <tbody></tbody>
-        </table>
-        <table id="stats-Parniveau" border="1">
-            <caption>Par niveau - filière</caption>
-        </table>
-        <table id="stats-Parsection" border="1">
-            <caption>Par section</caption>
-        </table>
-        <table id="stats-Provenance" border="1">
-            <caption>Établissement d'origine des élèves :
-                <ul>
-                    <li>pour tout l'établissement</li>
-                    <li>uniquement pour les élèves en classe de seconde</li>
-                </ul>
-            </caption>
-        </table>
-        <table id="stats-Provenanceclasse" border="1">
-            <caption>Établissement d'origine, trié par classe</caption>
-        </table>
-        <table id="stats-Tauxdepassage" border="1">
-            <caption>Taux de passage</caption>
-        </table>
+        <div id="stats-Général">
+            <table border="1">
+                <caption>Pour l'établissement</caption>
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="stats-Parniveau">
+            <table border="1">
+                <caption>Par niveau - filière</caption>
+            </table>
+            <div class='legende'>
+                <h3>Légende</h3>
+                Diverses statistiques sur l'établissement, vue par niveau.
+                <dl>
+                    <dt>Effectif</dt>
+                    <dd>le nombre d'élèves de ce niveau</dd>
+                    <dt>Poids</dt>
+                    <dd>la proportion d'élèves de ce niveau par rapport au nombre total d'élèves</dd>
+                    <dt>Homme</dt>
+                    <dd>la proportion de garçons de ce niveau</dd>
+                    <dt>Doublant</dt>
+                    <dd>la proportion de doublants de ce niveau</dd>
+                    <dt>Nouveau</dt>
+                    <dd>la proportion de nouveaux de ce niveau (qui arrivent d'un autre établissement)</dd>
+                    <dt>Issue de pro</dt>
+                    <dd>la proportion d'élèves provenant de la SEP du ce lycée</dd>
+                </dl>
+            </div>
+        </div>
+        <div id="stats-Parsection">
+            <table border="1">
+                <caption>Par section</caption>
+            </table>
+            <div class='legende'>
+                <h3>Légende</h3>
+                Diverses statistiques sur l'établissement, vue par section.
+                <dl>
+                    <dt>Effectif</dt>
+                    <dd>le nombre d'élèves de ce niveau</dd>
+                    <dt>Poids</dt>
+                    <dd>la proportion d'élèves de ce niveau par rapport au nombre total d'élèves</dd>
+                    <dt>Homme</dt>
+                    <dd>la proportion de garçons de ce niveau</dd>
+                    <dt>Doublant</dt>
+                    <dd>la proportion de doublants de ce niveau</dd>
+                    <dt>Nouveau</dt>
+                    <dd>la proportion de nouveaux de ce niveau (qui arrivent d'un autre établissement)</dd>
+                    <dt>Issue de pro</dt>
+                    <dd>la proportion d'élèves provenant de la SEP du ce lycée</dd>
+                </dl>
+            </div>
+ 
+        </div>
+        <div id="stats-Provenance">
+            <table border="1">
+                <caption>Établissement d'origine des élèves</caption>
+            </table>
+            <div class='legende'>
+                <h3>Légende</h3>
+                Donne la provenance des élèves.
+                <dl>
+                    <dt>Total</dt>
+                    <dd>le nombre d'élèves provenant de celui-ci</dd>
+                    <dt>En seconde</dt>
+                    <dd>le nombre d'élèves actuellement en seconde provenant de celui-ci</dd>
+                </dl>
+            </div>
+        </div>
+        <div id="stats-Provenanceclasse">
+            <table border="1">
+                <caption>Établissement d'origine, trié par classe</caption>
+            </table>
+            <div class='legende'>
+                <h3>Légende</h3>
+                Donne la provenance des élèves, trié par classe actuelle et d'origine.
+                <dl>
+                    <dt>Classe</dt>
+                    <dd>la classe actuelle</dd>
+                    <dt>Provenance</dt>
+                    <dd>la classe d'origine</dd>
+                    <dt>Établissement</dt>
+                    <dd>l'établissement d'origine</dd>
+                    <dt>Total</dt>
+                    <dd>le total [sic]</dd>
+                </dl>
+            </div>
+        </div>
+        <div id="stats-Tauxdepassage">
+            <table border="1">
+                <caption>Taux de passage</caption>
+            </table>
+            <div class='legende'>
+                <h3>Légende</h3>
+                 Donne le taux de passage des élèves d'une classe à la suivante dans une même section.
+                <dl>
+                    <dt>Section</dt>
+                    <dd>la section [sic]</dd>
+                    <dt>Passage</dt>
+                    <dd>la transition de niveau (niveau d'origine > niveau actuel)</dd>
+                    <dt>Taux</dt>
+                    <dd>le nombre d'élèves provenant du niveau inférieur (année précédente) par rapport au nombre d'élèves dans la classe actuelle</dd>
+                </dl>
+            </div>
+        </div>
     </div>
     <div id="Pending">
         <div style="width:100%;">
             <h3 style="display: inline-block;">Importations en attente de validation (données incomplètes)</h3>
             <span id="totalPending" class="total"></span>
         </div>
-        <p>Voici la liste des élèves qui n'ont pas été incorporés à la base après la dernière importation car il manquait certaines informations vitales. Pour pouvoir importer ces comptes, vous devez compléter la BEE sur le portail PAGRIATES, puis refaites l'importation.</p>
+        <p>Cette liste répertorie les élèves qui n'ont pas été incorporés à la base après la dernière importation car il manquait certaines informations vitales. Pour pouvoir importer ces comptes, vous devez compléter la BEE sur le portail PAGRIATES, puis refaites l'importation.</p>
         <table id="pending" border="1">
             <thead></thead>
             <tbody></tbody>

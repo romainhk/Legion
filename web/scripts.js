@@ -74,7 +74,13 @@ function fin_filtrage(e, filter){
 function charger_page(nom) {
     $.each(les_pages, function( i, p ) { $("#"+p).hide(); });
 
-    if (nom == 'Liste') {
+    if (nom == 'Accueil') {
+        page_active = 'Accueil';
+        $.get( "/accueil.html", function( data ) {
+            $("#Accueil").html(data);
+        });
+    }
+    else if (nom == 'Liste') {
         page_active = 'Liste';
         vue_depliee = true;
         $.get( "/liste", function( data ) {
@@ -207,6 +213,7 @@ $(document).ready(function() {
     });
 
     // Préparation du menu
+    les_pages.push('Accueil');
     $("#onglets").children().each(function() { les_pages.push($(this).html()) });
     $("#onglets li").click(function(event) {
         target = $(event.target);
@@ -278,6 +285,6 @@ $(document).ready(function() {
         });
     });
     stats_listes();
-    // Chargement de la première page
-    $("#onglets li:first-child").trigger("click");
+    // Chargement de la page accueil
+    charger_page('Accueil');
 });

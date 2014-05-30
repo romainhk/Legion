@@ -33,6 +33,12 @@ footer .copyleft {
     display: inline-block;
     margin-top:1ex;
 }
+#Accueil {
+    padding:2ex 3ex;
+}
+#Accueil h2 {
+    margin:3ex;
+}
 
 /* Tableaux */
 table > caption {

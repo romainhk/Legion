@@ -11,18 +11,12 @@
 
 ### Python
 * colonne Diplômé : importation automatisée depuis ...
-* Pending : ajout/supprimer dans la base après validation ? ou plutôt le masquer jusqu'au prochain import
-* Pending : sad_etab et sad_classe ?
-
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 
 ### HTML
 * envoie de mail en masse : à tester
 * filtre colonne année, doublement et étab : ne fonctionne que pour l'année en cours
 * les colonnes editables ne le sont plus après un changement d'onglet
-* possibilité d'ajouter un mail ?
-* Liste : limiter à une année scolaire (comme stats) ? (pb du temps de chargement)
-** > page d'accueil
 * exportation : bouton "copier dans le presse-papier"
 * Ajouter des tutoriels sur l'importation (quand les faire ?...)
 ** importation de la base

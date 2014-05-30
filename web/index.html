@@ -16,7 +16,8 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
   </head>
   <body>
-    <img src="logo.png" class="logo" alt="Logo" />
+    <a onClick='charger_page("Accueil")' href=''>
+        <img src="logo.png" class="logo" alt="Logo" /></a>
     <ul class="onglet" id="onglets">
         <li>Liste</li>
         <li>Statistiques</li>
@@ -25,11 +26,12 @@
         <img src="quitter.png" class="img_quitter" alt="Quitter l'application" title="Quitter l'application" />
     </ul>
     <h1>Legion</h1>
-    <h2>Application de suivi de cohorte</h2>
     <div style="text-align:center;">
         <a href="#" class="export">Exporter ce tableau</a>
     </div>
     <div style="clear:both;"></div>
+    <div id="Accueil">
+    </div>
     <div id="Liste">
         <div style="width:100%;">
             <h3 style="display: inline-block;">Base des élèves</h3>

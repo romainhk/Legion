@@ -239,17 +239,18 @@ class Database():
         :type raison: str
         :rtype: booléen
         """
+        JOCKER = '0' # Nécessairement un int
         # Protection contre des données qui seraient non valides
         for k, v in enr.items():
-            if v is None: enr[k] = '0'
+            if v is None: enr[k] = JOCKER
 
         # On regarde si l'enregistrement est déjà présent
         ine = enr['ine']
         nom = enr['nom']
         prenom = enr['prénom']
-        if ine != '0': # Par ine
+        if ine != JOCKER: # Par ine
             condition = 'INE="{0}"'.format(ine)
-        elif nom !='0' and prenom != '0': # Par nom/prénom
+        elif nom != JOCKER and prenom != JOCKER: # Par nom/prénom
             condition = 'Nom="{0}" AND Prénom="{1}"'.format(nom, prenom)
         else:
             # Impossible de savoir si c'est un doublon -> on fait tout simplement une insertion
@@ -266,12 +267,11 @@ class Database():
 
         if r[1] == 0:
             req = 'INSERT INTO Pending ' \
-                + '(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu, Année, Classe, Établissement, Doublement, Raison) ' \
-                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}", {10}, "{11}", "{12}", {13}, "{14}")'.format(
+                + '(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Année, Classe, Établissement, Doublement, Raison) ' \
+                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, {7}, "{8}", "{9}", {10}, "{11}")'.format(
                     enr['ine'],             enr['nom'],             enr['prénom'],
                     enr['naissance'],       int(enr['genre']),      enr['mail'],
-                    int(enr['entrée']),     enr['Diplômé'],        enr['Situation'],
-                    enr['Lieu'],            annee,                  enr['classe'],
+                    int(enr['entrée']),     annee,                  enr['classe'],
                     enr['sad_établissement'],   int(enr['doublement']),     raison)
             try:
                 self.curs.execute(req)
@@ -279,13 +279,12 @@ class Database():
                 logging.error(u"Insertion en pending : {0}\n{1}".format(e.args[0], req))
                 return False
         else:
-             # Déjà en pending
+             # Élève déjà en pending
             req = 'UPDATE Pending SET ' \
-                + 'INE="{0}", Nom="{1}", Prénom="{2}", Naissance="{3}", Genre={4}, Mail="{5}", Entrée={6}, Diplômé="{7}", Situation="{8}", Lieu="{9}", Année={10}, Classe="{11}", Établissement="{12}", Doublement={13}, Raison="{14}" '.format(
+                + 'INE="{0}", Nom="{1}", Prénom="{2}", Naissance="{3}", Genre={4}, Mail="{5}", Entrée={6}, Année={7}, Classe="{8}", Établissement="{9}", Doublement={10}, Raison="{11}" '.format(
                     enr['ine'],             enr['nom'],             enr['prénom'],
                     enr['naissance'],       int(enr['genre']),      enr['mail'],
-                    int(enr['entrée']),     enr['Diplômé'],        enr['Situation'],
-                    enr['Lieu'],            annee,                  enr['classe'],
+                    int(enr['entrée']),     annee,                  enr['classe'],
                     enr['sad_établissement'],   int(enr['doublement']),     raison) \
                 + 'WHERE rowid={rowid}'.format(rowid=r[0])
             try:

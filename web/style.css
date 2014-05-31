@@ -65,7 +65,7 @@ td select {
 .even td select {
     background-color:#EBF2FA;
 }
-/* légende des statisitques */
+/* légende des statistiques */
 .legende {
     margin:1ex 15%;
 }
@@ -79,53 +79,47 @@ td select {
 .legende dd {
     margin-left:9ex;
 }
-
-/* Classes */
+/* Zone de recherche (onglet Statistiques) */
 .recherche {
     border:1px dotted black;
     padding:0.8ex 1ex;
 }
-.filtre {
-    text-align:center;
-    border-top:none;
-    border-left:none;
-    border-right:none;
+/* boutons d'action : copier -exporter */
+.action {
+    background-color:rgba(153,191,230,0.3);
+    border-radius:2ex;
+    border:6px outset #99BFE6;
+    padding:9px;
+    margin:1ex;
 }
-.filtre input {
-    width:8ex;
+.action img {
+    vertical-align:middle;
 }
-a.export, a.export:visited {
-    font-family: sans-serif;
-    text-decoration: none;
-    padding:5px 8px;
-    color:#000;
-    /* Apparence d'un bouton */
-    appearance:button;
-    -webkit-appearance:button;
-    -moz-appearance:button;
-    -o-appearance:button;
-    -ms-appearance:button;
-}
+/* fond pour les champs mis à jour dynamiquement */
 .maj_oui {
     background-color: #B3FFB3 !important;
 }
 .maj_non {
     background-color: #FFB3B3 !important;
 }
+/* Le logo */
 .logo {
     float:left;
     height:100px;
 }
+/* Le message lors de la fermeture de l'application */
 .msg_quitter {
     text-align:center;
     font-size:1.5em;
     margin:4em auto 2em;
 }
+/* La page des options */
 .page_options {
     background-color:rgba(255,255,255,0.2);
     margin:1em;
     padding:1ex 2ex;
 }
+/* La ligne qui indique le nombre total d'élèves affichés (onglets Liste et Pending) */
 .total {
     float: right;
     margin:2ex 3ex 0 0;

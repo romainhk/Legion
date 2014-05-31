@@ -205,7 +205,7 @@ $(document).ready(function() {
     $.tablesorter.defaults.theme = 'blue';
 
     // Création du lien d'exportation
-    $(".export").on('click', function (event) {
+    $("#export").on('click', function (event) {
         exportTableToCSV.apply(this, [$('#'+page_active), 'export_'+page_active+'.csv']);
         // IF CSV, don't do event.preventDefault() or return false
         // We actually need this to be a typical hyperlink

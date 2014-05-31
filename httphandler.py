@@ -11,6 +11,10 @@ from urllib.parse import urlparse, parse_qs
 import xml.etree.ElementTree as ET
 #lib spécifique
 from liblegion import *
+#graphiques
+from pylab import *
+import os
+import random, string
 
 class HttpHandler(http.server.SimpleHTTPRequestHandler):
     """
@@ -112,6 +116,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         rep = 'Vous pouvez éteindre votre navigateur et reprendre une activité normale.'
         self.repondre(rep)
         self.server.db.fermer()
+        # Suppression des fichiers de cache
+        for root, dirs, filenames in os.walk('cache'):
+            for f in filenames:
+                os.remove(os.path.join(root, f))
         # Coupure du serveur web
         time.sleep(0.5)
         logging.info('Extinction du serveur')
@@ -165,7 +173,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
 
             accord = ''
             if eff_total > 1: accord = 's'
-            rep['data']['Effectif global'] = str(eff_total) + ' élève'+accord
+            rep['data']['Effectif'] = str(eff_total) + ' élève'+accord
             if eff_total != 0:
                 rep['data']['Parité homme / femme'] = en_pourcentage(total_homme / eff_total)+' / '+en_pourcentage(1 - (total_homme/eff_total))
                 rep['data']['Proportion de doublants'] = en_pourcentage(total_doublant / eff_total)
@@ -173,13 +181,23 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 # Années de scolarisation moyenne par élève
                 a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, les_niveaux)])
                 rep['data']['Nb moyen d\'années de scolarisation par élève'] = str(round( a, 2 )) + ' ans'
+                prop_homme = round(100*total_homme/eff_total,1)
+                rep['graph'] = self.generer_tarte(
+                        [prop_homme, 100-prop_homme],
+                        'Parité',
+                        ['Homme', 'Femme'] )
         elif stat == 'Par niveau':
             rep['ordre'] = ['niveau', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
             rep['data'] = []
+            g_eff = []
+            g_lab = []
             for d in self.server.db.stats('par niveau', annee, les_niveaux):
                 a = {}
                 a['niveau'] = d['Niveau']
-                if a['niveau'] == '': a['niveau'] = '<i>Inconnu</i>'
+                g_niv = a['niveau']
+                if a['niveau'] == '':
+                    a['niveau'] = '<i>Inconnu</i>'
+                    g_niv = '?'
                 a['effectif'] = d['effectif']
                 a['poids'] = en_pourcentage(d['effectif'] / eff_total)
                 a['homme'] = en_pourcentage(d['homme'] / d['effectif'])
@@ -190,13 +208,22 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     a['issue de pro'] = ''
                 rep['data'].append(a)
+                g_eff.append(a['effectif'])
+                g_lab.append(g_niv)
+            # Génération du graphique des effectifs
+            rep['graph'] = self.generer_tarte( g_eff, 'Répartition des effectifs', g_lab )
         elif stat == 'Par section':
             rep['ordre'] = ['section', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
             rep['data'] = []
+            g_eff = []
+            g_lab = []
             for d in self.server.db.stats('par section', annee, les_niveaux):
                 a = {}
                 a['section'] = d['Section']
-                if a['section'] == '': a['section'] = '<i>Inconnue</i>'
+                g_niv = a['section']
+                if a['section'] == '':
+                    a['section'] = '<i>Inconnue</i>'
+                    g_niv = '?'
                 a['effectif'] = d['effectif']
                 a['poids'] = en_pourcentage(d['effectif'] / eff_total)
                 a['homme'] = en_pourcentage(d['homme'] / d['effectif'])
@@ -208,6 +235,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     a['issue de pro'] = ''
                 rep['data'].append(a)
+                g_eff.append(a['effectif'])
+                g_lab.append(g_niv)
+            # Génération du graphique des effectifs
+            rep['graph'] = self.generer_tarte( g_eff, 'Répartition des effectifs', g_lab )
         elif stat == 'Provenance':
             rep['ordre'] = ['Établissement', 'total', 'en seconde']
             rep['data'] = self.server.db.stats('provenance', annee, les_niveaux)
@@ -239,6 +270,40 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
 
         #logging.debug(rep)
         return rep
+
+    def generer_tarte(self, proportions, titre, labels, explode=False):
+        """
+            Génère un graphique en tarte
+
+        :param proportions: les proportions / 100
+        :param titre: le titre du graphique
+        :param labels: les libellés associés aux proportions (dans le même ordre)
+        :param explode: les parts à écarter
+        :type proportions: list
+        :type titre: string
+        :type labels: list
+        :type explode: tuple
+        :return: le nom du fichier généré
+        :rtype: string
+        """
+        # Génération d'un nom de fichier
+        #random.seed(titre) # Pour avoir un nom stable -> pb de cache
+        ident = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(12))
+        fichier = 'cache/tarte_'+ident+'.png'
+        # Création d'un espace de dessin
+        figure(1, figsize=(6,6))
+        ax = axes([0.1, 0.1, 0.8, 0.8])
+        if not explode: explode = tuple( [0]*len(proportions) )
+        # Génération de la tarte
+        pie(proportions, explode=explode, labels=labels,
+                colors=('#0080FF', '#FF0080', '#80FF00',
+                        '#8000FF', '#FF8000', '#00FF80',
+                        '#FF0000', '#00FF00', '#0000FF'),
+                autopct='%1.1f%%', shadow=True, startangle=90)
+        title(titre, bbox={'facecolor':'0.9', 'pad':16}) # Ajout d'un titre
+        savefig(fichier, transparent=True) # Génération du fichier
+        clf() # Nettoyage du graphique pour le run suivant
+        return fichier
 
     def importer_xml(self, data):
         """

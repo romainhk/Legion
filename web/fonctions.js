@@ -100,6 +100,9 @@ function stats_recherche() {
         }
         $(id+' table').tablesorter();
         $(id).show();
+        if ('graph' in data) {
+            $(id+' .graph').html('<img src="'+data['graph']+'" />');
+        }
     });
 }
 

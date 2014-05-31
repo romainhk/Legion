@@ -124,6 +124,10 @@ td select {
     float: right;
     margin:2ex 3ex 0 0;
 }
+/* graphique (onglet Statistiques) */
+.graph {
+    text-align:center;
+}
 
 /* Onglets */
 .onglet {

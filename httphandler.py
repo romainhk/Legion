@@ -38,7 +38,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 donnee = query['d'].pop()
             else:
                 donnee = ''
-            if champ == 'Situations': donnee = self.server.situations[int(donnee)]
+            if champ == 'Situation': donnee = self.server.situations[int(donnee)]
             rep = self.server.db.maj_champ('Élèves', ine, champ, donnee)
         elif params.path == '/maj_classe':
             classe = query['classe'].pop()

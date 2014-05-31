@@ -55,7 +55,7 @@ function fin_filtrage(e, filter){
         t = 'Résultats : ' + a + ' / ' + nb_eleves + ' élèves.';
     } else if (page_active == 'Pending') {
         id = 'totalPending';
-        t = a + ' enregistrements en attente.';
+        t = a + ' enregistrements.';
     }
     $("#"+id).html(t);
     // Réaffichage des childrows

@@ -222,9 +222,9 @@ $(document).ready(function() {
     });
     // Bouton quitter
     $("#onglets .img_quitter").hover(function(event) {
-        $(this).attr("src", 'quitter_hover.png');
+        $(this).attr("src", 'img/quitter_hover.png');
     }).mouseout(function(event) {
-        $(this).attr("src", 'quitter.png');
+        $(this).attr("src", 'img/quitter.png');
     }).on('click', function (event) {
         $.get( "/quitter", function( data ) {
             var msg = $('<div>').append(data);

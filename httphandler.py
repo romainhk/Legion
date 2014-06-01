@@ -315,7 +315,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         les_classes = list(self.server.db.lire_classes().keys())
         classes_a_ajouter = []
         # Écriture de l'xml dans un fichier
-        fichier_tmp = 'importation.xml'
+        fichier_tmp = 'cache/importation.xml'
         f = open(fichier_tmp, 'w', encoding='ISO-8859-15')
         f.write(data)
         f.close()

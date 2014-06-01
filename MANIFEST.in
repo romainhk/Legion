@@ -1,3 +1,6 @@
 graft web
+recursive-exclude *~
+prune web/cache
+prune web/sources
 include *.cfg
 include base.sqlite

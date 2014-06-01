@@ -24,6 +24,7 @@ class Legion(http.server.HTTPServer):
 
         global root, config
         os.chdir(root + os.sep + 'web') # la partie html est dans le dossier web
+        if not os.path.isdir("cache"): os.makedirs('cache')
         # Lecture de la configuration
         self.nom_etablissement=config.get('Établissement', 'nom de l\'etablissement')
         self.situations=sorted([x.strip(' ') for x in config.get('Établissement', 'situations').split(',')])

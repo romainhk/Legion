@@ -2,7 +2,8 @@
 # -*- coding: utf-8  -*-
 import time
 import logging
-import statistics
+#import statistics
+import numpy
 #web
 import http.server
 import json
@@ -179,7 +180,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 rep['data']['Proportion de doublants'] = en_pourcentage(total_doublant / eff_total)
                 #rep['data']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
                 # Années de scolarisation moyenne par élève
-                a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, les_niveaux)])
+                #a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, les_niveaux)])
+                a = numpy.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, les_niveaux)])
                 rep['data']['Nb moyen d\'années de scolarisation par élève'] = str(round( a, 2 )) + ' ans'
                 prop_homme = round(100*total_homme/eff_total,1)
                 rep['graph'] = self.generer_tarte(

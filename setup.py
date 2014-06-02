@@ -37,7 +37,7 @@ executables = [ Executable(
     appendScriptToExe=True
     ) ]
 
-build_exe_options = { "optimize": 1, 'include_files':includefiles }
+build_exe_options = { "optimize": 1, 'include_files':includefiles, 'include_msvcr':1 }
 
 setup(name='legion',
       version='0.8',

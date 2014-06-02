@@ -5,7 +5,7 @@ import threading
 import time
 import datetime
 import logging
-import configparser
+import configparser, codecs
 #web
 import http.server
 #lib spécifique
@@ -85,8 +85,8 @@ if __name__ == "__main__":
     # Fichier de config
     root = os.getcwd()
     config = configparser.ConfigParser()
-    config.read(root + os.sep + 'config.cfg')
-
+    config.read_file(codecs.open(root + os.sep + 'config.cfg', "r", "utf8"))
+    
     port=int(config.get('General', 'port'))
     address = ("", port)
     server = Legion(address, httphandler.HttpHandler)

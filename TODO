@@ -12,7 +12,8 @@
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 * Options : crash si section vaut ...
 * Histogrammes : chevauchement quand trop de xlabels
-* Stats: cohérences des couleurs entre les graphiques
+* Histogrammes : utiliser des barres multiples ? (nouveaux, doublants, hommes)
+# http://stackoverflow.com/questions/9497524/displaying-3-histograms-on-1-axis-in-a-legible-way-matplotlib
 
 ### HTML
 * envoie de mail en masse : à tester

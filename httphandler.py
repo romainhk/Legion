@@ -305,9 +305,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 x.append(proportions[k])
                 labels.append(k)
         # Génération de la tarte
-        pie(x, labels=labels,
+        pie(x,  labels=labels,
                 colors=self.server.colors,
-                autopct='%1.1f%%', shadow=True, startangle=90)
+                autopct='%1.1f%%', # texte dans les parts
+                pctdistance=0.85, # distance au centre des textes dans les parts
+                shadow=True, startangle=90)
         title(titre, weight='demi') # Ajout d'un titre
         savefig(fichier, transparent=True) # Génération du fichier
         clf() # Nettoyage du graphique pour le run suivant
@@ -340,7 +342,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         ax.set_xlabel( titre, labelpad=12, weight='demi' )
         ax.set_ylim(0, 100)
         # Dessinnement
-        bar(pos, x, width, color=self.server.colors[0])
+        bar(pos, x, width, color=self.server.colors)
 
         savefig(fichier, transparent=True)
         clf()

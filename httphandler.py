@@ -62,7 +62,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             rep = self.server.db.maj_champ('Classes', classe, champ, val)
             # En cas de la modification d'une section, il faux modifier la filière en conséquence
             if champ == "Section":
-                if val == '?':
+                if val == '?' or val == '':
                     fil = ''
                 else:
                     fil = self.server.section_filière[val]
@@ -308,7 +308,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         pie(x,  labels=labels,
                 colors=self.server.colors,
                 autopct='%1.1f%%', # texte dans les parts
-                pctdistance=0.85, # distance au centre des textes dans les parts
+                pctdistance=0.8, # distance au centre des textes dans les parts
                 shadow=True, startangle=90)
         title(titre, weight='demi') # Ajout d'un titre
         savefig(fichier, transparent=True) # Génération du fichier

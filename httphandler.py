@@ -4,6 +4,7 @@ import time
 import logging
 #import statistics
 import numpy
+import collections # OrderedDict
 #web
 import http.server
 import json
@@ -15,7 +16,7 @@ from liblegion import *
 #graphiques
 from pylab import *
 import os
-import random, string
+import numpy as np
 
 class HttpHandler(http.server.SimpleHTTPRequestHandler):
     """
@@ -164,7 +165,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         totaux = self.server.db.stats('totaux', annee, les_niveaux).pop()
         eff_total = totaux['total'] # Effectif total
 
-        rep = { 'ordre': {}, 'data': {} }
+        rep = { 'ordre': {}, 'data': {}, 'graph': [] }
         if stat == 'Général':
             total_homme = totaux['homme'] # Nombre total d'hommes
             total_doublant = totaux['doublant']
@@ -184,15 +185,16 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 a = numpy.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, les_niveaux)])
                 rep['data']['Nb moyen d\'années de scolarisation par élève'] = str(round( a, 2 )) + ' ans'
                 prop_homme = round(100*total_homme/eff_total,1)
-                rep['graph'] = self.generer_tarte(
+                rep['graph'].append( self.generer_tarte(
                         [prop_homme, 100-prop_homme],
                         'Parité',
-                        ['Homme', 'Femme'] )
+                        ['Homme', 'Femme'] ) )
         elif stat == 'Par niveau':
             rep['ordre'] = ['niveau', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
             rep['data'] = []
             g_eff = []
             g_lab = []
+            histo = collections.OrderedDict.fromkeys(self.server.niveaux)
             for d in self.server.db.stats('par niveau', annee, les_niveaux):
                 a = {}
                 a['niveau'] = d['Niveau']
@@ -204,7 +206,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 a['poids'] = en_pourcentage(d['effectif'] / eff_total)
                 a['homme'] = en_pourcentage(d['homme'] / d['effectif'])
                 a['doublant'] = en_pourcentage(d['doublant'] / d['effectif'])
-                a['nouveau'] = en_pourcentage(d['nouveau'] / d['effectif'])
+                
+                n = d['nouveau'] / d['effectif']
+                a['nouveau'] = en_pourcentage(n)
+                histo[g_niv] = round(100*n,1)
+
                 if a['niveau'] == '1BTS' or a['niveau'] == '2BTS':
                     a['issue de pro'] = en_pourcentage(d['issue de pro'] / d['effectif'])
                 else:
@@ -213,12 +219,14 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 g_eff.append(a['effectif'])
                 g_lab.append(g_niv)
             # Génération du graphique des effectifs
-            rep['graph'] = self.generer_tarte( g_eff, 'Répartition des effectifs', g_lab )
+            rep['graph'].append(self.generer_tarte( g_eff, 'Répartition des effectifs', g_lab ))
+            rep['graph'].append(self.generer_histo( histo, 'Proportions de nouveaux élèves par niveau' ))
         elif stat == 'Par section':
             rep['ordre'] = ['section', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
             rep['data'] = []
             g_eff = []
             g_lab = []
+            histo = collections.OrderedDict.fromkeys(self.server.sections)
             for d in self.server.db.stats('par section', annee, les_niveaux):
                 a = {}
                 a['section'] = d['Section']
@@ -230,7 +238,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 a['poids'] = en_pourcentage(d['effectif'] / eff_total)
                 a['homme'] = en_pourcentage(d['homme'] / d['effectif'])
                 a['doublant'] = en_pourcentage(d['doublant'] / d['effectif'])
-                a['nouveau'] = en_pourcentage(d['nouveau'] / d['effectif'])
+
+                n = d['nouveau'] / d['effectif']
+                a['nouveau'] = en_pourcentage(n)
+                histo[g_niv] = round(100*n,1)
+
                 sf = self.server.section_filière
                 if a['section'] in sf and sf[a['section']] == 'Enseignement supérieur':
                     a['issue de pro'] = en_pourcentage(d['issue de pro'] / d['effectif'])
@@ -240,7 +252,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 g_eff.append(a['effectif'])
                 g_lab.append(g_niv)
             # Génération du graphique des effectifs
-            rep['graph'] = self.generer_tarte( g_eff, 'Répartition des effectifs', g_lab )
+            rep['graph'].append(self.generer_tarte( g_eff, 'Répartition des effectifs', g_lab ))
+            rep['graph'].append(self.generer_histo( histo, 'Proportions de nouveaux élèves par section' ))
         elif stat == 'Provenance':
             rep['ordre'] = ['Établissement', 'total', 'en seconde']
             rep['data'] = self.server.db.stats('provenance', annee, les_niveaux)
@@ -288,10 +301,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         :return: le nom du fichier généré
         :rtype: string
         """
-        # Génération d'un nom de fichier
-        #random.seed(titre) # Pour avoir un nom stable -> pb de cache
-        ident = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(12))
-        fichier = 'cache/tarte_'+ident+'.png'
+        fichier = generer_nom_fichier('cache/tarte_')
         # Création d'un espace de dessin
         figure(1, figsize=(6,6))
         ax = axes([0.1, 0.1, 0.8, 0.8])
@@ -302,9 +312,42 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         '#8000FF', '#FF8000', '#00FF80',
                         '#FF0000', '#00FF00', '#0000FF'),
                 autopct='%1.1f%%', shadow=True, startangle=90)
-        title(titre, bbox={'facecolor':'0.9', 'pad':16}) # Ajout d'un titre
+        title(titre, weight='demi') # Ajout d'un titre
         savefig(fichier, transparent=True) # Génération du fichier
         clf() # Nettoyage du graphique pour le run suivant
+        return fichier
+
+    def generer_histo(self, proportions, titre):
+        """
+            Génère un graphique en histogramme
+
+        :param proportions: les proportions / 100
+        :param titre: le titre du graphique
+        :type proportions: dict
+        :type titre: string
+        :return: le nom du fichier généré
+        :rtype: string
+        """
+        fichier = generer_nom_fichier('cache/histo_')
+        x = [] # les valeurs à afficher
+        labels = [] # les intitulés correspondants
+        for k in proportions:
+            if proportions[k] is not None: # L'orderedDict créer automatiquement des cases vides
+                x.append(proportions[k])
+                labels.append(k)
+        pos = np.arange(len(labels))
+        width = 0.8 # la largeur de chaque barre
+        # Construction des axes
+        ax = axes()
+        ax.set_xticks(pos + (width / 2))
+        ax.set_xticklabels(labels)
+        ax.set_xlabel( titre, labelpad=12, weight='demi' )
+        ax.set_ylim(0, 100)
+        # Dessinnement
+        bar(pos, x, width, color='crimson')
+
+        savefig(fichier, transparent=True)
+        clf()
         return fichier
 
     def importer_xml(self, data):

@@ -3,6 +3,7 @@
 import webbrowser
 import threading
 import datetime
+import random, string
 
 """
     Librairie contenant les fonctions générales
@@ -110,6 +111,17 @@ def filtrer_dict(dictionnaire, clef, valeur):
         return dict((k, v) for k, v in dictionnaire.items() if v[clef]==valeur)
     else:
         return dictionnaire
+
+def generer_nom_fichier(prefix, extension='png'):
+    """
+        Génère aléatoirement un nom de fichier
+
+    :param prefix: le préfix à apposer devant le nom
+    :type prefix: str
+    :rtype: str
+    """
+    ident = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(12))
+    return prefix + ident + '.' + extension
 
 def eteindre_serveur(serveur):
     """

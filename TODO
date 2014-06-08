@@ -11,6 +11,8 @@
 * colonne Diplômé : importation automatisée depuis ...
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 * Options : crash si section vaut ...
+* Histogrammes : chevauchement quand trop de xlabels
+* Stats: cohérences des couleurs entre les graphiques
 
 ### HTML
 * envoie de mail en masse : à tester

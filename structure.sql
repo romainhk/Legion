@@ -29,7 +29,6 @@ CREATE TABLE "Pending" (
     "Genre" INTEGER NOT NULL  DEFAULT (0),
     "Mail" TEXT DEFAULT (null),
     "Entrée" INTEGER DEFAULT (null),
-    "Année" INTEGER,
     "Classe" TEXT,
     "Établissement" TEXT DEFAULT (null),
     "Doublement" INTEGER  DEFAULT (0),

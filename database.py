@@ -267,12 +267,12 @@ class Database():
 
         if r[1] == 0:
             req = 'INSERT INTO Pending ' \
-                + '(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Année, Classe, Établissement, Doublement, Raison) ' \
-                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, {7}, "{8}", "{9}", {10}, "{11}")'.format(
+                + '(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Classe, Établissement, Doublement, Raison) ' \
+                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", {9}, "{10}")'.format(
                     enr['ine'],             enr['nom'],             enr['prénom'],
                     enr['naissance'],       int(enr['genre']),      enr['mail'],
-                    int(enr['entrée']),     annee,                  enr['classe'],
-                    enr['sad_établissement'],   int(enr['doublement']),     raison)
+                    int(enr['entrée']),     enr['classe'],          enr['sad_établissement'],
+                    int(enr['doublement']),     raison)
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:
@@ -281,11 +281,11 @@ class Database():
         else:
              # Élève déjà en pending
             req = 'UPDATE Pending SET ' \
-                + 'INE="{0}", Nom="{1}", Prénom="{2}", Naissance="{3}", Genre={4}, Mail="{5}", Entrée={6}, Année={7}, Classe="{8}", Établissement="{9}", Doublement={10}, Raison="{11}" '.format(
+                + 'INE="{0}", Nom="{1}", Prénom="{2}", Naissance="{3}", Genre={4}, Mail="{5}", Entrée={6}, Classe="{7}", Établissement="{8}", Doublement={9}, Raison="{10}" '.format(
                     enr['ine'],             enr['nom'],             enr['prénom'],
                     enr['naissance'],       int(enr['genre']),      enr['mail'],
-                    int(enr['entrée']),     annee,                  enr['classe'],
-                    enr['sad_établissement'],   int(enr['doublement']),     raison) \
+                    int(enr['entrée']),     enr['classe'],          enr['sad_établissement'],
+                    int(enr['doublement']),     raison) \
                 + 'WHERE rowid={rowid}'.format(rowid=r[0])
             try:
                 self.curs.execute(req)
@@ -355,7 +355,7 @@ class Database():
         :rtype: dict
         """
         data = {}
-        req = 'SELECT rowid,* FROM Pending ORDER BY Nom,Prénom ASC, Année DESC'
+        req = 'SELECT rowid,* FROM Pending ORDER BY Nom,Prénom ASC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             key = d['rowid']

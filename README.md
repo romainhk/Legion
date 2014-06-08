@@ -7,6 +7,14 @@ Legion est un logiciel de suivi de cohorte pour lycée.
 * jquery / TableSorter (inclus)
 
 ## Build
+Pour pouvoir compiler l'application sous windows, il faut :
+* un interpréteur python 33 :
+* cx\_freeze : 
+* pywin32 : 
+* matplotlib, pylab, numpy... (pour la partie graphique)
+
+Le plus simple est d'installer WinPython, un environnement python qui inclu tout (sauf cx\_freeze)
+
 > python setup.py bdist --format=zip
 
 ## Exécution sous windows

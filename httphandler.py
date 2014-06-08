@@ -186,14 +186,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 rep['data']['Nb moyen d\'années de scolarisation par élève'] = str(round( a, 2 )) + ' ans'
                 prop_homme = round(100*total_homme/eff_total,1)
                 rep['graph'].append( self.generer_tarte(
-                        [prop_homme, 100-prop_homme],
-                        'Parité',
-                        ['Homme', 'Femme'] ) )
+                    { 'Homme': prop_homme, 'Femme': 100-prop_homme }, 'Parité' ) )
         elif stat == 'Par niveau':
             rep['ordre'] = ['niveau', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
             rep['data'] = []
-            g_eff = []
-            g_lab = []
+            tarte = collections.OrderedDict.fromkeys(self.server.niveaux)
             histo = collections.OrderedDict.fromkeys(self.server.niveaux)
             for d in self.server.db.stats('par niveau', annee, les_niveaux):
                 a = {}
@@ -203,6 +200,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     a['niveau'] = '<i>Inconnu</i>'
                     g_niv = '?'
                 a['effectif'] = d['effectif']
+                tarte[g_niv] = round(100*int(a['effectif']),1)
+
                 a['poids'] = en_pourcentage(d['effectif'] / eff_total)
                 a['homme'] = en_pourcentage(d['homme'] / d['effectif'])
                 a['doublant'] = en_pourcentage(d['doublant'] / d['effectif'])
@@ -216,16 +215,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     a['issue de pro'] = ''
                 rep['data'].append(a)
-                g_eff.append(a['effectif'])
-                g_lab.append(g_niv)
             # Génération du graphique des effectifs
-            rep['graph'].append(self.generer_tarte( g_eff, 'Répartition des effectifs', g_lab ))
+            rep['graph'].append(self.generer_tarte( tarte, 'Répartition des effectifs' ))
             rep['graph'].append(self.generer_histo( histo, 'Proportions de nouveaux élèves par niveau' ))
         elif stat == 'Par section':
             rep['ordre'] = ['section', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
             rep['data'] = []
-            g_eff = []
-            g_lab = []
+            tarte = collections.OrderedDict.fromkeys(self.server.niveaux)
             histo = collections.OrderedDict.fromkeys(self.server.sections)
             for d in self.server.db.stats('par section', annee, les_niveaux):
                 a = {}
@@ -235,6 +231,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     a['section'] = '<i>Inconnue</i>'
                     g_niv = '?'
                 a['effectif'] = d['effectif']
+                tarte[g_niv] = round(100*int(a['effectif']),1)
+
                 a['poids'] = en_pourcentage(d['effectif'] / eff_total)
                 a['homme'] = en_pourcentage(d['homme'] / d['effectif'])
                 a['doublant'] = en_pourcentage(d['doublant'] / d['effectif'])
@@ -249,10 +247,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     a['issue de pro'] = ''
                 rep['data'].append(a)
-                g_eff.append(a['effectif'])
-                g_lab.append(g_niv)
             # Génération du graphique des effectifs
-            rep['graph'].append(self.generer_tarte( g_eff, 'Répartition des effectifs', g_lab ))
+            rep['graph'].append(self.generer_tarte( tarte, 'Répartition des effectifs' ))
             rep['graph'].append(self.generer_histo( histo, 'Proportions de nouveaux élèves par section' ))
         elif stat == 'Provenance':
             rep['ordre'] = ['Établissement', 'total', 'en seconde']
@@ -286,18 +282,14 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         #logging.debug(rep)
         return rep
 
-    def generer_tarte(self, proportions, titre, labels, explode=False):
+    def generer_tarte(self, proportions, titre):
         """
             Génère un graphique en tarte
 
         :param proportions: les proportions / 100
         :param titre: le titre du graphique
-        :param labels: les libellés associés aux proportions (dans le même ordre)
-        :param explode: les parts à écarter
         :type proportions: list
         :type titre: string
-        :type labels: list
-        :type explode: tuple
         :return: le nom du fichier généré
         :rtype: string
         """
@@ -305,12 +297,16 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         # Création d'un espace de dessin
         figure(1, figsize=(6,6))
         ax = axes([0.1, 0.1, 0.8, 0.8])
-        if not explode: explode = tuple( [0]*len(proportions) )
+
+        x = [] # les valeurs à afficher
+        labels = [] # les intitulés correspondants
+        for k in proportions:
+            if proportions[k] is not None: # L'orderedDict créer automatiquement des cases vides
+                x.append(proportions[k])
+                labels.append(k)
         # Génération de la tarte
-        pie(proportions, explode=explode, labels=labels,
-                colors=('#0080FF', '#FF0080', '#80FF00',
-                        '#8000FF', '#FF8000', '#00FF80',
-                        '#FF0000', '#00FF00', '#0000FF'),
+        pie(x, labels=labels,
+                colors=self.server.colors,
                 autopct='%1.1f%%', shadow=True, startangle=90)
         title(titre, weight='demi') # Ajout d'un titre
         savefig(fichier, transparent=True) # Génération du fichier
@@ -344,7 +340,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         ax.set_xlabel( titre, labelpad=12, weight='demi' )
         ax.set_ylim(0, 100)
         # Dessinnement
-        bar(pos, x, width, color='crimson')
+        bar(pos, x, width, color=self.server.colors[0])
 
         savefig(fichier, transparent=True)
         clf()

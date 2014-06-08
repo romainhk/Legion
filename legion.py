@@ -62,6 +62,10 @@ class Legion(http.server.HTTPServer):
             self.date = debut_AS(ajd.year)
         # DB
         self.db = database.Database(root, self.nom_etablissement)
+        # Suite de couleurs utilisés pour les graphiques
+        self.colors=('#0080FF', '#FF0080', '#80FF00',
+                     '#8000FF', '#FF8000', '#00FF80',
+                     '#FF0000', '#00FF00', '#0000FF')
 
     def maj_date(self, date):
         """ Seter sur la date (date d'importation) """

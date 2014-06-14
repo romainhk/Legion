@@ -345,9 +345,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         ax.set_ylim(0, 100)
         # Dessinnement
         bar(pos, x, width, color=self.server.colors)
-        bar(pos, doublants, width, color='k', bottom=x)
+        bar(pos, doublants, width, color='w', bottom=x)
         xlim(pos.min(), pos.max()+width) # On force l'affiche des colonnes vides
-        legend( [Rectangle((0, 0), 1, 1, fc="k")] ,['Doublants'] ) # Légende pour les doublants
+        leg = legend( [Rectangle((0, 0), 1, 1, fc="w")], ['Doublants'] ) # Légende pour les doublants
+        leg.get_frame().set_alpha(0)
 
         savefig(fichier, transparent=True)
         clf()

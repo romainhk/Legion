@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Run the build process by running the command 'python setup.py build'
+# Lancer la compilation avec la commande 'python setup.py build'
 
 from cx_Freeze import setup, Executable
 import platform, os
@@ -16,7 +16,7 @@ includefiles=[]
 ignoredDirs= ['web'+os.sep+'cache', 'web'+os.sep+'sources']
 for root, subFolders, files in os.walk(dir+os.sep+'web'):
     # Adresse relative du dossier exploré
-    sub=root.replace(dir, '').strip('\\')
+    sub=root.replace(dir, '').strip(os.sep)
     if not sub in ignoredDirs:
         for f in files:
             if not f.endswith('~'): # exclusion des fichiers temporaires

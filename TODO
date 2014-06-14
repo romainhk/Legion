@@ -5,14 +5,10 @@
 * Taux de réussite au BAC, au BTS
 * Pour les élèves sorties : durée de scolarisation
 
-* Issue de Pro : la proportion est faible (13%)
-
 ### Python
 * colonne Diplômé : importation automatisée depuis ...
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 * Histogrammes : chevauchement quand trop de xlabels
-* Histogrammes : utiliser des barres multiples ? (nouveaux, doublants, hommes)
-# http://stackoverflow.com/questions/9497524/displaying-3-histograms-on-1-axis-in-a-legible-way-matplotlib
 
 ### HTML
 * envoie de mail en masse : à tester

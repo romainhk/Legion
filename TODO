@@ -13,6 +13,8 @@
 * Histogrammes : chevauchement quand trop de xlabels
 * Histogrammes : utiliser des barres multiples ? (nouveaux, doublants, hommes)
 # http://stackoverflow.com/questions/9497524/displaying-3-histograms-on-1-axis-in-a-legible-way-matplotlib
+* Histo : cumuler les doublants sur les nouveaux
+* Section : les couleurs ne correspondent pas
 
 ### HTML
 * envoie de mail en masse : à tester
@@ -26,3 +28,4 @@
 * Pour chaque élève, pouvoir affecter 3 activités en 1er et 2 en Terminale, avec notations
 * Calculer la note du bac de l'élève : moyenne des 3 meilleures notes dont au moins une en terminale
 * Générer des stats transversales : moyenne par activités...
+* Authentification à distance

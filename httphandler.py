@@ -190,8 +190,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         elif stat == 'Par niveau':
             rep['ordre'] = ['niveau', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
             rep['data'] = []
-            tarte = collections.OrderedDict.fromkeys(self.server.niveaux)
-            histo = collections.OrderedDict.fromkeys(self.server.niveaux)
+            tarte = collections.OrderedDict.fromkeys(les_niveaux)
+            histo = collections.OrderedDict.fromkeys(les_niveaux)
             for d in self.server.db.stats('par niveau', annee, les_niveaux):
                 a = {}
                 a['niveau'] = d['Niveau']
@@ -221,8 +221,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         elif stat == 'Par section':
             rep['ordre'] = ['section', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
             rep['data'] = []
-            tarte = collections.OrderedDict.fromkeys(self.server.niveaux)
-            histo = collections.OrderedDict.fromkeys(self.server.sections)
+            tarte = collections.OrderedDict.fromkeys(les_niveaux)
+            histo = collections.OrderedDict.fromkeys(les_niveaux)
             for d in self.server.db.stats('par section', annee, les_niveaux):
                 a = {}
                 a['section'] = d['Section']
@@ -343,6 +343,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         ax.set_ylim(0, 100)
         # Dessinnement
         bar(pos, x, width, color=self.server.colors)
+        xlim(pos.min(), pos.max()+width) # On force l'affiche des colonnes vides
 
         savefig(fichier, transparent=True)
         clf()

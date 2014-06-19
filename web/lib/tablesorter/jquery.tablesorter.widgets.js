@@ -1,4 +1,4 @@
-/*! tableSorter 2.16+ widgets - updated 5/22/2014 (v2.17.0)
+/*! tableSorter 2.16+ widgets - updated 6/18/2014 (v2.17.2)
  *
  * Column Styles
  * Column Filters
@@ -458,21 +458,27 @@ ts.filter = {
 			}
 			return null;
 		},
+		// Look for a not match
+		notMatch: function( filter, iFilter, exact, iExact, cached, index, table, wo ) {
+			if ( /^\!/.test(iFilter) ) {
+				iFilter = iFilter.replace('!', '');
+				if (ts.filter.regex.exact.test(iFilter)) {
+					// look for exact not matches - see #628
+					iFilter = iFilter.replace(ts.filter.regex.exact, '');
+					return iFilter === '' ? true : $.trim(iFilter) !== iExact;
+				} else {
+					var indx = iExact.search( $.trim(iFilter) );
+					return iFilter === '' ? true : !(wo.filter_startsWith ? indx === 0 : indx >= 0);
+				}
+			}
+			return null;
+		},
 		// Look for quotes or equals to get an exact match; ignore type since iExact could be numeric
 		exact: function( filter, iFilter, exact, iExact, cached, index, table, wo, parsed, rowArray ) {
 			/*jshint eqeqeq:false */
 			if (ts.filter.regex.exact.test(iFilter)) {
 				var fltr = iFilter.replace(ts.filter.regex.exact, '');
 				return rowArray ? $.inArray(fltr, rowArray) >= 0 : fltr == iExact;
-			}
-			return null;
-		},
-		// Look for a not match
-		notMatch: function( filter, iFilter, exact, iExact, cached, index, table, wo ) {
-			if ( /^\!/.test(iFilter) ) {
-				iFilter = iFilter.replace('!', '');
-				var indx = iExact.search( $.trim(iFilter) );
-				return iFilter === '' ? true : !(wo.filter_startsWith ? indx === 0 : indx >= 0);
 			}
 			return null;
 		},
@@ -675,13 +681,16 @@ ts.filter = {
 			filters = ts.filter.setDefaults(table, c, wo) || [];
 			if (filters.length) {
 				ts.setFilters(table, filters, true);
+				// ts.filter.checkFilters(table, filters);
 			}
 			c.$table.trigger('filterFomatterUpdate');
-			ts.filter.checkFilters(table, filters);
+			if (!wo.filter_initialized) {
+				// filter widget initialized
+				wo.filter_initialized = true;
+				c.$table.trigger('filterInit');
+			}
 		});
-		// filter widget initialized
-		wo.filter_initialized = true;
-		c.$table.trigger('filterInit');
+
 	},
 	setDefaults: function(table, c, wo) {
 		var isArray, saved, indx,
@@ -814,6 +823,7 @@ ts.filter = {
 		// add filter array back into inputs
 		if (filterArray) {
 			ts.setFilters( table, filters, false, skipFirst !== true );
+			if (!wo.filter_initialized) { c.lastCombinedFilter = ''; }
 		}
 		if (wo.filter_hideFilters) {
 			// show/hide filter row as needed
@@ -828,7 +838,7 @@ ts.filter = {
 			c.lastCombinedFilter = null;
 			c.lastSearch = [];
 		}
-		c.$table.trigger('filterStart', [filters]);
+		if (wo.filter_initialized) { c.$table.trigger('filterStart', [filters]); }
 		if (c.showProcessing) {
 			// give it time for the processing icon to kick in
 			setTimeout(function() {
@@ -1068,7 +1078,7 @@ ts.filter = {
 		if (c.debug) {
 			ts.benchmark("Completed filter widget search", time);
 		}
-		c.$table.trigger('filterEnd');
+		if (wo.filter_initialized) { c.$table.trigger('filterEnd'); }
 		setTimeout(function(){
 			c.$table.trigger('applyWidgets'); // make sure zebra widget is applied
 		}, 0);
@@ -1110,7 +1120,7 @@ ts.filter = {
 			$.each(arry, function(i, v){
 				// parse array data using set column parser; this DOES NOT pass the original
 				// table cell to the parser format function
-				parsed.push({ t : v, p : c.parsers && c.parsers[column].format( v, table, [], column ) || v });
+				parsed.push({ t : v, p : c.parsers && c.parsers[column].format( v, table, [], column ) });
 			});
 
 			// sort parsed select options

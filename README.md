@@ -13,7 +13,8 @@ Legion est un logiciel de suivi de cohorte pour lycée.
 Sous linux :
 > python3 legion.py
 
-Sous windows, le plus simple est d'installer WinPython, un environnement python qui inclu tout sauf cx\_freeze, puis exécuter "lancer_avec_winpython.bat".
+Sous windows, le plus simple est d'installer WinPython, un environnement python qui inclu tout (sauf cx\_freeze pour la compilation), puis exécuter "lancer_avec_winpython.bat".
+S'il manque des libraires -> http://www.lfd.uci.edu/~gohlke/pythonlibs/
 
 ## Build
 > python setup.py build

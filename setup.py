@@ -7,8 +7,11 @@ import platform, os
 
 if platform.system() == 'Windows':
     base = 'Console'
+    # Winpython ne compile pas bien si on n'insère pas obligatoirement ce paquet
+    packages = ['matplotlib.backends.backend_tkagg']
 else:
     base = None
+    packages = []
 
 # Liste les fichiers à embarquer aussi
 dir = os.getcwd();
@@ -37,7 +40,7 @@ executables = [ Executable(
     appendScriptToExe=True
     ) ]
 
-build_exe_options = { "optimize": 1, 'include_files':includefiles, 'include_msvcr':1 }
+build_exe_options = { "optimize": 1, 'include_files':includefiles, 'include_msvcr':1, 'packages':packages }
 
 setup(name='legion',
       version='0.8',

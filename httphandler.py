@@ -206,9 +206,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 a['homme'] = en_pourcentage(d['homme'] / d['effectif'])
                 a['doublant'] = en_pourcentage(d['doublant'] / d['effectif'])
                 
-                n = d['nouveau'] / d['effectif']
-                a['nouveau'] = en_pourcentage(n)
-                histo[g_niv] = [ round(100*n,1), round(100*d['doublant']/d['effectif']) ]
+                a['nouveau'] = en_pourcentage(d['nouveau']/d['effectif'])
+                histo[g_niv] = [ d['nouveau'], d['doublant'], d['effectif']-d['nouveau']-d['doublant'] ]
 
                 if a['niveau'] == '1BTS' or a['niveau'] == '2BTS':
                     a['issue de pro'] = en_pourcentage(d['issue de pro'] / d['effectif'])
@@ -217,7 +216,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 rep['data'].append(a)
             # Génération du graphique des effectifs
             rep['graph'].append(self.generer_tarte( tarte, 'Répartition des effectifs' ))
-            rep['graph'].append(self.generer_histo( histo, 'Proportions de nouveaux élèves/doublants par niveau' ))
+            rep['graph'].append(self.generer_histo( histo, 'Nombre de nouveaux élèves/doublants par niveau' ))
         elif stat == 'Par section':
             rep['ordre'] = ['section', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
             rep['data'] = []
@@ -237,9 +236,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 a['homme'] = en_pourcentage(d['homme'] / d['effectif'])
                 a['doublant'] = en_pourcentage(d['doublant'] / d['effectif'])
 
-                n = d['nouveau'] / d['effectif']
-                a['nouveau'] = en_pourcentage(n)
-                histo[g_niv] = [ round(100*n,1), round(100*d['doublant']/d['effectif']) ]
+                a['nouveau'] = en_pourcentage(d['nouveau']/d['effectif'])
+                histo[g_niv] = [ d['nouveau'], d['doublant'], d['effectif']-d['nouveau']-d['doublant'] ]
 
                 sf = self.server.section_filière
                 if a['section'] in sf and sf[a['section']] == 'Enseignement supérieur':
@@ -249,7 +247,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 rep['data'].append(a)
             # Génération du graphique des effectifs
             rep['graph'].append(self.generer_tarte( tarte, 'Répartition des effectifs' ))
-            rep['graph'].append(self.generer_histo( histo, 'Proportions de nouveaux élèves/doublants par section' ))
+            rep['graph'].append(self.generer_histo( histo, 'Nombre de nouveaux élèves/doublants par section' ))
         elif stat == 'Provenance':
             rep['ordre'] = ['Établissement', 'total', 'en seconde']
             rep['data'] = self.server.db.stats('provenance', annee, les_niveaux)
@@ -329,11 +327,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         fichier = generer_nom_fichier('cache/histo_')
         x = [] # les valeurs à afficher
         doublants = [] # les doublants à ajouter au dessus
+        reste = [] # le reste des élèves
         labels = [] # les intitulés correspondants
         for k in proportions:
             if proportions[k] is not None: # L'orderedDict créer automatiquement des cases vides
                 x.append(proportions[k][0])
                 doublants.append(proportions[k][1])
+                reste.append(proportions[k][2])
                 labels.append(k)
         pos = np.arange(len(labels))
         width = 0.8 # la largeur de chaque barre
@@ -342,12 +342,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         ax.set_xticks(pos + (width / 2))
         ax.set_xticklabels(labels)
         ax.set_xlabel( titre, labelpad=12, weight='demi' )
-        ax.set_ylim(0, 100)
         # Dessinnement
         bar(pos, x, width, color=self.server.colors)
         bar(pos, doublants, width, color='w', bottom=x)
+        r=bar(pos, reste, width, color='0.8', bottom=numpy.sum( (x,doublants), 0), alpha=0.4)
         xlim(pos.min(), pos.max()+width) # On force l'affiche des colonnes vides
-        leg = legend( [Rectangle((0, 0), 1, 1, fc="w")], ['Doublants'] ) # Légende pour les doublants
+        leg = legend( [Rectangle((0, 0), 1, 1, fc="w"), Rectangle((0, 0), 1, 1, fc="0.8", alpha=0.4)], \
+                ['Doublants', 'Restant'] ) # Légende
         leg.get_frame().set_alpha(0)
 
         savefig(fichier, transparent=True)

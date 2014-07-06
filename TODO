@@ -9,6 +9,7 @@
 * colonne Diplômé : importation automatisée depuis ...
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 * Histogrammes : chevauchement quand trop de xlabels
+* Filières : séparer G et T
 
 ### HTML
 * envoie de mail en masse : à tester
@@ -16,7 +17,11 @@
 * les colonnes editables ne le sont plus après un changement d'onglet
 * Ajouter des tutoriels sur l'importation (quand les faire ?...)
 ** importation de la base
-* Stats : fusionner 1BTS et 2BTS ?
+* Liste - année : noter les deux années '2013-2014'
+* Liste - situation : la liste déroulante disparait !
+* Liste : recherche par section (filtres de classe en plus : tous les bts, toutes les secondes...)
+* Options : ajouter la section 'GT' pour les classes de seconde
+* Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 
 ### Extension EPS
 * Pour chaque élève, pouvoir affecter 3 activités en 1er et 2 en Terminale, avec notations

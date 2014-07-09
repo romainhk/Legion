@@ -43,7 +43,7 @@ executables = [ Executable(
 build_exe_options = { "optimize": 1, 'include_files':includefiles, 'include_msvcr':1, 'packages':packages }
 
 setup(name='legion',
-      version='0.8',
+      version='1.0',
       description='Legion',
       author='Romain Hennuyer',
       author_email='romain.hennuyer@gmail.com',

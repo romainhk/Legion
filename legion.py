@@ -30,7 +30,7 @@ class Legion(http.server.HTTPServer):
         self.situations=sorted([x.strip(' ') for x in config.get('Établissement', 'situations').split(',')])
         #self.niveaux=sorted([x.strip(' ') for x in config.get('Établissement', 'niveaux').split(',')])
         self.niveaux=['Seconde', 'Première', 'Terminale', '1BTS', '2BTS', 'Bac+1', 'Bac+3']
-        self.filières = ['GT', 'Pro', 'Enseignement supérieur']
+        self.filières = ['Générale', 'Technologique', 'Pro', 'Enseignement supérieur']
         self.sections = []
         self.section_filière = {}
         for f in self.filières:

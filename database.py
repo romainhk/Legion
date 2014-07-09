@@ -157,7 +157,8 @@ class Database():
             raison.append('Pb affectation année en cours')
         if y == self.FAILED:
             #raison.append('Pb affectation année précédente')
-            logging.info(u"{0}".format(enr))
+            #logging.info(u"{0}".format(enr))
+            pass
         if len(raison) > 0:
             self.conn.rollback()
             if self.ecrire_en_pending(enr, date.year, ', '.join(raison)):
@@ -189,7 +190,7 @@ class Database():
         :type doublement: int - 0 ou 1
         """
         if classe == "" or etab == "":
-            logging.info("Erreur lors de l'affectation : classe ou établissement en défaut")
+            #logging.info("Erreur lors de l'affectation : classe ou établissement en défaut")
             return False
         req = 'INSERT INTO Affectations ' \
               +  '(INE, Année, Classe, Établissement, Doublement) ' \

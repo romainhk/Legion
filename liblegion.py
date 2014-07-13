@@ -25,29 +25,11 @@ def dict_from_row(row):
     """
     return dict(zip(row.keys(), row))
 
-def dict_add(dictionnaire, index, val):
-    """
-        Ajoute val à la clé 'index' du dictionnaire, si l'entrée existe
-    """
-    if index in dictionnaire:
-        dictionnaire[index] = dictionnaire[index] + val
-    else:
-        dictionnaire[index] = val
-
 def inc_list(liste, index):
     """
         Incrémente un élément de la liste
     """
     liste[index] = liste[index] + 1
-
-def open_browser(port):
-    """
-        Ouvre un navigateur web sur la bonne page
-    """
-    def _open_browser():
-        webbrowser.open('http://localhost:{port}'.format(port=port))
-    thread = threading.Timer(0.5, _open_browser)
-    thread.start()
 
 def datefr(chaine):
     """

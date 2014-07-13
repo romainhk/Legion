@@ -20,10 +20,12 @@
 * Liste - situation : la liste déroulante disparait !
 * Liste : recherche par section (filtres de classe en plus : tous les bts, toutes les secondes...)
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
+* Pending : renommer en 'Incomplets' ?
 
 ### Extension EPS
 * Pour chaque élève, pouvoir affecter 3 activités en 1er et 2 en Terminale, avec notations
 * Calculer la note du bac de l'élève : moyenne des 3 meilleures notes dont au moins une en terminale
 * Générer des stats transversales : moyenne par activités...
 * Authentification à distance
+** ssl !
 * Gestion de l'appel et mail des abscents pour la scolaire

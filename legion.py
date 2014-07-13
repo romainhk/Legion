@@ -7,7 +7,7 @@ import datetime
 import logging
 import configparser, codecs
 #web
-import http.server
+import http.server, http.cookies
 #lib spécifique
 import database
 import httphandler
@@ -25,8 +25,10 @@ class Legion(http.server.HTTPServer):
         global root, config
         os.chdir(root + os.sep + 'web') # la partie html est dans le dossier web
         if not os.path.isdir("cache"): os.makedirs('cache')
+        self.cookie = http.cookies.SimpleCookie()
         # Lecture de la configuration
         self.nom_etablissement=config.get('Établissement', 'nom de l\'etablissement')
+        self.mdp=config.get('Général', 'mdp')
         self.situations=sorted([x.strip(' ') for x in config.get('Établissement', 'situations').split(',')])
         #self.niveaux=sorted([x.strip(' ') for x in config.get('Établissement', 'niveaux').split(',')])
         self.niveaux=['Seconde', 'Première', 'Terminale', '1BTS', '2BTS', 'Bac+1', 'Bac+3']
@@ -91,10 +93,9 @@ if __name__ == "__main__":
     config = configparser.ConfigParser()
     config.read_file(codecs.open(root + os.sep + 'config.cfg', "r", "utf8"))
     
-    port=int(config.get('General', 'port'))
+    port=int(config.get('Général', 'port'))
     address = ("", port)
     server = Legion(address, httphandler.HttpHandler)
-    #open_browser(port)
     thread = threading.Thread(target = server.serve_forever)
     thread.deamon = True
     logging.info('Démarrage du serveur sur le port {0}'.format(port))

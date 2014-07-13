@@ -189,3 +189,7 @@ td select {
 .stats select {
     background-color:transparent;
 }
+/* Formulaire de login */
+#login-error {
+    color:red;
+}

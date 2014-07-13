@@ -232,6 +232,26 @@ $(document).ready(function() {
             $('#'+page_active).replaceWith( msg );
         });
     });
+    // Formulaire de login
+    $("#login-error").hide();
+    $("#login").on('submit', function(e){    
+        e.preventDefault(); // no-reload
+        $("#login-error").hide();
+        $.ajax({
+            type: "POST",
+            url: "auth",
+            data: { mdp: $("#motdepasse").val() },
+            success: function(html){    
+                if(html=='reussie') {
+                    $("#login").hide();
+                } else {
+                    //console.log('login failed');
+                    $("#login-error").show();
+                }
+            }
+        });
+        return false;
+    });
 
     // Initialisation de l'application
     $.get( "/init", function( data ) {

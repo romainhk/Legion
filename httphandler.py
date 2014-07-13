@@ -11,6 +11,7 @@ import json
 import urllib
 from urllib.parse import urlparse, parse_qs
 import xml.etree.ElementTree as ET
+import cgi, http.cookies
 #lib spécifique
 from liblegion import *
 #graphiques
@@ -30,6 +31,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         params = urlparse(self.path)
         query = parse_qs(params.query)
         rep = "";
+        try:
+            a = self.server.cookie["session"].value
+        except (http.cookies.CookieError, KeyError):
+            print("session cookie not set!")
         if params.path == '/liste':
             rep = { 'annee': self.server.date.year, 'data': self.server.db.lire() }
         elif params.path == '/stats':
@@ -91,18 +96,30 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_POST(self):
         """ Traitement des POST """
-        length = self.headers['content-length']
-        data = self.rfile.read(int(length))
-        parse = parse_qs(data.decode('UTF-8')) # { data: , name: }
-        # le fichier xml est en ISO-8859-15
-        data = parse['data'].pop()
+        #http://pymotw.com/2/BaseHTTPServer/
         rep = "";
-        if self.path == '/importation':
+        form = cgi.FieldStorage(
+            fp=self.rfile, 
+            headers=self.headers,
+            environ={'REQUEST_METHOD':'POST',
+                     'CONTENT_TYPE':self.headers['Content-Type'],
+                     })
+        if self.path == '/auth':
+            mdp = form.getvalue('mdp')
+            print(mdp)
+            print(self.server.mdp)
+            if mdp == self.server.mdp:
+                self.server.cookie['session'] = 'ok'
+                expiration = datetime.datetime.now() + datetime.timedelta(minutes=30)
+                self.server.cookie['session']['expires'] = expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
+                rep = 'reussie'
+        elif self.path == '/importation':
+            data = form.getvalue('data')
             logging.info('Importation du fichier...')
             self.importer_xml(data)
-            rep = u"L'importation s'est bien terminée."
-        else:
-            return True
+            rep = "L'importation s'est bien terminée."
+        #else:
+        #    return True
         self.repondre(rep)
 
     def repondre(self, reponse):

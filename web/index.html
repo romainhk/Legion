@@ -16,30 +16,26 @@
     <link rel="icon" href="img/favicon.png" sizes="64x64" type="image/png">
   </head>
   <body>
-    <a onClick='charger_page("Accueil")' href=''>
-        <img src="img/logo.png" class="logo" alt="Logo" /></a>
-    <ul class="onglet" id="onglets">
-        <li>Liste</li>
-        <li>Statistiques</li>
-        <li>Pending</li>
-        <li>Options</li>
-        <img src="img/quitter.png" class="img_quitter" alt="Quitter l'application" title="Quitter l'application" />
-    </ul>
-    <h1>Legion</h1>
-    <div style="text-align:center;">
-        <a href="#" class="action" id="export"><img src="img/exporter.png" width="45px" />Exporter ce tableau (csv)</a>
-    </div>
+    <header>
+        <a onClick='charger_page("accueil")' href=''>
+            <img src="img/logo.png" class="logo" alt="Logo" /></a>
+        <img src="img/quitter.png" class="quitter" alt="Quitter l'application" title="Quitter l'application" />
+        <ul class="onglet" id="onglets">
+        </ul>
+        <div style="text-align:center;">
+            <form id="login">
+                <label for="mdp">Mot de passe de connexion :</label><input type="password" id="motdepasse" name="mdp" value="test" />
+                <input type="submit" />
+            </form>
+            <div id="login-message"></div>
+            <br/>
+            <a href="#" class="action" id="export"><img src="img/exporter.png" width="45px" />Exporter ce tableau (csv)</a>
+        </div>
+    </header>
     <div style="clear:both;"></div>
-    <div id="login">
-        <form>
-            <label for="mdp">Mot de passe :</label><input type="password" id="motdepasse" name="mdp" value="test" />
-            <input type="submit" />
-        </form>
-        <span id="login-error">Impossible de se connecter</span>
+    <div id="accueil">
     </div>
-    <div id="Accueil">
-    </div>
-    <div id="Liste">
+    <div id="liste">
         <div style="width:100%;">
             <h3 style="display: inline-block;">Base des élèves</h3>
             <button style="margin-left:7ex;" class="mailer" type="button" onClick="mailer_tous()">Mailer tous</button>
@@ -52,7 +48,7 @@
             <tbody></tbody>
         </table>
     </div>
-    <div id="Statistiques">
+    <div id="stats">
         <h3>Statistiques</h3>
         <table id="stats-recherche" class="stats">
             <tr class="removeme">
@@ -178,7 +174,7 @@
             </div>
         </div>
     </div>
-    <div id="Pending">
+    <div id="pending">
         <div style="width:100%;">
             <h3 style="display: inline-block;">Importations incomplètes</h3>
             <span id="totalPending" class="total"></span>
@@ -189,7 +185,7 @@
             <tbody></tbody>
         </table>
     </div>
-    <div id="Options" class="page_options">
+    <div id="options" class="page_options">
         <div style="float:left; width:49%">
             <h4>Importation</h4>
             Sélectionner l'exportation xml de la base BEE de SIÈCLE (<i>ElevesSansAdresses.xml</i>)

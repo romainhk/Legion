@@ -2,7 +2,13 @@
 var champs_vue = new Array();
 // Page affichée
 var page_active = "";
-var les_pages = new Array();
+// Liste des pages et correspondance id-titre
+var les_pages = {
+        'accueil': '',
+        'liste': 'Liste',
+        'stats': 'Stats',
+        'pending': 'En<br>Attente', 
+        'options': 'Options' };
 // Total d'élèves dans la base
 var nb_eleves = 0;
 // Champs du pending (tous)
@@ -50,10 +56,10 @@ function fin_filtrage(e, filter){
     // MAJ du total de résultat
     var a = $(this).find('tr:visible:not(".tablesorter-childRow"):not(".tablesorter-filter-row")').length - 1; // - le header
     var id = '';
-    if (page_active == 'Liste') {
+    if (page_active == 'liste') {
         id = 'totalListe';
         t = 'Résultats : ' + a + ' / ' + nb_eleves + ' élèves.';
-    } else if (page_active == 'Pending') {
+    } else if (page_active == 'pending') {
         id = 'totalPending';
         t = a + ' enregistrements.';
     }
@@ -71,16 +77,16 @@ function fin_filtrage(e, filter){
  * Le switch de page
  */
 function charger_page(nom) {
-    $.each(les_pages, function( i, p ) { $("#"+p).hide(); });
+    $.each(les_pages, function( i, p ) { $("#"+i).hide(); });
 
-    if (nom == 'Accueil') {
-        page_active = 'Accueil';
+    if (nom == 'accueil') {
+        page_active = 'accueil';
         $.get( "/accueil.html", function( data ) {
-            $("#Accueil").html(data);
+            $("#accueil").html(data);
         });
     }
-    else if (nom == 'Liste') {
-        page_active = 'Liste';
+    else if (nom == 'liste') {
+        page_active = 'liste';
         vue_depliee = true;
         $.get( "/liste", function( data ) {
             annee = data['annee'];
@@ -160,21 +166,20 @@ $.each( data['data'], function( key, value ) {
             // Pliage de toutes les lignes
             if (vue_depliee) { $('button.toggle-deplier').trigger('click'); }
         });
-    } else if (nom == 'Statistiques') {
-        page_active = 'Statistiques';
-    } else if (nom == 'Pending') {
-        page_active = 'Pending';
+    } else if (nom == 'stats') {
+        page_active = 'stats';
+    } else if (nom == 'pending') {
+        page_active = 'pending';
         $.get( "/pending", function( data ) {
-            $('#pending > tbody').html( list_to_tab_simple(data, champs_pending) );
-            $("#pending").tablesorter({
+            $('#pending table > tbody').html( list_to_tab_simple(data, champs_pending) );
+            $("#pending table").tablesorter({
                 sortList: [ [1,0] ]
-            }).bind('filterEnd', fin_filtrage
-            );
-            $("#pending").trigger('update');
-            $("#pending").trigger('filterEnd'); // Mise à jour du total
+            }).bind('filterEnd', fin_filtrage);
+            $("#pending table").trigger('update');
+            $("#pending table").trigger('filterEnd'); // Mise à jour du total
         });
-    } else if (nom == 'Options') {
-        page_active = 'Options';
+    } else if (nom == 'options') {
+        page_active = 'options';
         $.get( "/options", function( data ) {
             niveaux = data['niveaux'];
             filières = data['filières'];
@@ -187,9 +192,9 @@ $.each( data['data'], function( key, value ) {
                 var s = j['Section'];
                 tab += '<tr><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
             });
-            $('#options > tbody').html(tab);
-            $("#options").tablesorter().delegate('td', 'click', cell_to_select);
-            $("#options").trigger('update');
+            $('#options table > tbody').html(tab);
+            $("#options table").tablesorter().delegate('td', 'click', cell_to_select);
+            $("#options table").trigger('update');
         });
     }
     $("#"+page_active).show();
@@ -203,6 +208,10 @@ $(document).ready(function() {
     $.tablesorter.defaults.widgets = ["zebra", "cssStickyHeaders"];
     $.tablesorter.defaults.widgetOptions.cssStickyHeaders_offset = 4;
     $.tablesorter.defaults.theme = 'blue';
+    var tables_stats = ['Général', 'Parniveau', 'Parsection', 'Provenance', 'Provenanceclasse', 'Tauxdepassage'];
+    $.each(tables_stats, function(i,j) {
+        $("#stats-"+j+" table").tablesorter();
+    });
 
     // Création du lien d'exportation
     $("#export").on('click', function (event) {
@@ -212,16 +221,24 @@ $(document).ready(function() {
     });
 
     // Préparation du menu
-    les_pages.push('Accueil');
-    $("#onglets").children().each(function() { les_pages.push($(this).html()) });
+    $.each(les_pages, function(i,j) {
+        if (j != "") {
+            $("#onglets").append('<li>'+j+'</li>');
+        }
+    });
     $("#onglets li").click(function(event) {
         target = $(event.target);
-        $("#onglets").children().removeClass('onglet_actif');
-        target.addClass('onglet_actif');
-        charger_page(target.html());
+        $("#onglets").children().removeClass('actif');
+        target.addClass('actif');
+        $.each(les_pages, function(i,j) {
+            if (j == target.html()) {
+                charger_page(i);
+                return false; //break
+            }
+        });
     });
     // Bouton quitter
-    $("#onglets .img_quitter").hover(function(event) {
+    $(".quitter").hover(function(event) {
         $(this).attr("src", 'img/quitter_hover.png');
     }).mouseout(function(event) {
         $(this).attr("src", 'img/quitter.png');
@@ -233,20 +250,22 @@ $(document).ready(function() {
         });
     });
     // Formulaire de login
-    $("#login-error").hide();
+    $("#login-message").hide();
     $("#login").on('submit', function(e){    
         e.preventDefault(); // no-reload
-        $("#login-error").hide();
+        $("#login-message").hide();
         $.ajax({
             type: "POST",
             url: "auth",
             data: { mdp: $("#motdepasse").val() },
-            success: function(html){    
+            success: function(html){
+                $("#login-message").show();
                 if(html=='reussie') {
                     $("#login").hide();
+                    $("#login-message").html('Bienvenue xxxx');
                 } else {
-                    //console.log('login failed');
-                    $("#login-error").show();
+                    // Échec de connection
+                    $("#login-message").html(html);
                 }
             }
         });
@@ -305,5 +324,5 @@ $(document).ready(function() {
     });
     stats_listes();
     // Chargement de la page accueil
-    charger_page('Accueil');
+    charger_page('accueil');
 });

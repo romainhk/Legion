@@ -106,13 +106,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                      })
         if self.path == '/auth':
             mdp = form.getvalue('mdp')
-            print(mdp)
-            print(self.server.mdp)
             if mdp == self.server.mdp:
                 self.server.cookie['session'] = 'ok'
                 expiration = datetime.datetime.now() + datetime.timedelta(minutes=30)
                 self.server.cookie['session']['expires'] = expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
                 rep = 'reussie'
+            else:
+                rep = 'Mot de passe incorrect.'
         elif self.path == '/importation':
             data = form.getvalue('data')
             logging.info('Importation du fichier...')

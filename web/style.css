@@ -1,7 +1,8 @@
 body {
     padding:0 1ex;
-    background: #febbbb;
-    background: linear-gradient(90deg, #fec9e4 0%,#fe90C7 50%,#FFABD5 100%);
+    background: #fee5bc;
+    background: linear-gradient(90deg, #fef2e9 0%,#fee5bc 100%);
+    margin:0;
 }
 h1 {
     text-align:center;
@@ -54,6 +55,10 @@ th {
     text-align:center;
     text-transform: capitalize;
 }
+#stats .tablesorter {
+    margin:0 auto;
+    width:auto;
+}
 /* pour les select dans un table */
 td select {
     width:100%;
@@ -90,7 +95,6 @@ td select {
     border-radius:2ex;
     border:6px outset #99BFE6;
     padding:9px;
-    margin:1ex;
 }
 .action img {
     vertical-align:middle;
@@ -102,11 +106,6 @@ td select {
 .maj_non {
     background-color: #FFB3B3 !important;
 }
-/* Le logo */
-.logo {
-    float:left;
-    height:100px;
-}
 /* Le message lors de la fermeture de l'application */
 .msg_quitter {
     text-align:center;
@@ -115,7 +114,6 @@ td select {
 }
 /* La page des options */
 .page_options {
-    background-color:rgba(255,255,255,0.2);
     margin:1em;
     padding:1ex 2ex;
 }
@@ -133,30 +131,44 @@ td select {
 .onglet {
     float:right;
     list-style-type: none;
-    padding-bottom: 0.5ex;
+    margin:0;
+    padding:0;
 }
 .onglet li {
-    background-color:#EBF2FA;
     float: left;
-    margin: 2px 2px 0 2px !important;
-    border: 1px solid #9EA0A1;
-    padding: 1ex;
+    display:inline;
+    padding: 41px 16px 54px;
+    font-size: 16px;
+    line-height: 16px;
+    font-weight:bold;
     cursor: pointer;
-}
-.onglet a {
-    display: block;
+    text-transform: uppercase;
+    min-width:60px;
+    text-align:center;
+    text-shadow: 1px 2px 0 #DBD4CA;
+    border-top: 3px solid transparent;
 }
 .onglet li:hover {
-    background-color:#99BFE6;
+    color:#9EB0A9;
+    text-shadow: none;
+    border-top: 3px solid #887963;
 }
-.onglet img {
-    width:4ex;
-    margin: 2px;
-    padding-left:2ex;
+header .logo {
+    float:left;
+    height:90px;
+    margin-top:3px;
 }
-.onglet_actif {
-    background-color:#99BFE6 !important;
+header .quitter {
+    float:right;
+    height:42px;
+    margin-left:28px;
+    margin-top:25px;
+}
+.onglet .actif {
     cursor: default !important;
+    background: url("img/onglet_actif.png") no-repeat scroll center top transparent;
+    color:#dbd5db;
+    text-shadow: none;
 }
 
 /* upload */
@@ -190,6 +202,6 @@ td select {
     background-color:transparent;
 }
 /* Formulaire de login */
-#login-error {
-    color:red;
+#login-message {
+    padding-top:1ex;
 }

@@ -11,7 +11,6 @@
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 * Histogrammes : chevauchement quand trop de xlabels
 * Bannissement auto si trop de tentative d'auth
-* Faut-il renouveler le cookie à chaque utilisation ?
 
 ### HTML
 * envoie de mail en masse : à tester
@@ -29,6 +28,5 @@
 * Pour chaque élève, pouvoir affecter 3 activités en 1er et 2 en Terminale, avec notations
 * Calculer la note du bac de l'élève : moyenne des 3 meilleures notes dont au moins une en terminale
 * Générer des stats transversales : moyenne par activités...
-* Authentification à distance
-** ssl !
-* Gestion de l'appel et mail des abscents pour la scolaire
+* Authentification à distance avec ssl
+* Gestion de l'appel et mail des absents pour la vie scolaire

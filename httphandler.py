@@ -43,7 +43,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             rep = self.server.db.lister('Année')
             self.repondre(rep)
             return True
+        # On vérifie que le cookie n'a pas expiré
+        now = datetime.datetime.now()
         if self.server.cookie.output(attrs='session') != '':
+            expires = datetime.datetime.strptime(self.server.cookie['session']['expires'], "%a, %d-%b-%Y %H:%M:%S PST")
+        else:
+            expires = now
+        if now < expires:
             # Fonctions à accès limité
             if params.path == '/liste':
                 rep = { 'annee': self.server.date.year, 'data': self.server.db.lire() }
@@ -92,6 +98,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 # Par défaut, on sert le fichier
                 http.server.SimpleHTTPRequestHandler.do_GET(self)
                 return True
+            self.maj_cookie()
             self.repondre(rep)
         else:
             # Autre pages (on ne sert que les fichiers)
@@ -112,10 +119,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             if mdp == self.server.mdp:
                 user = 'admin'
                 self.server.cookie['session'] = user
-                expiration = datetime.datetime.now() + datetime.timedelta(minutes=30)
-                self.server.cookie['session']['expires'] = expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
+                self.maj_cookie()
                 rep['statut'] = 0
                 rep['message'] = user
+                logging.info('Authentification de {0} depuis {1}'.format(user, self.client_address[0]))
             else:
                 rep['message'] = 'Mot de passe incorrect.'
         elif self.path == '/importation':
@@ -126,6 +133,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         #else:
         #    return True
         self.repondre(rep)
+
+    def maj_cookie(self):
+        """ On met à jour la date d'expiration du cookie """
+        expiration = datetime.datetime.now() + datetime.timedelta(minutes=10)
+        self.server.cookie['session']['expires'] = expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
 
     def repondre(self, reponse):
         """ Envoie une réponse http [sic] """

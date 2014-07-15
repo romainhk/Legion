@@ -8,6 +8,7 @@ import logging
 import configparser, codecs
 #web
 import http.server, http.cookies
+#import ssl, socket
 #lib spécifique
 import database
 import httphandler
@@ -96,6 +97,7 @@ if __name__ == "__main__":
     port=int(config.get('Général', 'port'))
     address = ("", port)
     server = Legion(address, httphandler.HttpHandler)
+    #server.socket = ssl.wrap_socket(server, certfile='cert.pem', server_side=True, cert_reqs=ssl.CERT_REQUIRED)
     thread = threading.Thread(target = server.serve_forever)
     thread.deamon = True
     logging.info('Démarrage du serveur sur le port {0}'.format(port))

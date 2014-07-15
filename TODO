@@ -10,6 +10,8 @@
 * colonne Diplômé : importation automatisée depuis ...
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 * Histogrammes : chevauchement quand trop de xlabels
+* Bannissement auto si trop de tentative d'auth
+* Faut-il renouveler le cookie à chaque utilisation ?
 
 ### HTML
 * envoie de mail en masse : à tester
@@ -22,7 +24,6 @@
 * Liste : recherche par section (filtres de classe en plus : tous les bts, toutes les secondes...)
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * Retirer le bouton quitter ! -> remplacer par une commande d'extinction
-* Au login, rediriger vars la page d'accueil + afficher login
 
 ### Extension EPS
 * Pour chaque élève, pouvoir affecter 3 activités en 1er et 2 en Terminale, avec notations

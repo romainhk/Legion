@@ -271,13 +271,17 @@ $(document).ready(function() {
             data: { mdp: $("#motdepasse").val() },
             success: function(html){
                 $("#login-message").show();
-                if(html=='reussie') {
+                statut = html['statut'];
+                message = html['message'];
+                if (statut == 0) {
                     $("#login").hide();
-                    $("#login-message").html('Bienvenue xxxx');
-                    //charger_page('accueil');
+                    $("#login-message").html('Bienvenue '+message);
+                    // Rechargement de la première page
+                    $("#onglets").children().removeClass('actif');
+                    charger_page('accueil');
                 } else {
                     // Échec de connection
-                    $("#login-message").html(html);
+                    $("#login-message").html(message);
                 }
             }
         });

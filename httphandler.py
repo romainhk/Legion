@@ -100,7 +100,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         """ Traitement des POST """
         #http://pymotw.com/2/BaseHTTPServer/
-        rep = "";
+        rep = { 'statut': 1, 'message': '' };
         form = cgi.FieldStorage(
             fp=self.rfile, 
             headers=self.headers,
@@ -110,12 +110,14 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         if self.path == '/auth':
             mdp = form.getvalue('mdp')
             if mdp == self.server.mdp:
-                self.server.cookie['session'] = 'admin'
+                user = 'admin'
+                self.server.cookie['session'] = user
                 expiration = datetime.datetime.now() + datetime.timedelta(minutes=30)
                 self.server.cookie['session']['expires'] = expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
-                rep = 'reussie'
+                rep['statut'] = 0
+                rep['message'] = user
             else:
-                rep = 'Mot de passe incorrect.'
+                rep['message'] = 'Mot de passe incorrect.'
         elif self.path == '/importation':
             data = form.getvalue('data')
             logging.info('Importation du fichier...')

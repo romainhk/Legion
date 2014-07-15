@@ -21,7 +21,8 @@
 * Liste - situation : la liste déroulante disparait !
 * Liste : recherche par section (filtres de classe en plus : tous les bts, toutes les secondes...)
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
-* Retirer le bouton quitter !
+* Retirer le bouton quitter ! -> remplacer par une commande d'extinction
+* Au login, rediriger vars la page d'accueil + afficher login
 
 ### Extension EPS
 * Pour chaque élève, pouvoir affecter 3 activités en 1er et 2 en Terminale, avec notations

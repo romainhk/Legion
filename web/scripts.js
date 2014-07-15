@@ -177,7 +177,7 @@ $.each( data['data'], function( key, value ) {
         }).fail(noauth);
     } else if (nom == 'stats') {
         page_active = 'stats';
-        $.get( "/stats", function( data ) {
+        $.get( "/stats?stat=test", function( data ) {
         }).fail(noauth);
     } else if (nom == 'pending') {
         page_active = 'pending';
@@ -274,6 +274,7 @@ $(document).ready(function() {
                 if(html=='reussie') {
                     $("#login").hide();
                     $("#login-message").html('Bienvenue xxxx');
+                    //charger_page('accueil');
                 } else {
                     // Échec de connection
                     $("#login-message").html(html);

@@ -31,21 +31,31 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         params = urlparse(self.path)
         query = parse_qs(params.query)
         rep = "";
+        # Fonctions autorisées
+        if params.path == '/init':
+            rep = {
+                'header': self.server.header,
+                'situations': self.server.situations,
+                'niveaux' : self.server.niveaux }
+            self.repondre(rep)
+            return True
+        elif params.path == '/liste-annees':
+            rep = self.server.db.lister('Année')
+            self.repondre(rep)
+            return True
         if self.server.cookie.output(attrs='session') != '':
+            # Fonctions à accès limité
             if params.path == '/liste':
                 rep = { 'annee': self.server.date.year, 'data': self.server.db.lire() }
             elif params.path == '/stats':
                 stat = query['stat'].pop()
-                annee = query['annee'].pop()
-                niveaux = query['niveaux'].pop().split(',')
+                annee = query.get('annee', ['1970']).pop()
+                niveaux = query.get('niveaux', ['0']).pop().split(',')
                 rep = self.generer_stats(stat, int(annee), niveaux)
             elif params.path == '/maj':
                 ine = query['ine'].pop()
                 champ = query['champ'].pop()
-                if 'd' in query:
-                    donnee = query['d'].pop()
-                else:
-                    donnee = ''
+                donnee = query.get('d', ['']).pop()
                 if champ == 'Situation': donnee = self.server.situations[int(donnee)]
                 rep = self.server.db.maj_champ('Élèves', ine, champ, donnee)
             elif params.path == '/maj_classe':
@@ -71,17 +81,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     self.server.db.maj_champ('Classes', classe, "Filière", fil)
             elif params.path == '/pending':
                 rep = self.server.db.lire_pending()
-            elif params.path == '/liste-annees':
-                rep = self.server.db.lister('Année')
             elif params.path == '/options':
                 rep = { 'affectations': self.server.db.lire_classes(), 
                     'niveaux': self.server.niveaux,
                     'sections': self.server.sections }
-            elif params.path == '/init':
-                rep = {
-                    'header': self.server.header,
-                    'situations': self.server.situations,
-                    'niveaux' : self.server.niveaux }
             elif params.path == '/quitter':
                 self.quitter()
                 return
@@ -91,7 +94,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 return True
             self.repondre(rep)
         else:
-            # Mode limité : on ne sert que les fichiers, pas les fonctions spéciales
+            # Autre pages (on ne sert que les fichiers)
             http.server.SimpleHTTPRequestHandler.do_GET(self)
 
     def do_POST(self):

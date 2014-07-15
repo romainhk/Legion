@@ -38,11 +38,15 @@ footer .copyleft {
 p {
     text-indent:4ex;
 }
-#Accueil {
+#accueil {
     padding:2ex 3ex;
 }
-#Accueil h2 {
+#accueil h2 {
     margin:3ex;
+}
+#noauth {
+    text-align:center;
+    font-size:1.3em;
 }
 
 /* Tableaux */

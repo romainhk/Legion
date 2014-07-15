@@ -5,6 +5,7 @@ var page_active = "";
 // Liste des pages et correspondance id-titre
 var les_pages = {
         'accueil': '',
+        'noauth': '',
         'liste': 'Liste',
         'stats': 'Stats',
         'pending': 'En<br>Attente', 
@@ -71,6 +72,14 @@ function fin_filtrage(e, filter){
             cr.removeClass('filtered').show();
         }
     });
+}
+
+/*
+ * Charge la page demandant une authentification
+ */
+function noauth() {
+    page_active = 'noauth';
+    charger_page(page_active);
 }
 
 /* 
@@ -165,9 +174,11 @@ $.each( data['data'], function( key, value ) {
             $("#vue").trigger('filterEnd'); // Mise à jour du total
             // Pliage de toutes les lignes
             if (vue_depliee) { $('button.toggle-deplier').trigger('click'); }
-        });
+        }).fail(noauth);
     } else if (nom == 'stats') {
         page_active = 'stats';
+        $.get( "/stats", function( data ) {
+        }).fail(noauth);
     } else if (nom == 'pending') {
         page_active = 'pending';
         $.get( "/pending", function( data ) {
@@ -177,7 +188,7 @@ $.each( data['data'], function( key, value ) {
             }).bind('filterEnd', fin_filtrage);
             $("#pending table").trigger('update');
             $("#pending table").trigger('filterEnd'); // Mise à jour du total
-        });
+        }).fail(noauth);
     } else if (nom == 'options') {
         page_active = 'options';
         $.get( "/options", function( data ) {
@@ -195,7 +206,7 @@ $.each( data['data'], function( key, value ) {
             $('#options table > tbody').html(tab);
             $("#options table").tablesorter().delegate('td', 'click', cell_to_select);
             $("#options table").trigger('update');
-        });
+        }).fail(noauth);
     }
     $("#"+page_active).show();
 }

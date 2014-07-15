@@ -31,68 +31,68 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         params = urlparse(self.path)
         query = parse_qs(params.query)
         rep = "";
-        try:
-            a = self.server.cookie["session"].value
-        except (http.cookies.CookieError, KeyError):
-            print("session cookie not set!")
-        if params.path == '/liste':
-            rep = { 'annee': self.server.date.year, 'data': self.server.db.lire() }
-        elif params.path == '/stats':
-            stat = query['stat'].pop()
-            annee = query['annee'].pop()
-            niveaux = query['niveaux'].pop().split(',')
-            rep = self.generer_stats(stat, int(annee), niveaux)
-        elif params.path == '/maj':
-            ine = query['ine'].pop()
-            champ = query['champ'].pop()
-            if 'd' in query:
-                donnee = query['d'].pop()
-            else:
-                donnee = ''
-            if champ == 'Situation': donnee = self.server.situations[int(donnee)]
-            rep = self.server.db.maj_champ('Élèves', ine, champ, donnee)
-        elif params.path == '/maj_classe':
-            classe = query['classe'].pop()
-            champ = query['champ'].pop()
-            # Traduction du val (qui n'est qu'un index)
-            if 'val' in query: # val peut être vide
-                if champ == 'Niveau':    les = self.server.niveaux
-                elif champ == 'Section': les = self.server.sections
-                val = query['val'].pop()
-                if val != '' and int(val) < len(les):
-                    val = les[int(val)]
-            else:
-                val = ''
-            # MAJ
-            rep = self.server.db.maj_champ('Classes', classe, champ, val)
-            # En cas de la modification d'une section, il faux modifier la filière en conséquence
-            if champ == "Section":
-                if val == '?' or val == '':
-                    fil = ''
+        if self.server.cookie.output(attrs='session') != '':
+            if params.path == '/liste':
+                rep = { 'annee': self.server.date.year, 'data': self.server.db.lire() }
+            elif params.path == '/stats':
+                stat = query['stat'].pop()
+                annee = query['annee'].pop()
+                niveaux = query['niveaux'].pop().split(',')
+                rep = self.generer_stats(stat, int(annee), niveaux)
+            elif params.path == '/maj':
+                ine = query['ine'].pop()
+                champ = query['champ'].pop()
+                if 'd' in query:
+                    donnee = query['d'].pop()
                 else:
-                    fil = self.server.section_filière[val]
-                self.server.db.maj_champ('Classes', classe, "Filière", fil)
-        elif params.path == '/pending':
-            rep = self.server.db.lire_pending()
-        elif params.path == '/liste-annees':
-            rep = self.server.db.lister('Année')
-        elif params.path == '/options':
-            rep = { 'affectations': self.server.db.lire_classes(), 
-                'niveaux': self.server.niveaux,
-                'sections': self.server.sections }
-        elif params.path == '/init':
-            rep = {
+                    donnee = ''
+                if champ == 'Situation': donnee = self.server.situations[int(donnee)]
+                rep = self.server.db.maj_champ('Élèves', ine, champ, donnee)
+            elif params.path == '/maj_classe':
+                classe = query['classe'].pop()
+                champ = query['champ'].pop()
+                # Traduction du val (qui n'est qu'un index)
+                if 'val' in query: # val peut être vide
+                    if champ == 'Niveau':    les = self.server.niveaux
+                    elif champ == 'Section': les = self.server.sections
+                    val = query['val'].pop()
+                    if val != '' and int(val) < len(les):
+                        val = les[int(val)]
+                else:
+                    val = ''
+                # MAJ
+                rep = self.server.db.maj_champ('Classes', classe, champ, val)
+                # En cas de la modification d'une section, il faux modifier la filière en conséquence
+                if champ == "Section":
+                    if val == '?' or val == '':
+                        fil = ''
+                    else:
+                        fil = self.server.section_filière[val]
+                    self.server.db.maj_champ('Classes', classe, "Filière", fil)
+            elif params.path == '/pending':
+                rep = self.server.db.lire_pending()
+            elif params.path == '/liste-annees':
+                rep = self.server.db.lister('Année')
+            elif params.path == '/options':
+                rep = { 'affectations': self.server.db.lire_classes(), 
+                    'niveaux': self.server.niveaux,
+                    'sections': self.server.sections }
+            elif params.path == '/init':
+                rep = {
                     'header': self.server.header,
                     'situations': self.server.situations,
                     'niveaux' : self.server.niveaux }
-        elif params.path == '/quitter':
-            self.quitter()
-            return
+            elif params.path == '/quitter':
+                self.quitter()
+                return
+            else:
+                # Par défaut, on sert le fichier
+                http.server.SimpleHTTPRequestHandler.do_GET(self)
+                return True
+            self.repondre(rep)
         else:
-            # Par défaut, on sert l'index 
+            # Mode limité : on ne sert que les fichiers, pas les fonctions spéciales
             http.server.SimpleHTTPRequestHandler.do_GET(self)
-            return True
-        self.repondre(rep)
 
     def do_POST(self):
         """ Traitement des POST """
@@ -107,7 +107,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         if self.path == '/auth':
             mdp = form.getvalue('mdp')
             if mdp == self.server.mdp:
-                self.server.cookie['session'] = 'ok'
+                self.server.cookie['session'] = 'admin'
                 expiration = datetime.datetime.now() + datetime.timedelta(minutes=30)
                 self.server.cookie['session']['expires'] = expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
                 rep = 'reussie'

@@ -206,8 +206,8 @@ $.each( data['data'], function( key, value ) {
                 tab += '<tr><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
             });
             $('#options table > tbody').html(tab);
-            $("#options table").tablesorter().delegate('td', 'click', cell_to_select);
-            $("#options table").trigger('update');
+            //$("#options table").tablesorter().delegate('td', 'click', cell_to_select);
+            //$("#options table").trigger('update');
         }).fail(noauth);
     }
     $("#"+page_active).show();

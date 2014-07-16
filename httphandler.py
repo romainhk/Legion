@@ -141,9 +141,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             data = form.getvalue('data')
             logging.info('Importation du fichier...')
             self.importer_xml(data)
-            rep = "L'importation s'est bien terminée."
-        #else:
-        #    return True
+            rep['statut'] = 0
+            rep['message'] = "L'importation s'est bien terminée."
         self.repondre(rep)
 
     def maj_cookie(self):

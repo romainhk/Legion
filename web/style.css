@@ -50,14 +50,40 @@ p {
 }
 
 /* Tableaux */
+table {
+    border-spacing:0;
+    border-color:#cdcdcd;
+    border-width: 1px 0 0 1px;
+}
 table > caption {
     font-style:italic;
     background-color: rgba(255, 255, 255, 0.4);
     padding: 3px;
 }
+tr:nth-child(odd) {
+    background-color: #F2F7F2;
+}
+tr:nth-child(even) {
+    background-color: #FAFCFA;
+}
+td, th {
+    padding: 4px;
+    border-width: 0 1px 1px 0;
+}
+thead {
+    /* Entête collante (FF31) */
+    position: sticky;
+    position: -webkit-sticky;
+    position: -moz-sticky;
+    position: -ms-sticky;
+    position: -o-sticky;
+    top: 4px;
+}
 th {
     text-align:center;
     text-transform: capitalize;
+    color:#fef2e9;
+    background-color:#272E27;
 }
 #stats .tablesorter {
     margin:0 auto;
@@ -198,9 +224,14 @@ header .quitter {
     background-color: rgba(255, 255, 255, 0.4);
     border-radius: 5ex;
 }
-.stats td,th {
+.stats tr {
+    background-color: transparent;
+}
+.stats td, .stats th {
     text-align:center;
     padding:0.5ex 2ex;
+    background-color: transparent;
+    color:black;
 }
 .stats select {
     background-color:transparent;

@@ -10,7 +10,7 @@
 * colonne Diplômé : importation automatisée depuis ...
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 * Histogrammes : chevauchement quand trop de xlabels
-* Bannissement auto si trop de tentative d'auth
+* Verifier qu'une session est ouverte pour un ordinateur uniquement
 
 ### HTML
 * envoie de mail en masse : à tester

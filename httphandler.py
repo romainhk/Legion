@@ -98,7 +98,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 # Par défaut, on sert le fichier
                 http.server.SimpleHTTPRequestHandler.do_GET(self)
                 return True
-            self.maj_cookie()
+            self.maj_cookie() # On renouvèle le cookie après l'utilisation d'une fonction
             self.repondre(rep)
         else:
             # Autre pages (on ne sert que les fichiers)
@@ -115,16 +115,28 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                      'CONTENT_TYPE':self.headers['Content-Type'],
                      })
         if self.path == '/auth':
-            mdp = form.getvalue('mdp')
-            if mdp == self.server.mdp:
-                user = 'admin'
-                self.server.cookie['session'] = user
-                self.maj_cookie()
-                rep['statut'] = 0
-                rep['message'] = user
-                logging.info('Authentification de {0} depuis {1}'.format(user, self.client_address[0]))
-            else:
-                rep['message'] = 'Mot de passe incorrect.'
+            now = datetime.datetime.now()
+            # On vérifie le nombre de connexions récentes ...
+            a = []
+            for at in self.server.auth_tries:
+                if now - at <= datetime.timedelta(minutes=30):
+                    a.append(at)
+            self.server.auth_tries = a
+            self.server.auth_tries.append(now)
+            if len(self.server.auth_tries) < 5: # ... s'il y en a eu trop
+                mdp = form.getvalue('mdp')
+                if mdp == self.server.mdp:
+                    user = 'admin'
+                    self.server.cookie['session'] = user
+                    self.maj_cookie()
+                    rep['statut'] = 0
+                    rep['message'] = user
+                    logging.info('Authentification de {0} depuis {1}'.format(user, self.client_address[0]))
+                else:
+                    rep['message'] = 'Mot de passe incorrect.'
+            else: # Blocage !
+                logging.warning('Trop d\'authentifications. Bloquage de {0}.'.format(self.client_address[0]))
+                return False
         elif self.path == '/importation':
             data = form.getvalue('data')
             logging.info('Importation du fichier...')
@@ -135,7 +147,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         self.repondre(rep)
 
     def maj_cookie(self):
-        """ On met à jour la date d'expiration du cookie """
+        """ Mise à jour de la date d'expiration du cookie """
         expiration = datetime.datetime.now() + datetime.timedelta(minutes=10)
         self.server.cookie['session']['expires'] = expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
 

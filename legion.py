@@ -27,6 +27,7 @@ class Legion(http.server.HTTPServer):
         os.chdir(root + os.sep + 'web') # la partie html est dans le dossier web
         if not os.path.isdir("cache"): os.makedirs('cache')
         self.cookie = http.cookies.SimpleCookie()
+        self.auth_tries = [] # Timestamp des tentatives d'authentification récentes
         # Lecture de la configuration
         self.nom_etablissement=config.get('Établissement', 'nom de l\'etablissement')
         self.mdp=config.get('Général', 'mdp')

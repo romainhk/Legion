@@ -80,6 +80,8 @@ function fin_filtrage(e, filter){
 function noauth() {
     page_active = 'noauth';
     charger_page(page_active);
+    $("#login-message").hide();
+    $("#login").show();
 }
 
 /* 
@@ -271,6 +273,7 @@ $(document).ready(function() {
             data: { mdp: $("#motdepasse").val() },
             success: function(html){
                 $("#login-message").show();
+                $("#motdepasse").val('');
                 statut = html['statut'];
                 message = html['message'];
                 if (statut == 0) {

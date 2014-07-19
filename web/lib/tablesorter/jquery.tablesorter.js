@@ -1,5 +1,5 @@
 /**!
-* TableSorter 2.17.2 - Client-side table sorting with ease!
+* TableSorter 2.17.5 - Client-side table sorting with ease!
 * @requires jQuery v1.2.6+
 *
 * Copyright (c) 2007 Christian Bach
@@ -24,7 +24,7 @@
 
 			var ts = this;
 
-			ts.version = "2.17.2";
+			ts.version = "2.17.5";
 
 			ts.parsers = [];
 			ts.widgets = [];
@@ -274,6 +274,7 @@
 					$tb = c.$table.children('tbody'),
 				parsers = c.parsers;
 				c.cache = {};
+				c.totalRows = 0;
 				// if no parsers found, return - it's an empty table.
 				if (!parsers) {
 					return c.debug ? log('Warning: *Empty table!* Not building a cache') : '';
@@ -343,6 +344,8 @@
 							cc.normalized.push(cols);
 						}
 						cc.colMax = colMax;
+						// total up rows, not including child rows
+						c.totalRows += cc.normalized.length;
 					}
 				}
 				if (c.showProcessing) {
@@ -1013,6 +1016,7 @@
 				if (!/tablesorter\-/.test($table.attr('class'))) {
 					k = (c.theme !== '' ? ' tablesorter-' + c.theme : '');
 				}
+				c.table = table;
 				c.$table = $table
 					.addClass(ts.css.table + ' ' + c.tableClass + k)
 					.attr({ role : 'grid'});
@@ -1043,6 +1047,8 @@
 				fixColumnWidth(table);
 				// try to auto detect column type, and store in tables config
 				buildParserCache(table);
+				// start total row count at zero
+				c.totalRows = 0;
 				// build the cache for the tbody cells
 				// delayInit will delay building the cache until the user starts a sort
 				if (!c.delayInit) { buildCache(table); }
@@ -1181,9 +1187,9 @@
 							return this.sortDisabled ? false : ts.isValueInArray( parseFloat($(this).attr('data-column')), c.sortList) >= 0;
 						});
 					}
-					$h.addClass(ts.css.processing + ' ' + c.cssProcessing);
+					table.add($h).addClass(ts.css.processing + ' ' + c.cssProcessing);
 				} else {
-					$h.removeClass(ts.css.processing + ' ' + c.cssProcessing);
+					table.add($h).removeClass(ts.css.processing + ' ' + c.cssProcessing);
 				}
 			};
 
@@ -1487,6 +1493,11 @@
 				ts.widgets.push(widget);
 			};
 
+			ts.hasWidget = function(table, name){
+				table = $(table);
+				return table.length && table[0].config && table[0].config.widgetInit[name] || false;
+			};
+
 			ts.getWidgetById = function(name) {
 				var i, w, l = ts.widgets.length;
 				for (i = 0; i < l; i++) {
@@ -1529,13 +1540,14 @@
 					$.each(widgets, function(i,w){
 						if (w) {
 							if (init || !(c.widgetInit[w.id])) {
+								// set init flag first to prevent calling init more than once (e.g. pager)
+								c.widgetInit[w.id] = true;
 								if (w.hasOwnProperty('options')) {
 									wo = table.config.widgetOptions = $.extend( true, {}, w.options, wo );
 								}
 								if (w.hasOwnProperty('init')) {
 									w.init(table, w, c, wo);
 								}
-								c.widgetInit[w.id] = true;
 							}
 							if (!init && w.hasOwnProperty('format')) {
 								w.format(table, c, wo, false);

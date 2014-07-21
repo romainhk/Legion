@@ -11,7 +11,6 @@
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 * Histogrammes : chevauchement quand trop de xlabels
 * Verifier qu'une session est ouverte pour un ordinateur uniquement
-* Doublement : stocker le doublement en texte dans la bdd : Oui/Non/?
 
 ### HTML
 * envoie de mail en masse : à tester

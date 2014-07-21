@@ -97,10 +97,10 @@ function charger_page(nom) {
             $('#liste-table > tbody').html( data['html'] );
             nb_eleves = data['nb eleves'];
             $('#liste-table tr').hover(function() { // On mouse over
-                tr = $(this).find('td:nth-child(6) table tr');
+                tr = $(this).nextUntil('tr:not(".st_masque")');
                 tr.removeClass('st_masque');
             }, function() { // On mouse out
-                tr = $(this).find('td:nth-child(6) table tr').slice(1);
+                tr = $(this).nextUntil('tr[id]');
                 tr.addClass('st_masque');
             });
         }).fail(noauth);

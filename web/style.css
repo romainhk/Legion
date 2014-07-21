@@ -55,20 +55,22 @@ table {
     border-color:#cdcdcd;
     border-width: 1px 0 0 1px;
     margin:0 auto;
+    width:100%;
 }
 table > caption {
     font-style:italic;
     background-color: rgba(255, 255, 255, 0.4);
     padding: 3px;
 }
-tr:nth-child(odd) {
-    background-color: #EDF5ED;
+.pai {
+    background-color: #fafcfa;
 }
-tr:nth-child(even) {
-    background-color: #FAFCFA;
+.imp {
+    background-color: #edf5ed;
 }
-tr:hover {
-    background-color: #DCE8DC;
+/*tr:hover, tbody:hover td[colspan], tr:not([id]) {*/
+tr:hover, tr:not([id]) {
+    background-color: #dce8dc !important;
 }
 td, th {
     padding: 4px 1ex;
@@ -88,7 +90,7 @@ th {
     text-align:center;
     text-transform: capitalize;
     color:#fef2e9;
-    background-color:#272E27;
+    background-color:#272e27;
 }
 #stats .tablesorter {
     margin:0 auto;

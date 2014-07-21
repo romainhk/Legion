@@ -181,29 +181,34 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         r = ''
         par = ''
         data = self.server.db.lire()
+        parite = 'pai'
         for ine,d in data.items():
             d['Mail'] = '' if d['Mail'] == '' else '<a href="mailto:{0}">@</a>'.format(d['Mail'])
             d['Genre'] = 'Homme' if d['Genre'] == 1 else 'Femme'
             d['Année'] = annee
-            d['Classe'] = d['Parcours'][annee][0]
-            d['Établissement'] = d['Parcours'][annee][1]
-            if d['Parcours'][annee][2] == 0:    d['Doublement'] = 'Non'
-            elif d['Parcours'][annee][2] == 1:  d['Doublement'] = 'Oui'
-            else:                               d['Doublement'] = '?'
             s = ''
+            # Analyse du parcours
+            parcours = collections.OrderedDict()
+            parcours_inverse = collections.OrderedDict(sorted(d['Parcours'].items(), key=lambda t: t[0], reverse=True))
+            for an,p in parcours_inverse.items():
+                classe = ''
+                if p[2] == 0:   p[2] = 'Non'
+                elif p[2] == 1: p[2] = 'Oui'
+                else:           p[2] = '?'
+                if an not in parcours.keys():
+                    parcours[an] = { 'Année': an, 'Classe': p[0], 'Établissement': p[1], 'Doublement': p[2] }
+            # Construction de la première ligne
             for h in self.server.header:
-                if h[0] == 'Année':
-                    pa = ''
-                    parcours_inverse = collections.OrderedDict(sorted(d['Parcours'].items(), key=lambda t: t[0], reverse=True))
-                    for an,p in parcours_inverse.items():
-                        classe = ''
-                        if an != annee:
-                            classe = ' class="st_masque"'
-                        pa = pa + '<tr{4}><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>\n'.format(an,p[0],p[1],p[2],classe)
-                    s = s + '<td class="soustab" colspan="4"><table>{0}</table></td>\n'.format(pa)
-                elif h[0] not in ['Classe', 'Établissement', 'Doublement']:
+                if h[0] in ['Année', 'Classe', 'Établissement', 'Doublement']:
+                    s = s + '<td>{0}</td>'.format(parcours[annee][h[0]])
+                else:
                     s = s + '<td>{0}</td>'.format(d[h[0]])
-            r = r + '<tr id="{0}">{1}</tr>\n'.format(ine, s)
+            # Construction des sous-lignes
+            for a,p in parcours.items():
+                if a != annee:
+                    s = s + '<tr class="st_masque"><td colspan="5"></td><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td colspan="4"></td></tr>\n'.format(an,p['Classe'],p['Établissement'],p['Doublement'])
+            parite = 'imp' if parite == 'pai' else 'pai'
+            r = r + '<tr id="{0}" class="{1}">{2}</tr>\n'.format(ine, parite, s)
         return { 'annee': annee, 'html': r, 'nb eleves': len(data) }
 
     def generer_stats(self, stat, annee, niveaux):

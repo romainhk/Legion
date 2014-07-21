@@ -114,7 +114,7 @@ function maj_cellule(cell) {
     var val = cell.text();
     var ine = cell.parent().attr('id');
     index_x = cell.parent().children().index(cell);
-    var champ = champs_vue[index_x];
+    var champ = champs_liste[index_x];
     params = "ine="+ine+"&champ="+champ+"&d="+val;
     $.get( "/maj?"+params, function( data ) {
         if (data == 'Oui') { cell.addClass("maj_oui"); }
@@ -127,12 +127,8 @@ function maj_cellule(cell) {
  */
 function trad_db_val(v, j) {
     if(v != undefined){
-        if (j == "Classe") { // Traduction des doublements
-            v = v.replace(/([^, ]+)\*/g, '<span class="doublement">$1</span>');
-        } else if (j == "Genre") { // Traduction de la colonne genre
+        if (j == "Genre") { // Traduction de la colonne genre
             if (v == "1") { v = "Homme"; } else if (v == "2") { v = "Femme"; }
-        } else if (j == "Mail") { // Mise en page des mails
-            if (v != "") { v = '<a href="mailto:'+v+'">@</a>'; }
         } else if (j == "Doublement") { // Traduction de la colonne doublement
             if (v == "0") { v = "Non"; } else if (v == "1") { v = "Oui"; } else { v = "?"; }
         }
@@ -235,8 +231,8 @@ function exportTableToCSV($table, filename) {
  * Mailer toutes les personnes affichée
  */
 function mailer_tous() {
-    index = $.inArray('Mail', champs_vue) + 1;
-    col_mail = $("#vue > tbody").find('td:visible:nth-child('+index+')');
+    index = $.inArray('Mail', champs_liste) + 1;
+    col_mail = $("#liste-table > tbody").children('tr').children('td:nth-child('+index+')');
     mailto = new Array();
     $.each(col_mail, function(i,j){
         val = $(j).html();

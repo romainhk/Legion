@@ -1,5 +1,5 @@
 // Champs affichés dans la vue
-var champs_vue = new Array();
+var champs_liste = new Array();
 // Page affichée
 var page_active = "";
 // Liste des pages et correspondance id-titre
@@ -65,13 +65,6 @@ function fin_filtrage(e, filter){
         t = a + ' enregistrements.';
     }
     $("#"+id).html(t);
-    // Réaffichage des childrows
-    $.each($(this).find('tr.tablesorter-childRow'), function(i, cr) {
-        cr = $(cr);
-        if (cr.prev().css('display') == 'table-row') {
-            cr.removeClass('filtered').show();
-        }
-    });
 }
 
 /*
@@ -101,81 +94,15 @@ function charger_page(nom) {
         vue_depliee = true;
         $.get( "/liste", function( data ) {
             annee = data['annee'];
-            // Construction du tableau
-var tab = $('#vue > tbody');
-tab.html( '' );
-$.each( data['data'], function( key, value ) {
-    var vals = "";
-    ine = value['INE'];
-    $.each( champs_vue, function( i, j ) {
-        if (j != 'Parcours') {
-            v = trad_db_val(value[j], j);
-            vals += '<td id="'+ine+'-'+j+'">'+v+"</td>";
-        }
-    });
-    tab.append("<tr id='"+ine+"'>"+vals+"</tr>\n");
-    var parcours = value['Parcours'];
-    // Le parcours des classes est rétrograde
-    cles = dict_key_sort(parcours, true);
-    $.each( cles, function( i, an ) {
-        var t = parcours[an];
-        var doub = trad_db_val(t[2], "Doublement");
-        if (annee == an) {
-            // Données de l'année en cours
-            $("#"+ine+'-'+'Année').html(an)
-            $("#"+ine+'-'+'Classe').html(t[0])
-            $("#"+ine+'-'+'Établissement').html(t[1])
-            $("#"+ine+'-'+'Doublement').html(doub)
-        } else {
-            // Année précédente : ajout sur une ligne dépliante
-            index = $.inArray("Année", champs_vue);
-            vals = '<td colspan="'+index+'"></td>\n';
-            vals += '<td>'+an+'</td>';
-            vals += '<td>'+t[0]+'</td>';
-            vals += '<td>'+t[1]+'</td>';
-            vals += '<td>'+doub+'</td>';
-            var taille_fin = champs_vue.length - index - 4;
-            vals += '\n<td colspan="'+taille_fin+'"></td>\n';
-            tab.append('<tr class="tablesorter-childRow">'+vals+"</tr>\n");
-            var nom = $("#"+ine+' td:first-child');
-            nom.html('<a href="#" class="toggle">'+nom.html()+'</a>');
-        }
-    });
-});
-
-            nb_eleves = Object.keys(data['data']).length;
-            index = $.inArray("Année", champs_vue);
-            // Les champs modifiables
-            var champs_editables = [
-                    $.inArray('Diplômé', champs_vue),
-                    $.inArray('Lieu', champs_vue)];
-            $("#vue").tablesorter({
-                showProcessing: true,
-                headers: {
-                    3: { sorter: false }
-                },
-                widgets: ["zebra", "filter", "cssStickyHeaders", "editable"],
-                widgetOptions: {
-                    filter_reset : '.reset',
-                    filter_childRows : true,
-                    editable_columns       : champs_editables,
-                    editable_enterToAccept : true,
-                    editable_editComplete  : 'editComplete'
-                },
-                cssChildRow: "tablesorter-childRow"
-            }).bind('filterEnd', fin_filtrage
-            ).delegate('td', 'click', cell_to_select
-            ).delegate('.toggle', 'click' ,function(){
-                $(this).closest('tr').nextUntil('tr:not(.tablesorter-childRow)').find('td').toggle();
-                $(this).closest('tr').nextUntil('tr:not(.tablesorter-childRow)').toggleClass('removeme');
-                return false;
-            }).children('tbody').on('editComplete', 'td', function(){
-                maj_cellule($(this));
+            $('#liste-table > tbody').html( data['html'] );
+            nb_eleves = data['nb eleves'];
+            $('#liste-table tr').hover(function() { // On mouse over
+                tr = $(this).find('td:nth-child(6) table tr');
+                tr.removeClass('st_masque');
+            }, function() { // On mouse out
+                tr = $(this).find('td:nth-child(6) table tr').slice(1);
+                tr.addClass('st_masque');
             });
-            $("#vue").trigger('update'); // Mise à jour des widgets
-            $("#vue").trigger('filterEnd'); // Mise à jour du total
-            // Pliage de toutes les lignes
-            if (vue_depliee) { $('button.toggle-deplier').trigger('click'); }
         }).fail(noauth);
     } else if (nom == 'stats') {
         page_active = 'stats';
@@ -306,40 +233,19 @@ $(document).ready(function() {
         });
         $.each(data['header'], function( i, j ) {
             champ = j[0];
-            champs_vue.push(champ);
+            champs_liste.push(champ);
             type = j[1];
             if (champ!="Nom" && champ!="Prénom" && champ!="Diplômé" && champ!="Lieu") {
                 filter = 'class="filter-select"';
             } else { filter = ""; }
             entete += "<th "+filter+" data-placeholder=\""+type+"\">"+champ+"</th>\n";
         });
-        $('#vue > thead').html( "<tr>"+entete+"</tr>\n" );
+        $('#liste-table > thead').html( "<tr>"+entete+"</tr>\n" );
         entete = ""
         $.each(champs_pending, function( i, j ) {
             entete += "<th>"+j+"</th>\n";
         });
         $('#pending > thead').html( "<tr>"+entete+"</tr>\n" );
-
-        // Modifier l'affichage des childrows et permet la recherche sur eux
-        $('button.toggle-deplier').click(function(){
-            if (vue_depliee){
-                $('#vue .tablesorter-childRow').find('td').hide();
-                $('#vue .tablesorter-childRow').addClass('removeme');
-            } else {
-                $('#vue .tablesorter-childRow').find('td').show();
-                $('#vue .tablesorter-childRow').removeClass('removeme');
-            }
-            //var c = $('#vue')[0].config.widgetOptions, o = !c.filter_childRows;
-            //c.filter_childRows = o;
-            // Modification du bouton
-            var text = "Replier tout";
-            if (vue_depliee) { text = "Déplier tout"; }
-            vue_depliee = !vue_depliee;
-            $(this).html(text);
-
-            $('table').trigger('search', false);
-            return false;
-        });
     });
     stats_listes();
     // Chargement de la page accueil

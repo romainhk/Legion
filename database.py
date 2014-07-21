@@ -5,6 +5,7 @@ import shutil
 import datetime
 import logging
 import os
+import collections # OrderedDict
 from liblegion import *
 
 class Database():
@@ -299,9 +300,9 @@ class Database():
         """
             Lit le contenu de la base élève
         
-        :rtype: dict
+        :rtype: OrderedDict
         """
-        data = {}
+        data = collections.OrderedDict()
         req = 'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC, Année DESC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)

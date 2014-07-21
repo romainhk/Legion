@@ -54,6 +54,7 @@ table {
     border-spacing:0;
     border-color:#cdcdcd;
     border-width: 1px 0 0 1px;
+    margin:0 auto;
 }
 table > caption {
     font-style:italic;
@@ -61,14 +62,18 @@ table > caption {
     padding: 3px;
 }
 tr:nth-child(odd) {
-    background-color: #F2F7F2;
+    background-color: #EDF5ED;
 }
 tr:nth-child(even) {
     background-color: #FAFCFA;
 }
+tr:hover {
+    background-color: #DCE8DC;
+}
 td, th {
-    padding: 4px;
+    padding: 4px 1ex;
     border-width: 0 1px 1px 0;
+    vertical-align:top;
 }
 thead {
     /* Entête collante (FF31) */
@@ -88,6 +93,20 @@ th {
 #stats .tablesorter {
     margin:0 auto;
     width:auto;
+}
+/* sous-tableaux */
+.soustab {
+    padding:0;
+}
+.st_masque {
+    display:none;
+}
+table table {
+    width:100%;
+    margin: 0 auto;
+}
+table table tr {
+    background-color:transparent !important;
 }
 /* pour les select dans un table */
 td select {

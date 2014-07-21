@@ -52,7 +52,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         if now < expires:
             # Fonctions à accès limité
             if params.path == '/liste':
-                rep = { 'annee': self.server.date.year, 'data': self.server.db.lire() }
+                rep = self.generer_liste()
             elif params.path == '/stats':
                 stat = query['stat'].pop()
                 annee = query.get('annee', ['1970']).pop()
@@ -171,6 +171,40 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         time.sleep(0.5)
         logging.info('Extinction du serveur')
         eteindre_serveur(self.server)
+
+    def generer_liste(self):
+        """ Génère les données pour la liste : annee, tableau au format html et nombre total d'élèves
+
+        :return: dict
+        """
+        annee = self.server.date.year
+        r = ''
+        par = ''
+        data = self.server.db.lire()
+        for ine,d in data.items():
+            d['Mail'] = '' if d['Mail'] == '' else '<a href="mailto:{0}">@</a>'.format(d['Mail'])
+            d['Genre'] = 'Homme' if d['Genre'] == 1 else 'Femme'
+            d['Année'] = annee
+            d['Classe'] = d['Parcours'][annee][0]
+            d['Établissement'] = d['Parcours'][annee][1]
+            if d['Parcours'][annee][2] == 0:    d['Doublement'] = 'Non'
+            elif d['Parcours'][annee][2] == 1:  d['Doublement'] = 'Oui'
+            else:                               d['Doublement'] = '?'
+            s = ''
+            for h in self.server.header:
+                if h[0] == 'Année':
+                    pa = ''
+                    parcours_inverse = collections.OrderedDict(sorted(d['Parcours'].items(), key=lambda t: t[0], reverse=True))
+                    for an,p in parcours_inverse.items():
+                        classe = ''
+                        if an != annee:
+                            classe = ' class="st_masque"'
+                        pa = pa + '<tr{4}><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>\n'.format(an,p[0],p[1],p[2],classe)
+                    s = s + '<td class="soustab" colspan="4"><table>{0}</table></td>\n'.format(pa)
+                elif h[0] not in ['Classe', 'Établissement', 'Doublement']:
+                    s = s + '<td>{0}</td>'.format(d[h[0]])
+            r = r + '<tr id="{0}">{1}</tr>\n'.format(ine, s)
+        return { 'annee': annee, 'html': r, 'nb eleves': len(data) }
 
     def generer_stats(self, stat, annee, niveaux):
         """

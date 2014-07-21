@@ -11,6 +11,7 @@
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 * Histogrammes : chevauchement quand trop de xlabels
 * Verifier qu'une session est ouverte pour un ordinateur uniquement
+* Doublement : stocker le doublement en texte dans la bdd : Oui/Non/?
 
 ### HTML
 * envoie de mail en masse : à tester
@@ -24,6 +25,8 @@
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * Retirer le bouton quitter ! -> remplacer par une commande d'extinction
 * Login : ne pas afficher le formulaire de login si déjà connecté
+* Logout
+* Liste : tri, filtre, nb_resultat/nb_eleves, edition des 3 colonnes
 
 ### Extension EPS
 * Pour chaque élève, pouvoir affecter 3 activités en 1er et 2 en Terminale, avec notations

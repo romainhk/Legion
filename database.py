@@ -110,6 +110,9 @@ class Database():
             else:
                 inc_list(self.importations, self.FAILED)
                 return self.FAILED
+        # Conversion de la date au format ISO-8601
+        n = enr['naissance'].split('/')
+        enr['naissance'] = '{0}-{1}-{2}'.format(n[2], n[1], n[0])
 
         # Ajout de l'élève
         req = 'INSERT INTO Élèves ' \
@@ -117,7 +120,7 @@ class Database():
             + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}")'.format(
                     ine,                enr['nom'],         enr['prénom'],
                     enr['naissance'],   int(enr['genre']),  enr['mail'],
-                    int(enr['entrée']), enr['Diplômé'],    enr['Situation'],
+                    int(enr['entrée']), enr['Diplômé'],     enr['Situation'],
                     enr['Lieu'])
         try:
             self.curs.execute(req)
@@ -296,30 +299,32 @@ class Database():
                 return False
         return True
 
-    def lire(self):
+    def lire(self, annee, orderby, sens='ASC'):
         """
             Lit le contenu de la base élève
         
         :rtype: OrderedDict
         """
         data = collections.OrderedDict()
-        req = 'SELECT * FROM Élèves NATURAL JOIN Affectations ORDER BY Nom,Prénom ASC, Année DESC'
+        req = 'SELECT * FROM Élèves NATURAL JOIN Affectations WHERE Année="{2}" ORDER BY {0} {1}, Nom ASC'.format(orderby, sens, annee)
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             ine = d['INE']
-            # Génération du parcours
-            annee = d.pop('Année')
-            classe = d.pop('Classe')
-            etab = d.pop('Établissement')
-            doub = d.pop('Doublement')
-            if ine in data.keys():
-                # Déjà présent : on ajoute juste une année scolaire
-                data[ine]['Parcours'][annee] = [ classe, etab, doub ]
+            # Calcul de l'âge actuel
+            d['Âge'] = nb_annees(date(d['Naissance']))
+            data[ine] = d
+        # Génération du parcours
+        req = 'SELECT INE,Année,Classe,Établissement,Doublement FROM Élèves NATURAL JOIN Affectations ORDER BY Année DESC'
+        for row in self.curs.execute(req).fetchall():
+            d = dict_from_row(row)
+            ine = d['INE']
+            an = d['Année']
+            e = [ d['Classe'], d['Établissement'], d['Doublement'] ]
+            if 'Parcours' not in data[ine].keys():
+                data[ine]['Parcours'] = { an: e }
             else:
-                d['Parcours'] = {annee: [ classe, etab, doub ]}
-                # Calcul de l'âge actuel
-                d['Âge'] = nb_annees(datefr(d['Naissance']))
-                data[ine] = d
+                # Déjà présent : on ajoute juste une année scolaire
+                data[ine]['Parcours'][an] = e
         return data
 
     def lire_affectations(self):

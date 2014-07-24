@@ -3,7 +3,7 @@ CREATE TABLE "Élèves" (
     "INE" TEXT PRIMARY KEY  NOT NULL,
     "Nom" TEXT,
     "Prénom" TEXT,
-    "Naissance" TEXT,
+    "Naissance" DATE,
     "Genre" INTEGER NOT NULL  DEFAULT (0), -- 1=homme, 2=femme
     "Mail" TEXT DEFAULT (null),
     "Entrée" INTEGER DEFAULT (null),

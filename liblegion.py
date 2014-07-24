@@ -31,13 +31,13 @@ def inc_list(liste, index):
     """
     liste[index] = liste[index] + 1
 
-def datefr(chaine):
+def date(chaine):
     """
-        Converti une date au format français en objet Date
+        Converti une date au format de la base (ISO-8601) en objet Date
     
     :rtype: datetime
     """
-    return datetime.datetime.strptime(chaine, "%d/%m/%Y")
+    return datetime.datetime.strptime(chaine, "%Y-%m-%d")
 
 def yearsago(years, from_date=None):
     """

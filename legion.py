@@ -32,7 +32,6 @@ class Legion(http.server.HTTPServer):
         self.nom_etablissement=config.get('Établissement', 'nom de l\'etablissement')
         self.mdp=config.get('Général', 'mdp')
         self.situations=sorted([x.strip(' ') for x in config.get('Établissement', 'situations').split(',')])
-        #self.niveaux=sorted([x.strip(' ') for x in config.get('Établissement', 'niveaux').split(',')])
         self.niveaux=['Seconde', 'Première', 'Terminale', '1BTS', '2BTS', 'Bac+1', 'Bac+3']
         self.filières = ['Générale', 'Technologique', 'Pro', 'Enseignement supérieur']
         self.sections = []
@@ -43,21 +42,8 @@ class Legion(http.server.HTTPServer):
                     c = b.strip(' ')
                     self.sections.append(c)
                     self.section_filière[c] = f
-        # Les colonnes qui seront affichées, dans l'ordre et avec leur contenu par défaut
-        self.header = [ ['Nom', 'A-z'], \
-                        ['Prénom', 'A-z'], \
-                        ['Âge', ''], \
-                        ['Mail', ''], \
-                        ['Genre', 'H/F'], \
-                        ['Année', 'Toutes'], \
-                        ['Classe', ''], \
-                        ['Établissement', ''], \
-                        ['Doublement', 'Oui/Non'], \
-                        ['Entrée', 'Date'], \
-                        ['Diplômé', 'A-z'], \
-                        ['Situation', 'A-z'], \
-                        ['Lieu', 'A-z'] \
-                        ]
+        # Les colonnes qui seront affichées, dans l'ordre
+        self.header = [ 'Nom', 'Prénom', 'Âge', 'Mail', 'Genre', 'Année', 'Classe', 'Établissement', 'Doublement', 'Entrée', 'Diplômé', 'Situation', 'Lieu' ]
 
         ajd = datetime.date.today()
         if ajd.month < 9:
@@ -66,6 +52,7 @@ class Legion(http.server.HTTPServer):
             self.date = debut_AS(ajd.year)
         # DB
         self.db = database.Database(root, self.nom_etablissement)
+        self.lire = None
         # Suite de couleurs utilisés pour les graphiques
         self.colors=('#0080FF', '#FF0080', '#80FF00',
                      '#8000FF', '#FF8000', '#00FF80',

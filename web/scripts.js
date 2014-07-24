@@ -77,6 +77,29 @@ function noauth() {
     $("#login").show();
 }
 
+/*
+ * Mise à jour d'un tableau triable
+ */
+function maj_sortable(parametre) {
+    $.get( "/liste"+parametre, function( data ) {
+        annee = data['annee'];
+        $('#liste-table > tbody').html( data['html'] );
+        nb_eleves = data['nb eleves'];
+        $('#liste-table tr').hover(function() { // On mouse over
+            tr = $(this).nextUntil('tr:not(".sousligne")');
+            tr.removeClass('sousligne');
+        }, function() { // On mouse out
+            tr = $(this).nextUntil('tr[id]');
+            tr.addClass('sousligne');
+        });
+        // Remplacement des adresses mails
+        $('#liste-table tr[id] td:nth-child(4)').each(function(i,j) {
+            v = $(j).html();
+            if (v != "") { $(j).html('<a href="mailto:'+v+'">@</a>'); }
+        });
+    }).fail(noauth);
+}
+
 /* 
  * Le switch de page
  */
@@ -92,18 +115,7 @@ function charger_page(nom) {
     else if (nom == 'liste') {
         page_active = 'liste';
         vue_depliee = true;
-        $.get( "/liste", function( data ) {
-            annee = data['annee'];
-            $('#liste-table > tbody').html( data['html'] );
-            nb_eleves = data['nb eleves'];
-            $('#liste-table tr').hover(function() { // On mouse over
-                tr = $(this).nextUntil('tr:not(".st_masque")');
-                tr.removeClass('st_masque');
-            }, function() { // On mouse out
-                tr = $(this).nextUntil('tr[id]');
-                tr.addClass('st_masque');
-            });
-        }).fail(noauth);
+        maj_sortable('');
     } else if (nom == 'stats') {
         page_active = 'stats';
         $.get( "/stats?stat=test", function( data ) {
@@ -133,8 +145,8 @@ function charger_page(nom) {
                 tab += '<tr><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
             });
             $('#options table > tbody').html(tab);
-            //$("#options table").tablesorter().delegate('td', 'click', cell_to_select);
-            //$("#options table").trigger('update');
+            $("#options table").tablesorter().delegate('td', 'click', cell_to_select);
+            $("#options table").trigger('update');
         }).fail(noauth);
     }
     $("#"+page_active).show();
@@ -232,15 +244,29 @@ $(document).ready(function() {
             $("#stats-options td").last().before('<td><input type="checkbox"'+checked+' value="'+i+'" /></td>');
         });
         $.each(data['header'], function( i, j ) {
-            champ = j[0];
-            champs_liste.push(champ);
-            type = j[1];
-            if (champ!="Nom" && champ!="Prénom" && champ!="Diplômé" && champ!="Lieu") {
-                filter = 'class="filter-select"';
-            } else { filter = ""; }
-            entete += "<th "+filter+" data-placeholder=\""+type+"\">"+champ+"</th>\n";
+            champs_liste.push(j);
+            entete += '<th>'+j+"</th>\n";
         });
         $('#liste-table > thead').html( "<tr>"+entete+"</tr>\n" );
+        $("#liste-table th").click(function(event) {
+            // Tri des colonnes
+            target = $(event.target);
+            col = target.html();
+            classe = target.attr('class');
+            $('#liste-table th').removeClass('sortable_trie').removeClass('sortable_retrie');
+            if (classe == 'sortable_trie') {
+                sens = 'DESC';
+                target.addClass('sortable_retrie');
+            } else if (classe == 'sortable_retrie' || classe == undefined) {
+                sens = 'ASC';
+                target.addClass('sortable_trie');
+            } else { return false; }
+            params = "?sens="+sens+"&col="+col;
+            maj_sortable(params);
+            /* $.get( "/liste?"+params, function( data ) {
+                $('#liste-table > tbody').html( data['html'] );
+            });*/
+        });
         entete = ""
         $.each(champs_pending, function( i, j ) {
             entete += "<th>"+j+"</th>\n";

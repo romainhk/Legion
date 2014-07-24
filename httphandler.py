@@ -52,7 +52,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         if now < expires:
             # Fonctions à accès limité
             if params.path == '/liste':
-                rep = self.generer_liste()
+                annee = query.get('annee', [self.server.date.year]).pop()
+                orderby = query.get('col', ['Nom,Prénom']).pop()
+                if orderby == 'Âge': orderby = 'Naissance'
+                sens = query.get('sens', ['ASC']).pop().upper()
+                rep = self.generer_liste(annee, orderby, sens)
             elif params.path == '/stats':
                 stat = query['stat'].pop()
                 annee = query.get('annee', ['1970']).pop()
@@ -172,18 +176,24 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         logging.info('Extinction du serveur')
         eteindre_serveur(self.server)
 
-    def generer_liste(self):
+    def generer_liste(self, annee, orderby, sens):
         """ Génère les données pour la liste : annee, tableau au format html et nombre total d'élèves
 
         :return: dict
         """
-        annee = self.server.date.year
+        if sens == 'ASC':
+            data = self.server.db.lire(annee, orderby, sens)
+            self.server.lire = data
+        elif sens == 'DESC':
+            # On inverse simplement la recherche précédente ; gain de temps de ~30 %
+            ordre = list(self.server.lire.keys())[::-1]
+            c = collections.OrderedDict.fromkeys(ordre)
+            for a in ordre:
+                c[a] = self.server.lire[a]
+            data = c
         r = ''
-        par = ''
-        data = self.server.db.lire()
-        parite = 'pai'
+        parite = ''
         for ine,d in data.items():
-            d['Mail'] = '' if d['Mail'] == '' else '<a href="mailto:{0}">@</a>'.format(d['Mail'])
             d['Genre'] = 'Homme' if d['Genre'] == 1 else 'Femme'
             d['Année'] = annee
             s = ''
@@ -191,23 +201,25 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             parcours = collections.OrderedDict()
             parcours_inverse = collections.OrderedDict(sorted(d['Parcours'].items(), key=lambda t: t[0], reverse=True))
             for an,p in parcours_inverse.items():
-                classe = ''
                 if p[2] == 0:   p[2] = 'Non'
                 elif p[2] == 1: p[2] = 'Oui'
                 else:           p[2] = '?'
                 if an not in parcours.keys():
                     parcours[an] = { 'Année': an, 'Classe': p[0], 'Établissement': p[1], 'Doublement': p[2] }
+            d['Classe'] = parcours[annee]['Classe']
+            d['Établissement'] = parcours[annee]['Établissement']
+            d['Doublement'] = parcours[annee]['Doublement']
             # Construction de la première ligne
             for h in self.server.header:
-                if h[0] in ['Année', 'Classe', 'Établissement', 'Doublement']:
-                    s = s + '<td>{0}</td>'.format(parcours[annee][h[0]])
+                if h in ['Année', 'Classe', 'Établissement', 'Doublement']:
+                    s = s + '<td>{0}</td>'.format(parcours[annee][h])
                 else:
-                    s = s + '<td>{0}</td>'.format(d[h[0]])
-            # Construction des sous-lignes
+                    s = s + '<td>{0}</td>'.format(d[h])
+            # Construction des lignes / sous-lignes
             for a,p in parcours.items():
                 if a != annee:
-                    s = s + '<tr class="st_masque"><td colspan="5"></td><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td colspan="4"></td></tr>\n'.format(an,p['Classe'],p['Établissement'],p['Doublement'])
-            parite = 'imp' if parite == 'pai' else 'pai'
+                    s = s + '<tr class="sousligne"><td colspan="5"></td><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td colspan="4"></td></tr>\n'.format(an,p['Classe'],p['Établissement'],p['Doublement'])
+            parite = 'paire' if parite == 'impaire' else 'impaire'
             r = r + '<tr id="{0}" class="{1}">{2}</tr>\n'.format(ine, parite, s)
         return { 'annee': annee, 'html': r, 'nb eleves': len(data) }
 

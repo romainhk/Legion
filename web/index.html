@@ -33,18 +33,16 @@
         </div>
     </header>
     <div style="clear:both;"></div>
-    <div id="accueil">
-    </div>
-    <div id="noauth">L'authentification est nécessaire pour accéder à cette fonction.
-    </div>
+    <div id="accueil"></div>
+    <div id="noauth">L'authentification est nécessaire pour accéder à cette fonction.</div>
     <div id="liste">
         <div style="width:100%;">
             <h3 style="display: inline-block;">Base des élèves</h3>
             <button style="margin-left:7ex;" class="mailer" type="button" onClick="mailer_tous()">Mailer tous</button>
-            <!--<button class="reset">Vider filtres</button>-->
+            <!--Recherche : <input type="text" name="filter" value="" id="filter" />-->
             <span id="totalListe" class="total"></span>
         </div>
-        <table id="liste-table" border="1">
+        <table id="liste-table" class="sortable" border="1">
             <thead></thead>
             <tbody></tbody>
         </table>

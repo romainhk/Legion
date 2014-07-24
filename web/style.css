@@ -62,23 +62,13 @@ table > caption {
     background-color: rgba(255, 255, 255, 0.4);
     padding: 3px;
 }
-.pai {
-    background-color: #fafcfa;
-}
-.imp {
-    background-color: #edf5ed;
-}
-/*tr:hover, tbody:hover td[colspan], tr:not([id]) {*/
-tr:hover, tr:not([id]) {
-    background-color: #dce8dc !important;
-}
 td, th {
     padding: 4px 1ex;
     border-width: 0 1px 1px 0;
     vertical-align:top;
 }
 thead {
-    /* Entête collante (FF31) */
+    /* Entête collante (FF32) */
     position: sticky;
     position: -webkit-sticky;
     position: -moz-sticky;
@@ -92,23 +82,43 @@ th {
     color:#fef2e9;
     background-color:#272e27;
 }
-#stats .tablesorter {
+/* tableau : zebra */
+.paire {
+    background-color: #fafcfa;
+}
+.impaire {
+    background-color: #edf5ed;
+}
+/* tableau triable */
+table.sortable tr:hover, table.sortable tr:not([id]) td:not([colspan]) {
+    background-color: #dce8dc !important;
+}
+table.sortable th {
+    cursor: pointer;
+}
+th.sortable_trie, th.sortable_retrie  {
+    background-color: #666666;
+}
+table.sortable th:hover {
+    background-color: #666666;
+    text-decoration: underline;    
+}
+table.sortable th.sortable_trie:after { 
+    content: " \25BE";
+}
+table.sortable th.sortable_retrie:after { 
+    content: " \25B4";
+}
+table.sortable th:not(.sortable_trie):not(.sortable_retrie):not(.non_sortable):after { 
+    content: " \25B4\25BE";
+}
+#stats .tablesorter, #stats-recherche {
     margin:0 auto;
     width:auto;
 }
-/* sous-tableaux */
-.soustab {
-    padding:0;
-}
-.st_masque {
+/* sous-ligne de liste-table */
+.sousligne {
     display:none;
-}
-table table {
-    width:100%;
-    margin: 0 auto;
-}
-table table tr {
-    background-color:transparent !important;
 }
 /* pour les select dans un table */
 td select {

@@ -26,6 +26,8 @@
 * Login : ne pas afficher le formulaire de login si déjà connecté
 * Logout
 * Liste : tri, filtre, nb_resultat/nb_eleves, edition des 3 colonnes
+* Liste : limiter aux élèves de l'année en cours (mettre une année de référence ?)
+* Importation : maintient de la session après importation
 
 ### Extension EPS
 * Pour chaque élève, pouvoir affecter 3 activités en 1er et 2 en Terminale, avec notations

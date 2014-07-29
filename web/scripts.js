@@ -143,7 +143,7 @@ function charger_page(nom) {
     } else if (nom == 'pending') {
         page_active = 'pending';
         $.get( "/pending", function( data ) {
-            $('#pending table > tbody').html( list_to_tab_simple(data, champs_pending) );
+            $('#pending-table > tbody').html( list_to_tab_simple(data, champs_pending) );
             maj_total($('#pending'));
         }).fail(noauth);
     } else if (nom == 'options') {
@@ -162,8 +162,8 @@ function charger_page(nom) {
                 if (parite == 'impaire') {parite='paire';} else {parite='impaire';}
                 tab += '<tr class="'+parite+'"><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
             });
-            $('#options table > tbody').html(tab);
-            $("#options table td").click(cell_to_select);
+            $('#options-table > tbody').html(tab);
+            $("#options-table td").click(cell_to_select);
         }).fail(noauth);
     }
     $("#"+page_active).show();
@@ -260,7 +260,7 @@ $(document).ready(function() {
         $.each(champs_pending, function( i, j ) {
             entete += "<th>"+j+"</th>\n";
         });
-        $('#pending > thead').html( "<tr>"+entete+"</tr>\n" );
+        $('#pending-table > thead').html( "<tr>"+entete+"</tr>\n" );
         // Tri des colonnes
         $("#liste-table th").click(function(event) {
             target = $(event.target);

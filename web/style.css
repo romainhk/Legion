@@ -49,13 +49,13 @@ p {
 }
 
 /* Tableaux */
+table, td, th { border: 1px solid #cdcdcd; }
 table {
     border-spacing:0;
-    border-color:#cdcdcd;
     border-width: 1px 0 0 1px;
     margin:0 auto;
 }
-#liste-table, #pending {
+#liste-table, #pending-table {
     width:100%;
 }
 table > caption {
@@ -89,10 +89,10 @@ table td[contenteditable=true]:focus {
     resize: none;
 }
 /* tableau : zebra */
-.paire, #pending tr:nth-child(even), #stats > div tr:nth-child(even) {
+.paire, #pending-table tr:nth-child(even), #stats > div tr:nth-child(even) {
     background-color: #fafcfa;
 }
-.impaire, #pending tr:nth-child(odd), #stats > div tr:nth-child(odd) {
+.impaire, #pending-table tr:nth-child(odd), #stats > div tr:nth-child(odd) {
     background-color: #edf5ed;
 }
 /* tableau triable */
@@ -151,6 +151,7 @@ td select {
     border:1px dotted black;
     padding:0.8ex 1ex;
 }
+#stats-recherche td, #stats-recherche th { border: 0; }
 /* boutons d'action : copier -exporter */
 .action {
     background-color:rgba(153,191,230,0.3);

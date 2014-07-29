@@ -213,6 +213,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             for h in self.server.header:
                 if h in ['Année', 'Classe', 'Établissement', 'Doublement']:
                     s = s + '<td>{0}</td>'.format(parcours[annee][h])
+                elif h in ['Diplômé', 'Lieu']:
+                    s = s + '<td contenteditable="true">{0}</td>'.format(d[h])
                 else:
                     s = s + '<td>{0}</td>'.format(d[h])
             # Construction des lignes / sous-lignes

@@ -107,7 +107,7 @@ function stats_recherche() {
 }
 
 /*
- * Mise à jour d'un des champs autorisé
+ * Mise à jour d'un des champs autorisés
  */
 function maj_cellule(cell) {
     var val = cell.text();

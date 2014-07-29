@@ -96,7 +96,27 @@ function maj_sortable(parametre) {
             v = $(j).html();
             if (v != "") { $(j).html('<a href="mailto:'+v+'">@</a>'); }
         });
+        // Colonnes éditables
         $("#liste-table td:nth-child(12)").click(cell_to_select);
+        $('#liste-table td[contenteditable]').on('keydown', function (event) {
+            // http://css-tricks.com/snippets/javascript/saving-contenteditable-content-changes-as-json-with-ajax/
+        var esc = event.which == 27,
+            nl = event.which == 13,
+            el = event.target,
+            input = el.nodeName != 'INPUT' && el.nodeName != 'TEXTAREA',
+            data = {};
+        if (input) {
+            if (esc) { // Annulation
+                document.execCommand('undo');
+                el.blur();
+            } else if (nl) {
+                data[el.getAttribute('data-name')] = el.innerHTML;
+                maj_cellule($(el));
+                el.blur();
+                event.preventDefault();
+            }
+        }
+        });
         maj_total($('#liste-table'));
     }).fail(noauth);
 }

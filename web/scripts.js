@@ -124,13 +124,6 @@ function charger_page(nom) {
         page_active = 'pending';
         $.get( "/pending", function( data ) {
             $('#pending table > tbody').html( list_to_tab_simple(data, champs_pending) );
-            /*
-            $("#pending table").tablesorter({
-                sortList: [ [1,0] ]
-            });
-            $("#pending table").trigger('update');
-            $("#pending table").trigger('filterEnd'); // Mise à jour du total
-            */
             maj_total($('#pending'));
         }).fail(noauth);
     } else if (nom == 'options') {
@@ -159,17 +152,7 @@ function charger_page(nom) {
 $(document).ready(function() {
     $("#progress").hide();
 
-    // Paramétrage général de tablesorter
-    $.tablesorter.defaults.sortList = [ [0,0] ];
-    $.tablesorter.defaults.widgets = ["zebra", "cssStickyHeaders"];
-    $.tablesorter.defaults.widgetOptions.cssStickyHeaders_offset = 4;
-    $.tablesorter.defaults.theme = 'blue';
     var tables_stats = ['Général', 'Parniveau', 'Parsection', 'Provenance', 'Provenanceclasse', 'Tauxdepassage'];
-    /*
-    $.each(tables_stats, function(i,j) {
-        $("#stats-"+j+" table").tablesorter();
-    });*/
-
     // Création du lien d'exportation
     $("#export").on('click', function (event) {
         exportTableToCSV.apply(this, [$('#'+page_active), 'export_'+page_active+'.csv']);
@@ -297,3 +280,4 @@ $(document).ready(function() {
     // Chargement de la page accueil
     charger_page('accueil');
 });
+

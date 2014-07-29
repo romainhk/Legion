@@ -181,7 +181,7 @@ function list_to_tab(cell, list) {
  * FROM http://jsfiddle.net/terryyounghk/KPEGU/
  */
 function exportTableToCSV($table, filename) {
-    var $rows = $table.find('tr:visible:has(td,th):not(".tablesorter-filter-row"):not(".removeme")'),
+    var $rows = $table.find('tr:visible:has(td,th):not(".removeme")'),
 
     // Temporary delimiter characters unlikely to be typed by keyboard
     // This is to avoid accidentally splitting the actual contents

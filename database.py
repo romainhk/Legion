@@ -359,13 +359,13 @@ class Database():
         """
             Lit le contenu de la base des élèves en pending
         
-        :rtype: dict
+        :rtype: OrderedDict
         """
-        data = {}
+        data = collections.OrderedDict()
         req = 'SELECT rowid,* FROM Pending ORDER BY Nom,Prénom ASC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
-            key = d['rowid']
+            key = '{0}-{1}'.format(d['Nom'], d['rowid'])
             data[key] = d
         return data
 

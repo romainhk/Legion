@@ -110,13 +110,13 @@ table.sortable th:hover {
     text-decoration: underline;    
 }
 table.sortable th.sortable_trie:after { 
-    content: " \25BE";
+    content: "\00A0\25BE";
 }
 table.sortable th.sortable_retrie:after { 
-    content: " \25B4";
+    content: "\00A0\25B4";
 }
 table.sortable th:not(.sortable_trie):not(.sortable_retrie):not(.non_sortable):after { 
-    content: " \25B4\25BE";
+    content: "\00A0\25B4\25BE";
 }
 #stats table.sortable {
     margin:0 auto 1ex;

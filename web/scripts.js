@@ -80,6 +80,7 @@ function noauth() {
  * Mise à jour d'un tableau triable
  */
 function maj_sortable(parametre) {
+    $('#liste-table').css('opacity', '0.3');
     $.get( "/liste"+parametre, function( data ) {
         annee = data['annee'];
         $('#liste-table > tbody').html( data['html'] );
@@ -95,6 +96,11 @@ function maj_sortable(parametre) {
         $('#liste-table tr[id] td:nth-child(4)').each(function(i,j) {
             v = $(j).html();
             if (v != "") { $(j).html('<a href="mailto:'+v+'">@</a>'); }
+        });
+        // Remplacement des années scolaires
+        $('#liste-table tr[id] td:nth-child(6), #liste-table tr.sousligne td:nth-child(2)').each(function(i,j) {
+            v = $(j).html();
+            if (v != "") { $(j).html(v+'-'+(parseInt(v)+1)); }
         });
         // Colonnes éditables
         $("#liste-table td:nth-child(12)").click(cell_to_select);
@@ -117,6 +123,7 @@ function maj_sortable(parametre) {
             }
         }
         });
+        $('#liste-table').css('opacity', '1');
         maj_total($('#liste-table'));
     }).fail(noauth);
 }

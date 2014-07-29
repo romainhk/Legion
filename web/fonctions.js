@@ -98,7 +98,6 @@ function stats_recherche() {
         } else {
             console.log("Stat inconnue");
         }
-        $(id+' table').tablesorter();
         $(id).show();
         $(id+' .graph').html('');
         $.each(data['graph'], function(i, g) {
@@ -256,7 +255,7 @@ function cell_to_select(e) {
     // S'il n'y a pas encore de select et si le click vient d'une cellule
     if (s.length == 0 && c['x']) {
         valeurs = null;
-        col = cell.parentsUntil('table').parent().find("th:nth-child("+(c['x']+1)+") div").html();
+        col = cell.parentsUntil('table').parent().find("th:nth-child("+(c['x']+1)+")").html();
         if (col == "Niveau") { valeurs = niveaux; }
         else if (col == "Filière") { valeurs = filières; }
         else if (col == "Section") { valeurs = sections; }
@@ -294,3 +293,15 @@ function cell_to_select(e) {
         }
     }
 }
+
+/*
+ * Ajoute un delay à une action
+ */
+var delay = (function(){
+    var timer = 0;
+    return function(callback, ms){
+        clearTimeout (timer);
+        timer = setTimeout(callback, ms);
+    };
+})();
+

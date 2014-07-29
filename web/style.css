@@ -33,7 +33,6 @@ footer .copyleft {
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
     display: inline-block;
-    margin-top:1ex;
 }
 p {
     text-indent:4ex;
@@ -55,6 +54,8 @@ table {
     border-color:#cdcdcd;
     border-width: 1px 0 0 1px;
     margin:0 auto;
+}
+#liste-table, #pending {
     width:100%;
 }
 table > caption {
@@ -83,10 +84,10 @@ th {
     background-color:#272e27;
 }
 /* tableau : zebra */
-.paire {
+.paire, #pending tr:nth-child(even), #stats > div tr:nth-child(even) {
     background-color: #fafcfa;
 }
-.impaire {
+.impaire, #pending tr:nth-child(odd), #stats > div tr:nth-child(odd) {
     background-color: #edf5ed;
 }
 /* tableau triable */
@@ -112,11 +113,11 @@ table.sortable th.sortable_retrie:after {
 table.sortable th:not(.sortable_trie):not(.sortable_retrie):not(.non_sortable):after { 
     content: " \25B4\25BE";
 }
-#stats .tablesorter, #stats-recherche {
-    margin:0 auto;
+#stats table.sortable {
+    margin:0 auto 1ex;
     width:auto;
 }
-/* sous-ligne de liste-table */
+/* les sous-lignes de liste-table sont masquées par défaut */
 .sousligne {
     display:none;
 }
@@ -178,6 +179,9 @@ td select {
     margin:1em;
     padding:1ex 2ex;
 }
+.page_options table {
+    min-width:300px;
+}
 /* La ligne qui indique le nombre total d'élèves affichés (onglets Liste et Pending) */
 .total {
     float: right;
@@ -204,7 +208,7 @@ td select {
     font-weight:bold;
     cursor: pointer;
     text-transform: uppercase;
-    min-width:60px;
+    min-width:70px;
     text-align:center;
     text-shadow: 1px 2px 0 #DBD4CA;
     border-top: 3px solid transparent;
@@ -231,13 +235,11 @@ header .quitter {
     color:#dbd5db;
     text-shadow: none;
 }
-
 /* upload */
 #progress {
     margin-left:3ex;
     vertical-align:middle;
 }
-
 /* tablesorter : editable */
 .tablesorter tbody > tr > td[contenteditable=true]:focus {
   outline: #08f 1px solid;
@@ -250,7 +252,7 @@ header .quitter {
     width: auto;
 }
 .stats {
-    margin: 1ex auto;
+    margin: 1ex auto 2ex;
     padding: 2ex;
     background-color: rgba(255, 255, 255, 0.4);
     border-radius: 5ex;
@@ -270,4 +272,8 @@ header .quitter {
 /* Formulaire de login */
 #login-message {
     padding-top:1ex;
+}
+/* bouton "Mailer tous" */
+.mailer {
+    margin-right:3ex;
 }

@@ -51,11 +51,10 @@ function stats_listes() {
 }
 
 /*
- * Mises à jour après une recherche
+ * Mises à jour du total (après une recherche)
  */
-function fin_filtrage(e, filter){
-    // MAJ du total de résultat
-    var a = $(this).find('tr:visible:not(".tablesorter-childRow"):not(".tablesorter-filter-row")').length - 1; // - le header
+function maj_total(tableau){
+    var a = tableau.find('tr:visible:not("sousligne")').length - 1; // - le header
     var id = '';
     if (page_active == 'liste') {
         id = 'totalListe';
@@ -97,6 +96,8 @@ function maj_sortable(parametre) {
             v = $(j).html();
             if (v != "") { $(j).html('<a href="mailto:'+v+'">@</a>'); }
         });
+        $("#liste-table td:nth-child(12)").click(cell_to_select);
+        maj_total($('#liste-table'));
     }).fail(noauth);
 }
 
@@ -111,8 +112,7 @@ function charger_page(nom) {
         $.get( "/accueil.html", function( data ) {
             $("#accueil").html(data);
         });
-    }
-    else if (nom == 'liste') {
+    } else if (nom == 'liste') {
         page_active = 'liste';
         vue_depliee = true;
         maj_sortable('');
@@ -124,11 +124,14 @@ function charger_page(nom) {
         page_active = 'pending';
         $.get( "/pending", function( data ) {
             $('#pending table > tbody').html( list_to_tab_simple(data, champs_pending) );
+            /*
             $("#pending table").tablesorter({
                 sortList: [ [1,0] ]
-            }).bind('filterEnd', fin_filtrage);
+            });
             $("#pending table").trigger('update');
             $("#pending table").trigger('filterEnd'); // Mise à jour du total
+            */
+            maj_total($('#pending'));
         }).fail(noauth);
     } else if (nom == 'options') {
         page_active = 'options';
@@ -138,15 +141,16 @@ function charger_page(nom) {
             sections = data['sections'];
             var affectations = data['affectations'];
             var tab = '';
+            var parite = 'paire';
             $.each(affectations, function(i, j) {
                 var c = j['Classe'];
                 var n = j['Niveau'];
                 var s = j['Section'];
-                tab += '<tr><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
+                if (parite == 'impaire') {parite='paire';} else {parite='impaire';}
+                tab += '<tr class="'+parite+'"><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
             });
             $('#options table > tbody').html(tab);
-            $("#options table").tablesorter().delegate('td', 'click', cell_to_select);
-            $("#options table").trigger('update');
+            $("#options table td").click(cell_to_select);
         }).fail(noauth);
     }
     $("#"+page_active).show();
@@ -161,9 +165,10 @@ $(document).ready(function() {
     $.tablesorter.defaults.widgetOptions.cssStickyHeaders_offset = 4;
     $.tablesorter.defaults.theme = 'blue';
     var tables_stats = ['Général', 'Parniveau', 'Parsection', 'Provenance', 'Provenanceclasse', 'Tauxdepassage'];
+    /*
     $.each(tables_stats, function(i,j) {
         $("#stats-"+j+" table").tablesorter();
-    });
+    });*/
 
     // Création du lien d'exportation
     $("#export").on('click', function (event) {
@@ -232,8 +237,6 @@ $(document).ready(function() {
 
     // Initialisation de l'application
     $.get( "/init", function( data ) {
-        var entete = "";
-        var filtre = "";
         situations = data['situations'];
         niveaux = data['niveaux'];
         $('#stats-recherche th').css({'text-transform':'none'});
@@ -243,13 +246,20 @@ $(document).ready(function() {
             if (i < 3) { checked = ' checked="checked"'; } else { checked = ''; }
             $("#stats-options td").last().before('<td><input type="checkbox"'+checked+' value="'+i+'" /></td>');
         });
+        // Init des entêtes
+        var entete = "";
         $.each(data['header'], function( i, j ) {
             champs_liste.push(j);
             entete += '<th>'+j+"</th>\n";
         });
         $('#liste-table > thead').html( "<tr>"+entete+"</tr>\n" );
+        entete = ""
+        $.each(champs_pending, function( i, j ) {
+            entete += "<th>"+j+"</th>\n";
+        });
+        $('#pending > thead').html( "<tr>"+entete+"</tr>\n" );
+        // Tri des colonnes
         $("#liste-table th").click(function(event) {
-            // Tri des colonnes
             target = $(event.target);
             col = target.html();
             classe = target.attr('class');
@@ -263,15 +273,25 @@ $(document).ready(function() {
             } else { return false; }
             params = "?sens="+sens+"&col="+col;
             maj_sortable(params);
-            /* $.get( "/liste?"+params, function( data ) {
-                $('#liste-table > tbody').html( data['html'] );
-            });*/
         });
-        entete = ""
-        $.each(champs_pending, function( i, j ) {
-            entete += "<th>"+j+"</th>\n";
+        // Fonction de filtrage de la liste
+        $("#filtre").keypress(function (event) {
+            delay(function(){
+                var data = event.target.value.toLowerCase();
+                $("#liste-table > tbody > tr[id]").show();
+                $("#liste-table > tbody > tr[id]").filter(function (i, v) {
+                    trouve = false;
+                    $(this).find('td').each(function (i,j) {
+                        if (j.innerHTML.toLowerCase().indexOf(data) >= 0) {
+                            trouve = true;
+                            return false;
+                        }
+                    });
+                    return !trouve; // on cache quand on a pas trouvé
+                }).hide();
+                maj_total($('#liste-table'));
+            }, 500 );
         });
-        $('#pending > thead').html( "<tr>"+entete+"</tr>\n" );
     });
     stats_listes();
     // Chargement de la page accueil

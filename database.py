@@ -345,9 +345,9 @@ class Database():
         """
             Lit le contenu de la table classes
         
-        :rtype: dict
+        :rtype: OrderedDict
         """
-        data = {}
+        data = collections.OrderedDict()
         req = 'SELECT * FROM Classes ORDER BY Classe ASC'
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)

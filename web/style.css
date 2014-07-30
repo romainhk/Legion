@@ -1,5 +1,5 @@
 body {
-    padding:0 1ex;
+    padding:0 1ex 0.4ex;
     background: #fee5bc;
     background: linear-gradient(90deg, #fef2e9 0%,#fee5bc 100%);
     margin:0;
@@ -147,11 +147,25 @@ td select {
     margin-left:9ex;
 }
 /* Zone de recherche (onglet Statistiques) */
-.recherche {
-    border:1px dotted black;
-    padding:0.8ex 1ex;
+.stats {
+    margin: 1ex auto 2ex;
+    padding: 2ex;
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 5ex;
+}
+.stats tr {
+    background-color: transparent;
+}
+.stats td, .stats th {
+    text-align:center;
+    padding:0.5ex 2ex;
+    background-color: transparent;
+    color:black;
 }
 #stats-recherche td, #stats-recherche th { border: 0; }
+.stats select {
+    background-color:transparent;
+}
 /* boutons d'action : copier -exporter */
 .action {
     background-color:rgba(153,191,230,0.3);
@@ -241,29 +255,7 @@ header .quitter {
     margin-left:3ex;
     vertical-align:middle;
 }
-/* champs de recherche pour les statistiques */
-#Statistiques table {
-    margin:2ex auto 0;
-    width: auto;
-}
-.stats {
-    margin: 1ex auto 2ex;
-    padding: 2ex;
-    background-color: rgba(255, 255, 255, 0.4);
-    border-radius: 5ex;
-}
-.stats tr {
-    background-color: transparent;
-}
-.stats td, .stats th {
-    text-align:center;
-    padding:0.5ex 2ex;
-    background-color: transparent;
-    color:black;
-}
-.stats select {
-    background-color:transparent;
-}
+
 /* Formulaire de login */
 #login-message {
     padding-top:1ex;

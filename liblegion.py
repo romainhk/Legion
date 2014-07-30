@@ -81,19 +81,6 @@ def en_pourcentage(nombre):
     """
     return str( round(100*nombre,1) ) + ' %'
 
-def filtrer_dict(dictionnaire, clef, valeur):
-    """
-        Filtre les éléments d'un dictionnaire de dictionnaires, dont la sous-valeur "clef" vaut "valeur"
-    
-    :example: { {clef: valeur, clef2: xxx}, {clef: autre_valeur, clef2: yyy} }
-    :rtype: dict
-    """
-    premier_element = next (iter (dictionnaire.values()))
-    if clef in premier_element:
-        return dict((k, v) for k, v in dictionnaire.items() if v[clef]==valeur)
-    else:
-        return dictionnaire
-
 def generer_nom_fichier(prefix, extension='png'):
     """
         Génère aléatoirement un nom de fichier

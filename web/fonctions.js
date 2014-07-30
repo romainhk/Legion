@@ -121,20 +121,6 @@ function maj_cellule(cell) {
     });
 }
 
-/*
- * Traduction des données de la base en quelque chose de plus lisible
- */
-function trad_db_val(v, j) {
-    if(v != undefined){
-        if (j == "Genre") { // Traduction de la colonne genre
-            if (v == "1") { v = "Homme"; } else if (v == "2") { v = "Femme"; }
-        } else if (j == "Doublement") { // Traduction de la colonne doublement
-            if (v == "0") { v = "Non"; } else if (v == "1") { v = "Oui"; } else { v = "?"; }
-        }
-    } else { v= ''; }
-    return v;
-}
-
 /* 
  * Convertir une liste en lignes de tableau (tr)
  */
@@ -144,7 +130,14 @@ function list_to_tab_simple(liste, champs) {
         var vals = "";
         ine = value['INE'];
         $.each( champs, function( i, j ) {
-            v = trad_db_val(value[j], j);
+            v = value[j];
+            if(v != undefined){
+                if (j == "Genre") { // Traduction de la colonne genre
+                    if (v == "1") { v = "Homme"; } else if (v == "2") { v = "Femme"; }
+                } else if (j == "Doublement") { // Traduction de la colonne doublement
+                    if (v == "0") { v = "Non"; } else if (v == "1") { v = "Oui"; } else { v = "?"; }
+                }
+            } else { v= ''; }
             vals += "<td>"+v+"</td>";
         });
         lignes += "<tr id='"+ine+"'>"+vals+"</tr>\n";
@@ -160,8 +153,9 @@ function list_to_tab(cell, list) {
     // Pour l'en-tête
     cell.find('thead').remove();
     var thead = $('<thead>').appendTo(cell);
+    var entete = $('<tr>').appendTo(thead);
     $.each( list['ordre'], function( key, value ) {
-        thead.append('<th data-sort="'+value[1]+'">'+value[0]+'</th>');
+        entete.append('<th data-sort="'+value[1]+'">'+value[0]+'</th>');
     });
     // Pour les données
     cell.find('tbody').remove();

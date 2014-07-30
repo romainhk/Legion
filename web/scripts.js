@@ -14,8 +14,6 @@ var les_pages = {
 var nb_eleves = 0;
 // Champs du pending (tous)
 var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Genre", "Mail", "Entrée", "Classe", "Établissement", "Doublement", "Raison" ];
-// Indique si les sous-cellules (childrows) sont visibles ou non
-var vue_depliee = true;
 // Liste des situations possibles
 var situations = new Array();
 // Les niveaux, filières et sections reconnues
@@ -141,7 +139,6 @@ function charger_page(nom) {
         });
     } else if (nom == 'liste') {
         page_active = 'liste';
-        vue_depliee = true;
         maj_sortable('');
     } else if (nom == 'stats') {
         page_active = 'stats';
@@ -159,10 +156,9 @@ function charger_page(nom) {
             niveaux = data['niveaux'];
             filières = data['filières'];
             sections = data['sections'];
-            var affectations = data['affectations'];
             var tab = '';
             var parite = 'paire';
-            $.each(affectations, function(i, j) {
+            $.each(data['affectations'], function(i, j) {
                 var c = j['Classe'];
                 var n = j['Niveau'];
                 var s = j['Section'];

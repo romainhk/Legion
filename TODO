@@ -14,8 +14,6 @@
 
 ### HTML
 * envoie de mail en masse : à tester
-* filtre colonne année, doublement et étab : ne fonctionne que pour l'année en cours
-* les colonnes editables ne le sont plus après un changement d'onglet
 * Ajouter des tutoriels sur l'importation (quand les faire ?...)
 ** importation de la base
 * Liste - situation : la liste déroulante disparait !

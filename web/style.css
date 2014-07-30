@@ -96,26 +96,26 @@ table td[contenteditable=true]:focus {
     background-color: #edf5ed;
 }
 /* tableau triable */
-table.sortable tr:hover, table.sortable tr:not([id]) td:not([colspan]) {
+table.sortable tr:hover, #liste-table tr:not([id]) td:not([colspan]) {
     background-color: #dce8dc !important;
 }
 table.sortable th {
     cursor: pointer;
 }
-th.sortable_trie, th.sortable_retrie  {
+th.sorting-asc, th.sorting-desc  {
     background-color: #666666;
 }
 table.sortable th:hover {
     background-color: #666666;
     text-decoration: underline;    
 }
-table.sortable th.sortable_trie:after { 
+table.sortable th.sorting-desc:after { 
     content: "\00A0\25BE";
 }
-table.sortable th.sortable_retrie:after { 
+table.sortable th.sorting-asc:after { 
     content: "\00A0\25B4";
 }
-table.sortable th:not(.sortable_trie):not(.sortable_retrie):not(.non_sortable):after { 
+table.sortable th:not(.sorting-asc):not(.sorting-desc):not(.non_sortable):after { 
     content: "\00A0\25B4\25BE";
 }
 #stats table.sortable {

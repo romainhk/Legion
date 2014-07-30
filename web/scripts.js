@@ -265,24 +265,29 @@ $(document).ready(function() {
         $('#liste-table > thead').html( "<tr>"+entete+"</tr>\n" );
         entete = ""
         $.each(champs_pending, function( i, j ) {
-            entete += "<th>"+j+"</th>\n";
+            entete += '<th data-sort="string">'+j+"</th>\n";
         });
         $('#pending-table > thead').html( "<tr>"+entete+"</tr>\n" );
         // Tri des colonnes
-        $("#liste-table th").click(function(event) {
+        $(".sortable th").click(function(event) {
             target = $(event.target);
-            col = target.html();
-            classe = target.attr('class');
-            $('#liste-table th').removeClass('sortable_trie').removeClass('sortable_retrie');
-            if (classe == 'sortable_trie') {
-                sens = 'DESC';
-                target.addClass('sortable_retrie');
-            } else if (classe == 'sortable_retrie' || classe == undefined) {
-                sens = 'ASC';
-                target.addClass('sortable_trie');
-            } else { return false; }
-            params = "?sens="+sens+"&col="+col;
-            maj_sortable(params);
+            table = target.parentsUntil('div').last();
+            if (table.attr('id') == 'liste-table') {
+                // Tri par le serveur
+                classe = target.attr('class');
+                target.removeClass('sorting-desc').removeClass('sorting-asc');
+                if (classe == 'sorting-desc') {
+                    sens = 'DESC';
+                    target.addClass('sorting-asc');
+                } else if (classe == 'sorting-asc' || classe == undefined) {
+                    sens = 'ASC';
+                    target.addClass('sorting-desc');
+                } else { return false; }
+                col = target.html();
+                params = "?sens="+sens+"&col="+col;
+                maj_sortable(params);
+            } else { // Tri local
+            }
         });
         // Fonction de filtrage de la liste
         $("#filtre").keypress(function (event) {
@@ -302,6 +307,7 @@ $(document).ready(function() {
                 maj_total($('#liste-table'));
             }, 500 );
         });
+        $('.sortable').stupidtable();
     });
     stats_listes();
     // Chargement de la page accueil

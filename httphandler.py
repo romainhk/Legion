@@ -237,7 +237,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         :type niveaux: array(str)
 
         :return: dict(  'data'  : [ les données à afficher ],
-                        'ordre' : [ ordre d'affichage des colonnes ] }
+                        'ordre' : [ (ordre d'affichage des colonnes, type de donnees) ] }
 
         - pour l'établissement
             - effectif total
@@ -286,7 +286,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 rep['graph'].append( self.generer_tarte(
                     { 'Homme': prop_homme, 'Femme': 100-prop_homme }, 'Parité' ) )
         elif stat == 'Par niveau':
-            rep['ordre'] = ['niveau', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
+            rep['ordre'] = [('niveau','string'),
+                            ('effectif','int'),
+                            ('poids','float'),
+                            ('homme','float'),
+                            ('doublant','float'),
+                            ('nouveau','float'),
+                            ('issue de pro','float')]
             rep['data'] = []
             tarte = collections.OrderedDict.fromkeys(les_niveaux)
             histo = collections.OrderedDict.fromkeys(les_niveaux)
@@ -316,7 +322,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             rep['graph'].append(self.generer_tarte( tarte, 'Répartition des effectifs' ))
             rep['graph'].append(self.generer_histo( histo, 'Nombre de nouveaux élèves/doublants par niveau' ))
         elif stat == 'Par section':
-            rep['ordre'] = ['section', 'effectif', 'poids', 'homme', 'doublant', 'nouveau', 'issue de pro']
+            rep['ordre'] = [('section','string'),
+                            ('effectif','int'),
+                            ('poids','float'),
+                            ('homme','float'),
+                            ('doublant','float'),
+                            ('nouveau','float'),
+                            ('issue de pro','float')]
             rep['data'] = []
             tarte = collections.OrderedDict.fromkeys(les_niveaux)
             histo = collections.OrderedDict.fromkeys(les_niveaux)
@@ -347,13 +359,20 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             rep['graph'].append(self.generer_tarte( tarte, 'Répartition des effectifs' ))
             rep['graph'].append(self.generer_histo( histo, 'Nombre de nouveaux élèves/doublants par section' ))
         elif stat == 'Provenance':
-            rep['ordre'] = ['Établissement', 'total', 'en seconde']
+            rep['ordre'] = [('Établissement','string'),
+                            ('total','int'),
+                            ('en seconde','int')]
             rep['data'] = self.server.db.stats('provenance', annee, les_niveaux)
         elif stat == 'Provenance (classe)':
-            rep['ordre'] = ['classe', 'provenance', 'Établissement', 'total']
+            rep['ordre'] = [('classe', 'string'),
+                            ('provenance','string'),
+                            ('Établissement','string'),
+                            ('total','int')]
             rep['data'] = self.server.db.stats('provenance classe', annee, les_niveaux)
         elif stat == 'Taux de passage':
-            rep['ordre'] = ['section', 'passage', 'taux']
+            rep['ordre'] = [('section','string'),
+                            ('passage','string'),
+                            ('taux','float')]
             rep['data'] = []
             passage = self.server.db.stats('taux de passage', annee, les_niveaux)
             for sect in self.server.sections:

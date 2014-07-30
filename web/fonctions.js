@@ -161,7 +161,7 @@ function list_to_tab(cell, list) {
     cell.find('thead').remove();
     var thead = $('<thead>').appendTo(cell);
     $.each( list['ordre'], function( key, value ) {
-        thead.append('<th>'+value+'</th>');
+        thead.append('<th data-sort="'+value[1]+'">'+value[0]+'</th>');
     });
     // Pour les données
     cell.find('tbody').remove();
@@ -169,7 +169,7 @@ function list_to_tab(cell, list) {
     $.each( list['data'], function( key, value ) {
         vals = "";
         $.each( list['ordre'], function( i, j ) {
-            vals += "<td>"+value[j]+"</td>";
+            vals += "<td>"+value[j[0]]+"</td>";
         });
         tbody.append('<tr>'+vals+'</tr>');
     });

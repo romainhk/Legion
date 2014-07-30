@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="style_impression.css" media="print">
     <script type="text/javascript" src="lib/jquery.js"></script>
+    <script type="text/javascript" src="lib/stupidtable.js"></script>
     <script type="text/javascript" src="fonctions.js"></script>
     <script type="text/javascript" src="scripts.js"></script>
     <link rel="icon" href="img/favicon.png" sizes="64x64" type="image/png">
@@ -60,7 +61,7 @@
         </table>
  
         <div id="stats-Général">
-            <table>
+            <table class="sortable">
                 <caption>Pour l'établissement</caption>
                 <thead></thead>
                 <tbody></tbody>
@@ -68,7 +69,7 @@
             <div class="graph"></div>
         </div>
         <div id="stats-Parniveau">
-            <table>
+            <table class="sortable">
                 <caption>Par niveau - filière</caption>
             </table>
             <div class="graph"></div>
@@ -92,7 +93,7 @@
             </div>
         </div>
         <div id="stats-Parsection">
-            <table>
+            <table class="sortable">
                 <caption>Par section</caption>
             </table>
             <div class="graph"></div>
@@ -117,7 +118,7 @@
  
         </div>
         <div id="stats-Provenance">
-            <table>
+            <table class="sortable">
                 <caption>Établissement d'origine des élèves</caption>
             </table>
             <div class='legende'>
@@ -132,7 +133,7 @@
             </div>
         </div>
         <div id="stats-Provenanceclasse">
-            <table>
+            <table class="sortable">
                 <caption>Établissement d'origine, trié par classe</caption>
             </table>
             <div class='legende'>
@@ -151,7 +152,7 @@
             </div>
         </div>
         <div id="stats-Tauxdepassage">
-            <table>
+            <table class="sortable">
                 <caption>Taux de passage</caption>
             </table>
             <div class='legende'>
@@ -174,7 +175,7 @@
             <span id="totalPending" class="total"></span>
         </div>
         <p>Cette liste répertorie les élèves qui n'ont pas été incorporés à la base suite à la dernière importation par manque d'informations vitales.</p><p>Ces élèves nécessitent certainement une modification dans la BEE ; connecter vous sur le portail PAGRIATES pour pouvoir les mettre à jour. Ils disparaitront à la prochaine importation.</p>
-        <table id="pending-table">
+        <table id="pending-table" class="sortable">
             <thead></thead>
             <tbody></tbody>
         </table>

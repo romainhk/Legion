@@ -19,7 +19,6 @@
 * Liste - situation : la liste déroulante disparait !
 * Liste : recherche par section (filtres de classe en plus : tous les bts, toutes les secondes...)
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
-* Retirer le bouton quitter ! -> remplacer par une commande d'extinction
 * Login : ne pas afficher le formulaire de login si déjà connecté
 * Logout
 * Liste : limiter aux élèves de l'année en cours (mettre une année de référence ?)

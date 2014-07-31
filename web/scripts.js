@@ -6,6 +6,7 @@ var page_active = "";
 var les_pages = {
         'accueil': '',
         'noauth': '',
+        'quitter': '',
         'liste': 'Liste',
         'stats': 'Stats',
         'pending': 'En<br>Attente', 
@@ -137,6 +138,11 @@ function charger_page(nom) {
         $.get( "/accueil.html", function( data ) {
             $("#accueil").html(data);
         });
+    } else if (nom == 'quitter') {
+        page_active = 'quitter';
+        $.get( "/quitter", function( data ) {
+            $('#quitter').html(data);
+        });
     } else if (nom == 'liste') {
         page_active = 'liste';
         maj_sortable('');
@@ -206,11 +212,7 @@ $(document).ready(function() {
     }).mouseout(function(event) {
         $(this).attr("src", 'img/quitter.png');
     }).on('click', function (event) {
-        $.get( "/quitter", function( data ) {
-            var msg = $('<div>').append(data);
-            msg.addClass('msg_quitter');
-            $('#'+page_active).replaceWith( msg );
-        });
+        charger_page('quitter');
     });
     // Formulaire de login
     $("#login-message").hide();

@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
-import time
 import logging
 #import statistics
 import numpy
@@ -16,7 +15,6 @@ import cgi, http.cookies
 from liblegion import *
 #graphiques
 from pylab import *
-import os
 import numpy as np
 
 class HttpHandler(http.server.SimpleHTTPRequestHandler):
@@ -96,7 +94,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     'niveaux': self.server.niveaux,
                     'sections': self.server.sections }
             elif params.path == '/quitter':
-                self.quitter()
+                logging.info('Déconnection du client')
+                self.server.cookie['session']['expires']='Thu, 01-Jan-1970 00:00:00 PST'
+                rep = 'Vous pouvez éteindre votre navigateur et reprendre une activité normale.'
+                self.repondre(rep)
                 return
             else:
                 # Par défaut, on sert le fichier
@@ -161,20 +162,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(bytes(json.dumps(reponse), 'UTF-8'))
         self.wfile.flush()
-
-    def quitter(self):
-        """ Éteint le programme proprement """
-        rep = 'Vous pouvez éteindre votre navigateur et reprendre une activité normale.'
-        self.repondre(rep)
-        self.server.db.fermer()
-        # Suppression des fichiers de cache
-        for root, dirs, filenames in os.walk('cache'):
-            for f in filenames:
-                os.remove(os.path.join(root, f))
-        # Coupure du serveur web
-        time.sleep(0.5)
-        logging.info('Extinction du serveur')
-        eteindre_serveur(self.server)
 
     def generer_liste(self, annee, orderby, sens):
         """ Génère les données pour la liste : annee, tableau au format html et nombre total d'élèves

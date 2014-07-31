@@ -6,12 +6,12 @@ import time
 import datetime
 import logging
 import configparser, codecs
+import database
+import signal
 #web
 import http.server, http.cookies
-#import ssl, socket
-#lib spécifique
-import database
 import httphandler
+#import ssl, socket
 from liblegion import *
 
 class Legion(http.server.HTTPServer):
@@ -62,6 +62,22 @@ class Legion(http.server.HTTPServer):
         """ Seter sur la date (date d'importation) """
         self.date = date
 
+    def quitter(self):
+        """ Éteint le programme proprement """
+        self.db.fermer()
+        # Suppression des fichiers de cache
+        for root, dirs, filenames in os.walk('cache'):
+            for f in filenames:
+                os.remove(os.path.join(root, f))
+        # Coupure du serveur web
+        time.sleep(0.5)
+        logging.info('Extinction du serveur')
+        eteindre_serveur(self)
+
+def term(signal, frame):
+    """ Lance l'extinction """
+    server.quitter()
+
 if __name__ == "__main__":
     # Logging
     logger = logging.getLogger()
@@ -91,3 +107,6 @@ if __name__ == "__main__":
     logging.info('Démarrage du serveur sur le port {0}'.format(port))
     time.sleep(0.2)
     thread.start()
+    # Interception des signaux d'extinction (2 et 15)
+    signal.signal(signal.SIGINT, term)
+    signal.signal(signal.SIGTERM, term)

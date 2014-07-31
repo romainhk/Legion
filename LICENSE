@@ -1,7 +1,6 @@
 Le code source est sous licence GPLv3 (se reporter au fichier LICENSE_GPL).
 
-La librairie jquery est sous licence MIT.
-La librairie tablesorter est sous double licence MIT et GPL.
+Les librairies jquery et stupidtable sont sous licence MIT.
 
 Les images sont sous copyright.
 ( Notamment onglet_actif.png : http://www.script-tutorials.com/css3-green-marble-menu/ )

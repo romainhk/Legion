@@ -41,11 +41,15 @@ function stats_listes() {
     // Choix de l'année
     $.get( "/liste-annees", function( data ) {
         var options = "";
+        var options_ascolaire = "";
         $.each(data, function( i, an ) {
             options += "<option>"+an+"</option>\n";
+            options_ascolaire += '<option value="'+an+'">'+an+'-'+(an+1)+"</option>\n";
         });
         $('#stats-annee').html( options );
         $('#stats-annee option:last').attr("selected","selected");
+        $('#liste-annee').html( options_ascolaire );
+        $('#liste-annee option:last').attr("selected","selected");
     });
 }
 
@@ -78,9 +82,11 @@ function noauth() {
 /*
  * Mise à jour d'un tableau triable
  */
-function maj_sortable(parametre) {
+function maj_sortable(sens, col) {
     $('#liste-table').css('opacity', '0.3');
-    $.get( "/liste"+parametre, function( data ) {
+    var annee = $('#liste-annee option:selected').val();
+    parametres = '?annee='+annee+'&sens='+sens+'&col='+col;
+    $.get( "/liste"+parametres, function( data ) {
         annee = data['annee'];
         $('#liste-table > tbody').html( data['html'] );
         nb_eleves = data['nb eleves'];
@@ -145,7 +151,7 @@ function charger_page(nom) {
         });
     } else if (nom == 'liste') {
         page_active = 'liste';
-        maj_sortable('');
+        maj_sortable('', '');
     } else if (nom == 'stats') {
         page_active = 'stats';
         $.get( "/stats?stat=test", function( data ) {
@@ -282,8 +288,7 @@ $(document).ready(function() {
                     target.addClass('sorting-desc');
                 } else { return false; }
                 col = target.html();
-                params = "?sens="+sens+"&col="+col;
-                maj_sortable(params);
+                maj_sortable(sens, col);
             } else { // Tri local
             }
         });
@@ -306,6 +311,10 @@ $(document).ready(function() {
             }, 500 );
         });
         $('.sortable').stupidtable();
+    });
+    $('#liste-annee').on('change', function(i,j) {
+        $('#liste table th').removeClass('sorting-desc').removeClass('sorting-asc');
+        charger_page('liste');
     });
     stats_listes();
     // Chargement de la page accueil

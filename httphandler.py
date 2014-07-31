@@ -50,10 +50,12 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         if now < expires:
             # Fonctions à accès limité
             if params.path == '/liste':
-                annee = query.get('annee', [self.server.date.year]).pop()
+                annee = int(query.get('annee', ['{0}'.format(self.server.date.year)]).pop())
                 orderby = query.get('col', ['Nom,Prénom']).pop()
+                if orderby == '': orderby = 'Nom,Prénom'
                 if orderby == 'Âge': orderby = 'Naissance'
                 sens = query.get('sens', ['ASC']).pop().upper()
+                if sens == '': sens = 'ASC'
                 rep = self.generer_liste(annee, orderby, sens)
             elif params.path == '/stats':
                 stat = query['stat'].pop()

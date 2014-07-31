@@ -314,7 +314,7 @@ class Database():
             d['Âge'] = nb_annees(date(d['Naissance']))
             data[ine] = d
         # Génération du parcours
-        req = 'SELECT INE,Année,Classe,Établissement,Doublement FROM Élèves NATURAL JOIN Affectations ORDER BY Année DESC'
+        req = 'SELECT INE,Année,Classe,Établissement,Doublement FROM Élèves NATURAL JOIN Affectations WHERE Année<="{0}" ORDER BY Année DESC'.format(annee)
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             ine = d['INE']

@@ -21,8 +21,8 @@
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * Login : ne pas afficher le formulaire de login si déjà connecté
 * Logout
-* Liste : limiter aux élèves de l'année en cours (mettre une année de référence ?)
 * Importation : maintient de la session après importation
+* Liste : tri de la colonne Naissance
 
 ### Extension EPS
 * Pour chaque élève, pouvoir affecter 3 activités en 1er et 2 en Terminale, avec notations

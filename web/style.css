@@ -89,10 +89,10 @@ table td[contenteditable=true]:focus {
     resize: none;
 }
 /* tableau : zebra */
-.paire, #pending-table tr:nth-child(even), #stats > div tr:nth-child(even) {
+.paire, #pending-table tr:nth-child(even), #stats > div tr:nth-child(even), #eps-table tr:nth-child(even) {
     background-color: #fafcfa;
 }
-.impaire, #pending-table tr:nth-child(odd), #stats > div tr:nth-child(odd) {
+.impaire, #pending-table tr:nth-child(odd), #stats > div tr:nth-child(odd), #eps-table tr:nth-child(odd) {
     background-color: #edf5ed;
 }
 /* tableau triable */

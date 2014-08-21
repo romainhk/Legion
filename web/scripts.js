@@ -159,12 +159,10 @@ function charger_page(nom) {
             // Liste des notes
             if (liste != '') {
                 $('#eps-table > tbody').html( list_to_tab_simple(liste, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','BAC']) );
-                $("#eps-table td").click(cell_to_select);
+                $("#eps-table > tbody td").click(cell_to_select);
             }
-            $('#eps-table > tbody td:nth-child(3)').attr('contenteditable','true');
-            $('#eps-table > tbody td:nth-child(5)').attr('contenteditable','true');
-            $('#eps-table > tbody td:nth-child(7)').attr('contenteditable','true');
-            $('#eps-table > tbody td:nth-child(9)').attr('contenteditable','true');
+            $('#eps-table > tbody td:nth-child(3), #eps-table > tbody td:nth-child(5)').attr('contenteditable','true');
+            $('#eps-table > tbody td:nth-child(7), #eps-table > tbody td:nth-child(9)').attr('contenteditable','true');
             $('#eps-table > tbody td:nth-child(11)').attr('contenteditable','true');
             $('#eps-table td[contenteditable]').on('keydown', maj_cellule);
         }).fail(noauth);

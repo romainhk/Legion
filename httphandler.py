@@ -75,6 +75,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     donnee = self.server.eps_activites[int(donnee)]
                     table = 'EPS'
                 elif champ_can == 'Note':
+                    donnee = donnee.replace(',', '.') # virgule anglo-saxone
+                    note = float(donnee)
+                    if note > 20.0 or note < 0.0:
+                        self.repondre('Non')
+                        return
                     table = 'EPS'
                 rep = self.server.db.maj_champ(table, ine, champ, donnee)
             elif params.path == '/maj_classe':

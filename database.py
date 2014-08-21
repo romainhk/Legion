@@ -324,7 +324,7 @@ class Database():
             terminal = []
             for i in range(1,6):
                 index = 'Note {0}'.format(i)
-                if d[index] is not None:
+                if d[index] is not None and d[index] >= 0:
                     if i < 3:   premiere.append(d[index])
                     else:       terminal.append(d[index])
             if len(terminal) == 0: d['BAC'] = 'Manque note terminal'

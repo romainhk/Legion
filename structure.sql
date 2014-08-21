@@ -47,14 +47,14 @@ CREATE TABLE "EPS" (
     "INE" TEXT,
     "Année" INTEGER,
     "Activité 1" TEXT DEFAULT (''),
-    "Note 1" REAL DEFAULT (0.0),
+    "Note 1" REAL DEFAULT (-1.0), -- 0 >= note >= 20 ; -1 = exempt
     "Activité 2" TEXT DEFAULT (''),
-    "Note 2" REAL DEFAULT (0.0),
+    "Note 2" REAL DEFAULT (-1.0),
     "Activité 3" TEXT DEFAULT (''),
-    "Note 3" REAL DEFAULT (0.0),
+    "Note 3" REAL DEFAULT (-1.0),
     "Activité 4" TEXT DEFAULT (''),
-    "Note 4" REAL DEFAULT (0.0),
+    "Note 4" REAL DEFAULT (-1.0),
     "Activité 5" TEXT DEFAULT (''),
-    "Note 5" REAL DEFAULT (0.0),
+    "Note 5" REAL DEFAULT (-1.0),
     PRIMARY KEY(INE,Année)
 );

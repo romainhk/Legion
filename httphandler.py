@@ -68,10 +68,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 champ = query['champ'].pop()
                 donnee = query.get('d', ['']).pop()
                 table = 'Élèves'
-                if champ == 'Situation':
+                champ_can = champ.split(' ')[0] # Champ canonique = que la première partie
+                if champ_can == 'Situation':
                     donnee = self.server.situations[int(donnee)]
-                elif champ == 'Activité 1' or champ == 'Activité 2' or champ == 'Activité 3' or champ == 'Activité 4' or champ == 'Activité 5':
+                elif champ_can == 'Activité':
                     donnee = self.server.eps_activites[int(donnee)]
+                    table = 'EPS'
+                elif champ_can == 'Note':
                     table = 'EPS'
                 rep = self.server.db.maj_champ(table, ine, champ, donnee)
             elif params.path == '/maj_classe':

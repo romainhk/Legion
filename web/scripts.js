@@ -114,25 +114,7 @@ function maj_sortable(sens, col) {
         });
         // Colonnes éditables
         $("#liste-table td:nth-child(12)").click(cell_to_select);
-        $('#liste-table td[contenteditable]').on('keydown', function (event) {
-            // http://css-tricks.com/snippets/javascript/saving-contenteditable-content-changes-as-json-with-ajax/
-        var esc = event.which == 27,
-            nl = event.which == 13,
-            el = event.target,
-            input = el.nodeName != 'INPUT' && el.nodeName != 'TEXTAREA',
-            data = {};
-        if (input) {
-            if (esc) { // Annulation
-                document.execCommand('undo');
-                el.blur();
-            } else if (nl) {
-                data[el.getAttribute('data-name')] = el.innerHTML;
-                maj_cellule($(el));
-                el.blur();
-                event.preventDefault();
-            }
-        }
-        });
+        $('#liste-table td[contenteditable]').on('keydown', maj_cellule);
         $('#liste-table').css('opacity', '1');
         maj_total($('#liste-table'));
     }).fail(noauth);
@@ -179,6 +161,12 @@ function charger_page(nom) {
                 $('#eps-table > tbody').html( list_to_tab_simple(liste, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','BAC']) );
                 $("#eps-table td").click(cell_to_select);
             }
+            $('#eps-table > tbody td:nth-child(3)').attr('contenteditable','true');
+            $('#eps-table > tbody td:nth-child(5)').attr('contenteditable','true');
+            $('#eps-table > tbody td:nth-child(7)').attr('contenteditable','true');
+            $('#eps-table > tbody td:nth-child(9)').attr('contenteditable','true');
+            $('#eps-table > tbody td:nth-child(11)').attr('contenteditable','true');
+            $('#eps-table td[contenteditable]').on('keydown', maj_cellule);
         }).fail(noauth);
     } else if (nom == 'pending') {
         page_active = 'pending';

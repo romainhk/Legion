@@ -109,16 +109,36 @@ function stats_recherche() {
 /*
  * Mise à jour d'un des champs autorisés
  */
-function maj_cellule(cell) {
-    var val = cell.text();
-    var ine = cell.parent().attr('id');
-    index_x = cell.parent().children().index(cell);
-    var champ = champs_liste[index_x];
-    params = "ine="+ine+"&champ="+champ+"&d="+val;
-    $.get( "/maj?"+params, function( data ) {
-        if (data == 'Oui') { cell.addClass("maj_oui"); }
-        else if (data == 'Non') { cell.addClass("maj_non"); }
-    });
+function maj_cellule(event) {
+    // http://css-tricks.com/snippets/javascript/saving-contenteditable-content-changes-as-json-with-ajax/
+    var esc = event.which == 27,
+        nl = event.which == 13,
+        el = event.target,
+        input = el.nodeName != 'INPUT' && el.nodeName != 'TEXTAREA',
+        data = {};
+    if (input) {
+        if (esc) { // Annulation
+            document.execCommand('undo');
+            el.blur();
+        } else if (nl) {
+            data[el.getAttribute('data-name')] = el.innerHTML;
+            cell = $(el);
+            var val = cell.text();
+            var ine = cell.parent().attr('id');
+            if (page_active == 'eps') {
+                var champ = $('#eps-table').find('th').eq(cell.index()).html();
+            } else {
+                var champ = champs_liste[cell.index()];
+            }
+            params = "ine="+ine+"&champ="+champ+"&d="+val;
+            $.get( "/maj?"+params, function( data ) {
+                if (data == 'Oui') { cell.addClass("maj_oui"); }
+                else if (data == 'Non') { cell.addClass("maj_non"); }
+            });
+            el.blur();
+            event.preventDefault();
+        }
+    }
 }
 
 /* 

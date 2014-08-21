@@ -34,7 +34,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             rep = {
                 'header': self.server.header,
                 'situations': self.server.situations,
-                'niveaux' : self.server.niveaux }
+                'niveaux' : self.server.niveaux,
+                'activités' : self.server.eps_activites }
             self.repondre(rep)
             return True
         elif params.path == '/liste-annees':
@@ -66,8 +67,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 ine = query['ine'].pop()
                 champ = query['champ'].pop()
                 donnee = query.get('d', ['']).pop()
-                if champ == 'Situation': donnee = self.server.situations[int(donnee)]
-                rep = self.server.db.maj_champ('Élèves', ine, champ, donnee)
+                table = 'Élèves'
+                if champ == 'Situation':
+                    donnee = self.server.situations[int(donnee)]
+                elif champ == 'Activité 1' or champ == 'Activité 2' or champ == 'Activité 3' or champ == 'Activité 4' or champ == 'Activité 5':
+                    donnee = self.server.eps_activites[int(donnee)]
+                    table = 'EPS'
+                rep = self.server.db.maj_champ(table, ine, champ, donnee)
             elif params.path == '/maj_classe':
                 classe = query['classe'].pop()
                 champ = query['champ'].pop()
@@ -89,6 +95,12 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     else:
                         fil = self.server.section_filière[val]
                     self.server.db.maj_champ('Classes', classe, "Filière", fil)
+            elif params.path == '/eps':
+                classe = query.get('classe', ['']).pop()
+                if classe == '': eps = '' # Pas de classe, pas de chocolat
+                else: eps = self.server.db.lire_eps(self.server.date.year, classe)
+                rep = { 'classes': self.server.db.lire_classes(),
+                        'liste': eps }
             elif params.path == '/pending':
                 rep = self.server.db.lire_pending()
             elif params.path == '/options':

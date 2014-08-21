@@ -9,6 +9,7 @@ var les_pages = {
         'quitter': '',
         'liste': 'Liste',
         'stats': 'Stats',
+        'eps': 'EPS',
         'pending': 'En<br>Attente', 
         'options': 'Options' };
 // Total d'élèves dans la base
@@ -21,6 +22,10 @@ var situations = new Array();
 var niveaux = new Array();
 var filières = new Array();
 var sections = new Array();
+// Liste des activités possibles (EPS)
+var activités = new Array();
+// La classe sur la page EPS
+var eps_classe = '';
 // Les statistiques disponibles
 var les_stats = ['Général', 'Par niveau', 'Par section', 'Provenance', 'Provenance (classe)', 'Taux de passage'];
 
@@ -156,6 +161,25 @@ function charger_page(nom) {
         page_active = 'stats';
         $.get( "/stats?stat=test", function( data ) {
         }).fail(noauth);
+    } else if (nom == 'eps') {
+        page_active = 'eps';
+        $.get( "/eps?classe="+eps_classe, function( data ) {
+            classes = data['classes'];
+            liste = data['liste'];
+            // Liste des classes
+            options = '<option>???</option>\n';
+            $.each(classes, function( i, s ) {
+                pardefaut = '';
+                if (i == eps_classe) { pardefaut = ' selected="selected"' ; }
+                options += "<option"+pardefaut+">"+i+"</option>\n";
+            });
+            $('#eps-classes').html(options);
+            // Liste des notes
+            if (liste != '') {
+                $('#eps-table > tbody').html( list_to_tab_simple(liste, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','BAC']) );
+                $("#eps-table td").click(cell_to_select);
+            }
+        }).fail(noauth);
     } else if (nom == 'pending') {
         page_active = 'pending';
         $.get( "/pending", function( data ) {
@@ -253,6 +277,7 @@ $(document).ready(function() {
     $.get( "/init", function( data ) {
         situations = data['situations'];
         niveaux = data['niveaux'];
+        activités = data['activités'];
         $('#stats-recherche th').css({'text-transform':'none'});
         $('#stats-recherche th').last().attr('colspan', niveaux.length);
         $.each(niveaux, function( i, j ) {
@@ -315,6 +340,10 @@ $(document).ready(function() {
     $('#liste-annee').on('change', function(i,j) {
         $('#liste table th').removeClass('sorting-desc').removeClass('sorting-asc');
         charger_page('liste');
+    });
+    $('#eps-classes').on('change', function(i,j) {
+        eps_classe = i.target.value;
+        charger_page('eps');
     });
     stats_listes();
     // Chargement de la page accueil

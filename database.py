@@ -71,9 +71,9 @@ class Database():
         :type champ: str
         :type donnee: str
         """
-        if table == 'Élèves':       col = 'INE'
-        elif table == 'Classes':    col = 'Classe'
-        req = 'UPDATE {tab} SET {champ}="{d}" WHERE {col}="{ident}"'.format(tab=table, col=col, ident=ident, champ=champ, d=donnee)
+        if table == 'Élèves' or table == 'EPS': col = 'INE'
+        elif table == 'Classes': col = 'Classe'
+        req = 'UPDATE {tab} SET "{champ}"="{d}" WHERE {col}="{ident}"'.format(tab=table, col=col, ident=ident, champ=champ, d=donnee)
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
@@ -103,7 +103,7 @@ class Database():
         if classe is None:
             raison.append('Pas de classe')
         if len(raison) > 0:
-            if self.ecrire_en_pending(enr, date.year, ', '.join(raison)):
+            if self.ecrire_en_pending(enr, ', '.join(raison)):
                 self.conn.commit()
                 inc_list(self.importations, self.PENDING)
                 return self.PENDING
@@ -146,6 +146,9 @@ class Database():
             inc_list(self.importations, self.FAILED)
             return self.FAILED
 
+        # Ajout de l'élève dans la base EPS
+        req = 'INSERT OR IGNORE INTO EPS (INE, Année) VALUES ("{0}", {1})'.format(ine, date.year)
+        self.curs.execute(req)
         # Reste à affecter notre élève à sa classe de cette année et de l'année dernière
         x = self.ecrire_affectation(
                 ine,    date.year,     classe,  self.nom_etablissement,  enr['doublement'])
@@ -165,7 +168,7 @@ class Database():
             pass
         if len(raison) > 0:
             self.conn.rollback()
-            if self.ecrire_en_pending(enr, date.year, ', '.join(raison)):
+            if self.ecrire_en_pending(enr, ', '.join(raison)):
                 self.conn.commit()
                 inc_list(self.importations, self.PENDING)
                 return self.PENDING
@@ -232,15 +235,13 @@ class Database():
                 logging.info(u"Erreur lors de l'ajout de la classe {0}:\n{1}".format(cla, e.args[0]))
         self.conn.commit()
 
-    def ecrire_en_pending(self, enr, annee, raison=""):
+    def ecrire_en_pending(self, enr, raison=""):
         """
             Mise en attente de données incomplètes pour validation ultérieure
             
         :param enr: les données à enregistrer
-        :param annee: année de scolarisation
         :param raison: raison de la mise en pending
         :type enr: dict 
-        :type annee: int
         :type raison: str
         :rtype: booléen
         """
@@ -303,6 +304,12 @@ class Database():
         """
             Lit le contenu de la base élève
         
+        :param annee: année de scolarisation
+        :param orderby: clé de tri
+        :param sens: ordre de tri (ASC ou DESC)
+        :type annee: int
+        :type orderby: string
+        :type sens: string
         :rtype: OrderedDict
         """
         data = collections.OrderedDict()
@@ -327,20 +334,6 @@ class Database():
                 data[ine]['Parcours'][an] = e
         return data
 
-    def lire_affectations(self):
-        """
-            Lit le contenu de la table affectations et classes
-        
-        :rtype: dict
-        """
-        data = {}
-        req = 'SELECT INE, Année, A.Classe, Établissement, Doublement, Niveau, Filière, Section FROM Affectations A LEFT JOIN Classes C ON A.Classe = C.Classe'
-        for row in self.curs.execute(req).fetchall():
-            d = dict_from_row(row)
-            key = d['INE']+'__'+str(d['Année'])
-            data[key] = d
-        return data
-
     def lire_classes(self):
         """
             Lit le contenu de la table classes
@@ -353,6 +346,43 @@ class Database():
             d = dict_from_row(row)
             key = d['Classe']
             data[key] = d
+        return data
+
+    def lire_eps(self, annee, classe):
+        """
+            Lit les notes et activités d'EPS de toute une classe
+        
+        :param annee: année de scolarisation
+        :param classe: la classe [sic]
+        :type annee: int
+        :type classe: string
+        :rtype: OrderedDict
+        """
+        data = collections.OrderedDict()
+        req = 'SELECT * FROM Élèves El JOIN EPS E ON E.INE=El.INE JOIN Affectations A ON A.INE=El.INE WHERE Classe="{0}" AND E.Année="{1}" ORDER BY Nom,Prénom ASC'.format(classe, annee)
+        for row in self.curs.execute(req).fetchall():
+            d = dict_from_row(row)
+            d['Élèves'] = d['Nom'] + ' ' + d['Prénom']
+            # Calcul de la note du BAC : moyenne de la meilleur note de terminale + 2 autres meilleurs notes
+            premiere = []
+            terminal = []
+            for i in range(1,6):
+                index = 'Note {0}'.format(i)
+                if d[index] is not None:
+                    if i < 3:   premiere.append(d[index])
+                    else:       terminal.append(d[index])
+            if len(terminal) == 0: d['BAC'] = 'Manque note terminal'
+            else:
+                if len(terminal) > 1:
+                    premiere.append(min(terminal))
+                if len(premiere) > 1:
+                    premiere.sort(reverse=True) # tri décroissant
+                    tot = max(terminal) + premiere[0] + premiere[1]
+                    d['BAC'] = round(tot / 3.0, 2)
+                else:
+                    d['BAC'] = 'Pas assez de notes'
+
+            data[d['INE']] = d
         return data
 
     def lire_pending(self):

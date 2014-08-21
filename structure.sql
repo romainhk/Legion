@@ -42,3 +42,19 @@ CREATE TABLE "Classes" (
     "Section" TEXT NOT NULL,
     PRIMARY KEY(Classe)
 );
+CREATE TABLE "EPS" (
+    -- Les notes d'EPS de chaque élèves
+    "INE" TEXT,
+    "Année" INTEGER,
+    "Activité 1" TEXT DEFAULT (''),
+    "Note 1" REAL DEFAULT (0.0),
+    "Activité 2" TEXT DEFAULT (''),
+    "Note 2" REAL DEFAULT (0.0),
+    "Activité 3" TEXT DEFAULT (''),
+    "Note 3" REAL DEFAULT (0.0),
+    "Activité 4" TEXT DEFAULT (''),
+    "Note 4" REAL DEFAULT (0.0),
+    "Activité 5" TEXT DEFAULT (''),
+    "Note 5" REAL DEFAULT (0.0),
+    PRIMARY KEY(INE,Année)
+);

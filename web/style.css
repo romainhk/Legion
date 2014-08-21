@@ -260,3 +260,10 @@ header .quitter {
 #login-message {
     padding-top:1ex;
 }
+/* EPS */
+#eps-select {
+    text-align:center;
+}
+#eps-classes {
+    margin-bottom:0.5ex;
+}

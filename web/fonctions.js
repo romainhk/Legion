@@ -254,6 +254,7 @@ function cell_to_select(e) {
         else if (col == "Filière") { valeurs = filières; }
         else if (col == "Section") { valeurs = sections; }
         else if (col == "Situation") { valeurs = situations; }
+        else if (col == "Activité 1" || col == "Activité 2" || col == "Activité 3" || col == "Activité 4" || col == "Activité 5") { valeurs = activités; }
         if (valeurs != null) {
             selected = cell.html();
             cell.html('');
@@ -268,7 +269,7 @@ function cell_to_select(e) {
                 // Au changement de valeur, on l'enregistre dans la base
                 val = $(this).val();
                 txt = $('option:selected', this).text(); // option sélectionnée fils de l'élément this
-                if (col == "Situation") {
+                if (col == "Situation" || col == "Activité 1" || col == "Activité 2" || col == "Activité 3" || col == "Activité 4" || col == "Activité 5") {
                     ine = cell.closest('tr').attr('id');
                     params = "ine="+ine+"&d="+val+"&champ="+col;
                     url = "/maj?"+params;

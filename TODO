@@ -11,6 +11,7 @@
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 * Histogrammes : chevauchement quand trop de xlabels
 * Verifier qu'une session est ouverte pour un ordinateur uniquement
+* "INSERT OR REPLACE"
 
 ### HTML
 * envoie de mail en masse : à tester
@@ -25,8 +26,8 @@
 * Liste : tri de la colonne Naissance
 
 ### Extension EPS
-* Pour chaque élève, pouvoir affecter 3 activités en 1er et 2 en Terminale, avec notations
-* Calculer la note du bac de l'élève : moyenne des 3 meilleures notes dont au moins une en terminale
 * Générer des stats transversales : moyenne par activités...
-* Authentification à distance avec ssl
+* Authentification à distance avec ssl et droits différent de l'admin
 * Gestion de l'appel et mail des absents pour la vie scolaire
+* Pouvoir rentrer les notes et associer une activité à toute une classe à la fois
+* Pouvoir exempter une activité (et non un 0.0 par défaut)

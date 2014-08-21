@@ -38,9 +38,8 @@ class Database():
         # defines
         self.FAILED = 0
         self.INSERT = 1
-        self.UPDATE = 2
-        self.PENDING = 3
-        self.importations = [0]*4
+        self.PENDING = 2
+        self.importations = [0]*3
 
     def fermer(self):
         """
@@ -53,9 +52,9 @@ class Database():
             # Si aucuns changements, on supprime la sauvegarde créé au lancement
             os.remove(self.old_db)
         else:
-            logging.info('Rapport de modifications : {0} échecs ; {1} insertions ; {2} majs ; {3} pending.'.format(
+            logging.info('Rapport de modifications : {0} échecs ; {1} insertions/majs ; {2} pending.'.format(
                 self.importations[self.FAILED],     self.importations[self.INSERT],
-                self.importations[self.UPDATE],     self.importations[self.PENDING]) )
+                self.importations[self.PENDING]) )
         self.conn.close()
 
     def maj_champ(self, table, ident, champ, donnee):
@@ -93,7 +92,6 @@ class Database():
         :return: define du type d'importation effectuée
         :rtype: int
         """
-        ofthejedi = self.INSERT # valeur de retour par défaut
         ine = enr['ine']
         classe = enr['classe']
         enr['Diplômé'] = enr['Situation'] = enr['Lieu'] = ''
@@ -115,7 +113,7 @@ class Database():
         enr['naissance'] = '{0}-{1}-{2}'.format(n[2], n[1], n[0])
 
         # Ajout de l'élève
-        req = 'INSERT INTO Élèves ' \
+        req = 'INSERT OR REPLACE INTO Élèves ' \
             + '(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu) ' \
             + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}")'.format(
                     ine,                enr['nom'],         enr['prénom'],
@@ -124,22 +122,6 @@ class Database():
                     enr['Lieu'])
         try:
             self.curs.execute(req)
-        except sqlite3.IntegrityError:
-            # L'élève est déjà présent dans la base
-            # On met a jour les infos administratives mais pas les colonnes remplies à la main : Diplômé, Situation et Lieu
-            req = 'UPDATE Élèves SET ' \
-                + 'Nom="{0}", Prénom="{1}", Naissance="{2}", Genre={3}, Mail="{4}", Entrée={5}'.format(
-                        enr['nom'],         enr['prénom'],     enr['naissance'],
-                        int(enr['genre']),  enr['mail'],        int(enr['entrée']) ) \
-                + ' WHERE INE="{ine}"'.format(ine=ine)
-            try:
-                self.curs.execute(req)
-            except sqlite3.Error as e:
-                logging.error(u"Update d'un élève : {0}\n{1}".format(e.args[0], req))
-                inc_list(self.importations, self.FAILED)
-                return self.FAILED
-            ofthejedi = self.UPDATE
-
         except sqlite3.Error as e:
             # Pour toute autre erreur, on laisse tomber
             logging.error(u"Insertion d'un élève : {0}\n{1}".format(e.args[0], req))
@@ -178,8 +160,8 @@ class Database():
 
         # Validation de l'écriture et de l'affectation à deux classes
         self.conn.commit()
-        inc_list(self.importations, ofthejedi)
-        return ofthejedi
+        inc_list(self.importations, self.INSERT)
+        return self.INSERT
 
     def ecrire_affectation(self, ine, annee, classe, etab, doublement):
         """
@@ -199,22 +181,11 @@ class Database():
         if classe == "" or etab == "":
             #logging.info("Erreur lors de l'affectation : classe ou établissement en défaut")
             return False
-        req = 'INSERT INTO Affectations ' \
+        req = 'INSERT OR REPLACE INTO Affectations ' \
               +  '(INE, Année, Classe, Établissement, Doublement) ' \
               + 'VALUES ("{0}", {1}, "{2}", "{3}", {4})'.format( ine, annee, classe, etab, doublement )
         try:
             self.curs.execute(req)
-        except sqlite3.IntegrityError as e:
-             # L'affectation existe déjà -> maj
-            req = 'UPDATE Affectations SET ' \
-                  +  'Classe="{0}", Établissement="{1}", Doublement={2}'.format( classe, etab, doublement ) \
-                  +  ' WHERE INE="{0}" AND Année={1}'.format( ine, annee )
-            try:
-                self.curs.execute(req)
-            except sqlite3.Error as e:
-                logging.error(u"Update d'une affectation : {0}\n{1}".format(e.args[0], req))
-                return self.FAILED
-            return self.UPDATE
         except sqlite3.Error as e:
             logging.error(u"Insertion d'une affectation : {0}\n{1}".format(e.args[0], req))
             return self.FAILED
@@ -271,33 +242,18 @@ class Database():
                 return False
             r = self.curs.fetchone()
 
-        if r[1] == 0:
-            req = 'INSERT INTO Pending ' \
+        req = 'INSERT OR REPLACE INTO Pending ' \
                 + '(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Classe, Établissement, Doublement, Raison) ' \
                 + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", {9}, "{10}")'.format(
                     enr['ine'],             enr['nom'],             enr['prénom'],
                     enr['naissance'],       int(enr['genre']),      enr['mail'],
                     int(enr['entrée']),     enr['classe'],          enr['sad_établissement'],
                     int(enr['doublement']),     raison)
-            try:
-                self.curs.execute(req)
-            except sqlite3.Error as e:
-                logging.error(u"Insertion en pending : {0}\n{1}".format(e.args[0], req))
-                return False
-        else:
-             # Élève déjà en pending
-            req = 'UPDATE Pending SET ' \
-                + 'INE="{0}", Nom="{1}", Prénom="{2}", Naissance="{3}", Genre={4}, Mail="{5}", Entrée={6}, Classe="{7}", Établissement="{8}", Doublement={9}, Raison="{10}" '.format(
-                    enr['ine'],             enr['nom'],             enr['prénom'],
-                    enr['naissance'],       int(enr['genre']),      enr['mail'],
-                    int(enr['entrée']),     enr['classe'],          enr['sad_établissement'],
-                    int(enr['doublement']),     raison) \
-                + 'WHERE rowid={rowid}'.format(rowid=r[0])
-            try:
-                self.curs.execute(req)
-            except sqlite3.Error as e:
-                logging.error(u"Update en pending : {0}\n{1}".format(e.args[0], req))
-                return False
+        try:
+            self.curs.execute(req)
+        except sqlite3.Error as e:
+            logging.error(u"Insertion en pending : {0}\n{1}".format(e.args[0], req))
+            return False
         return True
 
     def lire(self, annee, orderby, sens='ASC'):

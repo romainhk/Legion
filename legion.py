@@ -61,7 +61,11 @@ class Legion(http.server.HTTPServer):
                      '#FF0000', '#00FF00', '#0000FF')
 
     def maj_date(self, date):
-        """ Seter sur la date (date d'importation) """
+        """
+            Seter sur la date
+        :param date: date d'importation
+        :type date: datetime
+        """
         self.date = date
 
     def quitter(self):

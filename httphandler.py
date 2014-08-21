@@ -170,7 +170,12 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         self.server.cookie['session']['expires'] = expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
 
     def repondre(self, reponse):
-        """ Envoie une réponse http [sic] """
+        """
+            Envoie une réponse http [sic]
+
+        :param reponse: la réponse
+        :type reponse: objet, généralement str ou dictionnaire
+        """
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
@@ -180,6 +185,12 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
     def generer_liste(self, annee, orderby, sens):
         """ Génère les données pour la liste : annee, tableau au format html et nombre total d'élèves
 
+        :param annee: année de scolarisation
+        :param orderby: clé de tri
+        :param sens: ordre de tri (ASC ou DESC)
+        :type annee: int
+        :type orderby: str
+        :type sens: str
         :return: dict
         """
         if sens == 'ASC':
@@ -405,9 +416,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         :param proportions: les proportions / 100
         :param titre: le titre du graphique
         :type proportions: list
-        :type titre: string
+        :type titre: str
         :return: le nom du fichier généré
-        :rtype: string
+        :rtype: str
         """
         fichier = generer_nom_fichier('cache/tarte_')
         # Création d'un espace de dessin
@@ -438,9 +449,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         :param proportions: les proportions / 100
         :param titre: le titre du graphique
         :type proportions: dict
-        :type titre: string
+        :type titre: str
         :return: le nom du fichier généré
-        :rtype: string
+        :rtype: str
         """
         fichier = generer_nom_fichier('cache/histo_')
         x = [] # les valeurs à afficher

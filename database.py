@@ -264,8 +264,8 @@ class Database():
         :param orderby: clé de tri
         :param sens: ordre de tri (ASC ou DESC)
         :type annee: int
-        :type orderby: string
-        :type sens: string
+        :type orderby: str
+        :type sens: str
         :rtype: OrderedDict
         """
         data = collections.OrderedDict()
@@ -311,7 +311,7 @@ class Database():
         :param annee: année de scolarisation
         :param classe: la classe [sic]
         :type annee: int
-        :type classe: string
+        :type classe: str
         :rtype: OrderedDict
         """
         data = collections.OrderedDict()

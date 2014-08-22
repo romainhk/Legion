@@ -27,7 +27,7 @@ var activités = new Array();
 // La classe sur la page EPS
 var eps_classe = '';
 // Les statistiques disponibles
-var les_stats = ['Général', 'Par niveau', 'Par section', 'Provenance', 'Provenance (classe)', 'Taux de passage'];
+var les_stats = ['Général', 'Par niveau', 'Par section', 'Provenance', 'Provenance (classe)', 'Taux de passage', 'EPS (activite)'];
 
 /*
  * Mets à jour les listes de la page de statistiques
@@ -200,7 +200,6 @@ function charger_page(nom) {
 $(document).ready(function() {
     $("#progress").hide();
 
-    var tables_stats = ['Général', 'Parniveau', 'Parsection', 'Provenance', 'Provenanceclasse', 'Tauxdepassage'];
     // Création du lien d'exportation
     $("#export").on('click', function (event) {
         exportTableToCSV.apply(this, [$('#'+page_active), 'export_'+page_active+'.csv']);

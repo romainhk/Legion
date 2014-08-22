@@ -20,11 +20,9 @@
 * Liste : recherche par section (filtres de classe en plus : tous les bts, toutes les secondes...)
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * Login : ne pas afficher le formulaire de login si déjà connecté
-* Logout
-* Importation : maintient de la session après importation
-* Liste : tri de la colonne Naissance
+* Pending : tri de la colonne Naissance
 
 ### Extension EPS
-* Générer des stats transversales : moyenne par activités...
 * Authentification à distance avec ssl et droits différent de l'admin
 * Gestion de l'appel et mail des absents pour la vie scolaire
+* contenteditable : input="number" ?

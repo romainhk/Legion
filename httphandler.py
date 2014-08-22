@@ -411,6 +411,25 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         taux = en_pourcentage( float(len(communs)) / float(len(g)) )
                         v = { 'section': sect, 'passage': niv_pre+' > '+niv, 'taux': taux}
                         rep['data'].append(v)
+        elif stat == 'EPS (activite)':
+            rep['ordre'] = [('activité','string'),
+                            ('moyenne','float'),
+                            ('effectif','int')]
+            rep['data'] = []
+            act = self.server.db.stats('eps activite', annee, les_niveaux)
+            for a in self.server.eps_activites:
+                somme = 0
+                eff= 0
+                for b in act: # pour chaque ligne
+                    for c in b: # pour chaque activité
+                        if b[c] == a: # si on trouve l'activité
+                            somme = somme + b['n{0}'.format(c.split(' ')[1])]
+                            eff = eff + b['nombre']
+                if eff != 0: moyenne = round(somme/eff,2)
+                else: moyenne = '?'
+                v = { 'activité': a, 'moyenne': moyenne, 'effectif': eff}
+                rep['data'].append(v)
+            print(rep['data'])
         else:
             logging.error('Statistique {0} inconnue'.format(stat))
 

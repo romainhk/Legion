@@ -95,6 +95,9 @@ function stats_recherche() {
         } else if (stat == "Taux de passage") {
             var id = "#stats-Tauxdepassage";
             list_to_tab($(id+' table'), data);
+        } else if (stat == "EPS (activite)") {
+            var id = "#stats-EPSactivite";
+            list_to_tab($(id+' table'), data);
         } else {
             console.log("Stat inconnue");
         }

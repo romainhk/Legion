@@ -88,6 +88,10 @@ table td[contenteditable=true]:focus {
     background: #eee !important;
     resize: none;
 }
+.affecter_a_tous {
+    empty-cells:hide;
+    text-align:center;
+}
 /* tableau : zebra */
 .paire, #pending-table tr:nth-child(even), #stats > div tr:nth-child(even), #eps-table tr:nth-child(even) {
     background-color: #fafcfa;

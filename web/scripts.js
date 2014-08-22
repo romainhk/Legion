@@ -149,7 +149,7 @@ function charger_page(nom) {
             classes = data['classes'];
             liste = data['liste'];
             // Liste des classes
-            options = '<option>???</option>\n';
+            options = '<option>...</option>\n';
             $.each(classes, function( i, s ) {
                 pardefaut = '';
                 if (i == eps_classe) { pardefaut = ' selected="selected"' ; }
@@ -159,6 +159,9 @@ function charger_page(nom) {
             // Liste des notes
             if (liste != '') {
                 $('#eps-table > tbody').html( list_to_tab_simple(liste, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','BAC']) );
+                // Ligne pour affecter une activité à toute une classe
+                $('#eps-table > tbody').append('<tr id="borntobewild" class="affecter_a_tous"><td><i>Affecter à tous</i></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td></td></tr>');
+
                 $("#eps-table > tbody td").click(cell_to_select);
             }
             $('#eps-table > tbody td:nth-child(3), #eps-table > tbody td:nth-child(5)').attr('contenteditable','true');

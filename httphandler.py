@@ -66,21 +66,21 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             elif params.path == '/maj':
                 ine = query['ine'].pop()
                 champ = query['champ'].pop()
-                donnee = query.get('d', ['']).pop()
+                d = query.get('d', ['-1']).pop()
                 table = 'Élèves'
                 champ_can = champ.split(' ')[0] # Champ canonique = que la première partie
                 if champ_can == 'Situation':
-                    donnee = self.server.situations[int(donnee)]
+                    donnee = self.server.situations[int(d)]
                 elif champ_can == 'Activité':
-                    donnee = self.server.eps_activites[int(donnee)]
+                    donnee = self.server.eps_activites[int(d)]
                     table = 'EPS'
                 elif champ_can == 'Note':
-                    donnee = donnee.replace(',', '.') # virgule anglo-saxone
-                    note = float(donnee)
-                    if note > 20.0 or note < 0.0:
+                    donnee = d.replace(',', '.') # virgule anglo-saxone
+                    if float(donnee) > 20.0 or float(donnee) < 0.0:
                         self.repondre('Non')
                         return
                     table = 'EPS'
+                if d == '-1': donnee = '' # Cas d'une RAZ
                 rep = self.server.db.maj_champ(table, ine, champ, donnee)
             elif params.path == '/maj_classe':
                 classe = query['classe'].pop()

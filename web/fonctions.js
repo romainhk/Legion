@@ -289,24 +289,39 @@ function cell_to_select(e) {
                 // Au changement de valeur, on l'enregistre dans la base
                 val = $(this).val();
                 txt = $('option:selected', this).text(); // option sélectionnée fils de l'élément this
-                if (col == "Situation" || col == "Activité 1" || col == "Activité 2" || col == "Activité 3" || col == "Activité 4" || col == "Activité 5") {
-                    ine = cell.closest('tr').attr('id');
-                    params = "ine="+ine+"&d="+val+"&champ="+col;
-                    url = "/maj?"+params;
-                } else {
-                    row = cell.parents('tr').find('td').first().html();
-                    params = "classe="+row+"&val="+val+"&champ="+col;
-                    url = "/maj_classe?"+params;
-                }
-                $.get( url, function( data ) {
-                    c = cell.parents('td');
-                    if (data == 'Oui') { c.addClass("maj_oui"); }
-                    else if (data == 'Non') { c.addClass("maj_non"); }
-                    c.html(txt); // Et on retire le select
-                });
+                ine = cell.closest('tr').attr('id');
+                if (ine == 'borntobewild') {
+                    // Cas de l'"Affectation à tous" de la page EPS
+                    $(this).parentsUntil('table').find('tr:not(".affecter_a_tous")').each(function(i,j) {
+                        id=$(j).attr('id');
+                        enregistrer_select(cell, col, val, txt, id);
+                    });
+                    charger_page('eps');
+                } else { enregistrer_select(cell, col, val, txt, ine); }
             });
         }
     }
+}
+/*
+ * Enregistre un élément sélectionné par liste déroulante (suite de cell_to_select)
+ */
+function enregistrer_select(cell, col, val, txt, ine) {
+    // Génération de l'url
+    if (col == "Situation" || col == "Activité 1" || col == "Activité 2" || col == "Activité 3" || col == "Activité 4" || col == "Activité 5") {
+        params = "ine="+ine+"&d="+val+"&champ="+col;
+        url = "/maj?"+params;
+    } else {
+        row = cell.parents('tr').find('td').first().html();
+        params = "classe="+row+"&val="+val+"&champ="+col;
+        url = "/maj_classe?"+params;
+    }
+    // Envoie des données
+    $.get( url, function( data ) {
+        c = cell.parents('td');
+        if (data == 'Oui') { c.addClass("maj_oui"); }
+        else if (data == 'Non') { c.addClass("maj_non"); }
+        c.html(txt); // Et on retire le select
+    });
 }
 
 /*

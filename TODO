@@ -11,6 +11,8 @@
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 * Histogrammes : chevauchement quand trop de xlabels
 * Verifier qu'une session est ouverte pour un ordinateur uniquement
+* Analyse des dépendances (au démarrage, vérification qu'elles sont disponibles)
+* setup.py : build d'une archive
 
 ### HTML
 * envoie de mail en masse : à tester

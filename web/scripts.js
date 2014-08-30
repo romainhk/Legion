@@ -126,11 +126,13 @@ function maj_sortable(sens, col) {
  * Le switch de page
  */
 function charger_page(nom) {
-    $.each(les_pages, function( i, p ) { $("#"+i).hide(); });
+    $.each(les_pages, function( i, p ) {
+        $("#"+i).hide();
+        if (p==nom) { nom = i; }
+    });
     // Mise à jour de l'onglet actif
     $("#onglets").children().removeClass('actif');
     $("#onglets").find(':contains('+nom+')').addClass('actif');
-    nom = nom.toLowerCase();
 
     if (nom == 'accueil') {
         page_active = 'accueil';
@@ -148,7 +150,7 @@ function charger_page(nom) {
     } else if (nom == 'stats') {
         page_active = 'stats';
         $.get( "/stats?stat=ouverture", function( data ) {
-            msg = "Les informations sur les classes sont complétées à "+data['data']+"%. Pour améliorer l'analyse des résultats, veuillez passer <a href=\"#\" onclick=\"charger_page('Options')\">sur la page d'options</a> pour définir le niveau et la section des classes de l'établissement";
+            msg = "Les informations sur les classes sont complétées à "+data['data']+"%. Pour améliorer l'analyse des résultats, veuillez passer <a href=\"#\" onclick=\"charger_page('Options')\">sur la page d'options</a> pour définir le niveau et la section des classes de l'établissement.";
             $('#stats-Avertissement').html(msg); 
         }).fail(noauth);
     } else if (nom == 'eps') {
@@ -261,6 +263,23 @@ $(document).ready(function() {
         });
         return false;
     });
+    // Ajout d'une méthode de tri par date
+    $.fn.stupidtable.default_sort_fns["date"] = function(a, b) {
+        aa = a.split('/');
+        bb = b.split('/');
+        // Année
+        if (aa[2] < bb[2]) { return -1; }
+        else if (aa[2] > bb[2]) { return 1; }
+        else { // Mois
+            if (aa[1] < bb[1]) { return -1; }
+            else if (aa[1] > bb[1]) { return 1; }
+            else { // Jour
+                if (aa[0] < bb[0]) { return -1; }
+                else if (aa[0] > bb[0]) { return 1; }
+                else { return 0; }
+            }
+        }
+    }
 
     // Initialisation de l'application
     $.get( "/init", function( data ) {
@@ -283,7 +302,9 @@ $(document).ready(function() {
         $('#liste-table > thead').html( "<tr>"+entete+"</tr>\n" );
         entete = ""
         $.each(champs_pending, function( i, j ) {
-            entete += '<th data-sort="string">'+j+"</th>\n";
+            if (j == 'Naissance') { ds = "date"; }
+            else { ds = "string"; }
+            entete += '<th data-sort="'+ds+'">'+j+"</th>\n";
         });
         $('#pending-table > thead').html( "<tr>"+entete+"</tr>\n" );
         // Tri des colonnes

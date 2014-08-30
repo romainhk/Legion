@@ -13,6 +13,7 @@ import http.server, http.cookies
 import httphandler
 #import ssl, socket
 from liblegion import *
+#import pkgutil
 
 class Legion(http.server.HTTPServer):
     """
@@ -59,6 +60,9 @@ class Legion(http.server.HTTPServer):
         self.colors=('#0080FF', '#FF0080', '#80FF00',
                      '#8000FF', '#FF8000', '#00FF80',
                      '#FF0000', '#00FF00', '#0000FF')
+        #modules = []
+        #for a,b,c in pkgutil.iter_modules():
+        #    modules.append(b)
 
     def maj_date(self, date):
         """

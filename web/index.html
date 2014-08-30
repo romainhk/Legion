@@ -47,6 +47,7 @@
     </div>
     <div id="stats">
         <h3>Statistiques</h3>
+        <div id="stats-Avertissement"></div>
         <table id="stats-recherche" class="stats">
             <tr class="removeme">
                 <th>Statistique désirée</th>
@@ -225,30 +226,25 @@
         </table>
     </div>
     <div id="options" class="page_options">
-        <div style="float:left; width:49%">
-            <h4>Importation</h4>
-            Sélectionner l'exportation xml de la base BEE de SIÈCLE (<i>ElevesSansAdresses.xml</i>)
-            <form id="importation" enctype="multipart/form-data">
-                <input type="file" id="fichier">
-                <input type="button" value="Importer" onClick="importation();" style="font-weight:bold;">
-                <img id="progress" src="img/loading.gif" alt="loading">
-            </form>
-        </div>
-        <div style="float:right; width:49%">
-            <h4>Affectations</h4>
-            <table id="options-table">
-                <caption>Veuillez affecter les classes à leur niveau et section</caption>
-                <thead>
-                    <tr>
-                        <th>Classe</th>
-                        <th>Niveau</th>
-                        <th>Section</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-        <div style="clear:both;"></div>
+        <h4>Importation</h4>
+        Sélectionner l'exportation xml de la base BEE de SIÈCLE (<i>ElevesSansAdresses.xml</i>)
+        <form id="importation" enctype="multipart/form-data">
+            <input type="file" id="fichier">
+            <input type="button" value="Importer" onClick="importation();" style="font-weight:bold;">
+            <img id="progress" src="img/loading.gif" alt="loading">
+        </form>
+        <h4>Affectations</h4>
+        <table id="options-table">
+            <caption>Veuillez affecter les classes à leur niveau et section</caption>
+            <thead>
+                <tr>
+                    <th>Classe</th>
+                    <th>Niveau</th>
+                    <th>Section</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
     <footer><span class="copyleft">©</span> Romain Hennuyer</footer>
   </body>

@@ -284,7 +284,12 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         eff_total = totaux['total'] # Effectif total
 
         rep = { 'ordre': {}, 'data': {}, 'graph': [] }
-        if stat == 'Général':
+        if stat == 'ouverture':
+            # Ouverture de la page stat
+            # on envoie juste la proportion de classes affectées
+            o = self.server.db.stats('ouverture', annee, les_niveaux).pop()
+            rep['data'] = round( (100*o['n']) / (o['total']*2) , 0)
+        elif stat == 'Général':
             total_homme = totaux['homme'] # Nombre total d'hommes
             total_doublant = totaux['doublant']
             #total_nouveau = totaux['nouveau']

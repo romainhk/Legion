@@ -382,7 +382,11 @@ class Database():
         :type niveaux: array(str)
         """
         les_niveaux = '('+' OR '.join(['CN.Niveau="'+s+'"' for s in niveaux])+')'
-        if info == "totaux": # totaux
+        if info == "ouverture": # ouverture
+            req = """SELECT 
+            sum(CASE WHEN "Niveau" LIKE "" THEN 0 ELSE 1 END)+sum(CASE WHEN "Section" LIKE "" THEN 0 ELSE 1 END) as n,
+            count(*) as total FROM Classes"""
+        elif info == "totaux": # totaux
             # Calcul des totaux :
             # Nombre d'élèves, d'hommes, doublants, nouveaux, issues de pro
             req = """SELECT count(*) total, 

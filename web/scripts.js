@@ -125,6 +125,10 @@ function maj_sortable(sens, col) {
  */
 function charger_page(nom) {
     $.each(les_pages, function( i, p ) { $("#"+i).hide(); });
+    // Mise à jour de l'onglet actif
+    $("#onglets").children().removeClass('actif');
+    $("#onglets").find(':contains('+nom+')').addClass('actif');
+    nom = nom.toLowerCase();
 
     if (nom == 'accueil') {
         page_active = 'accueil';
@@ -141,7 +145,9 @@ function charger_page(nom) {
         maj_sortable('', '');
     } else if (nom == 'stats') {
         page_active = 'stats';
-        $.get( "/stats?stat=test", function( data ) {
+        $.get( "/stats?stat=ouverture", function( data ) {
+            msg = "Les informations sur les classes sont complétées à "+data['data']+"%. Pour améliorer l'analyse des résultats, veuillez passer <a href=\"#\" onclick=\"charger_page('Options')\">sur la page d'options</a> pour définir le niveau et la section des classes de l'établissement";
+            $('#stats-Avertissement').html(msg); 
         }).fail(noauth);
     } else if (nom == 'eps') {
         page_active = 'eps';
@@ -215,14 +221,7 @@ $(document).ready(function() {
     });
     $("#onglets li").click(function(event) {
         target = $(event.target);
-        $("#onglets").children().removeClass('actif');
-        target.addClass('actif');
-        $.each(les_pages, function(i,j) {
-            if (j == target.html()) {
-                charger_page(i);
-                return false; //break
-            }
-        });
+        charger_page(target.html());
     });
     // Bouton quitter
     $(".quitter").hover(function(event) {
@@ -230,7 +229,7 @@ $(document).ready(function() {
     }).mouseout(function(event) {
         $(this).attr("src", 'img/quitter.png');
     }).on('click', function (event) {
-        charger_page('quitter');
+        charger_page('Quitter');
     });
     // Formulaire de login
     $("#login-message").hide();
@@ -251,7 +250,7 @@ $(document).ready(function() {
                     $("#login-message").html('Bienvenue '+message);
                     // Rechargement de la première page
                     $("#onglets").children().removeClass('actif');
-                    charger_page('accueil');
+                    charger_page('Accueil');
                 } else {
                     // Échec de connection
                     $("#login-message").html(message);
@@ -327,14 +326,14 @@ $(document).ready(function() {
     });
     $('#liste-annee').on('change', function(i,j) {
         $('#liste table th').removeClass('sorting-desc').removeClass('sorting-asc');
-        charger_page('liste');
+        charger_page('Liste');
     });
     $('#eps-classes').on('change', function(i,j) {
         eps_classe = i.target.value;
-        charger_page('eps');
+        charger_page('Eps');
     });
     stats_listes();
     // Chargement de la page accueil
-    charger_page('accueil');
+    charger_page('Accueil');
 });
 

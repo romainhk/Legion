@@ -221,9 +221,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             parcours = collections.OrderedDict()
             parcours_inverse = collections.OrderedDict(sorted(d['Parcours'].items(), key=lambda t: t[0], reverse=True))
             for an,p in parcours_inverse.items():
-                if p[2] == 0:   p[2] = 'Non'
-                elif p[2] == 1: p[2] = 'Oui'
-                else:           p[2] = '?'
+                if sens == 'ASC':
+                    if p[2] == 0:   p[2] = 'Non'
+                    elif p[2] == 1: p[2] = 'Oui'
+                    else:           p[2] = '?'
                 if an not in parcours.keys():
                     parcours[an] = { 'Année': an, 'Classe': p[0], 'Établissement': p[1], 'Doublement': p[2] }
             d['Classe'] = parcours[annee]['Classe']

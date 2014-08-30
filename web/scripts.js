@@ -117,6 +117,8 @@ function maj_sortable(sens, col) {
         $('#liste-table td[contenteditable]').on('keydown', maj_cellule);
         $('#liste-table').css('opacity', '1');
         maj_total($('#liste-table'));
+        // On relance le filtrage
+        rechercher();
     }).fail(noauth);
 }
 
@@ -305,23 +307,7 @@ $(document).ready(function() {
             }
         });
         // Fonction de filtrage de la liste
-        $("#filtre").keypress(function (event) {
-            delay(function(){
-                var data = event.target.value.toLowerCase();
-                $("#liste-table > tbody > tr[id]").show();
-                $("#liste-table > tbody > tr[id]").filter(function (i, v) {
-                    trouve = false;
-                    $(this).find('td').each(function (i,j) {
-                        if (j.innerHTML.toLowerCase().indexOf(data) >= 0) {
-                            trouve = true;
-                            return false;
-                        }
-                    });
-                    return !trouve; // on cache quand on a pas trouvé
-                }).hide();
-                maj_total($('#liste-table'));
-            }, 500 );
-        });
+        $("#filtre").keypress(function (event) { rechercher(500); });
         $('.sortable').stupidtable();
     });
     $('#liste-annee').on('change', function(i,j) {

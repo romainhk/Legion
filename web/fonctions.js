@@ -328,13 +328,23 @@ function enregistrer_select(cell, col, val, txt, ine) {
 }
 
 /*
- * Ajoute un delay à une action
+ * Recherche les éléments dans la liste
  */
-var delay = (function(){
-    var timer = 0;
-    return function(callback, ms){
-        clearTimeout (timer);
-        timer = setTimeout(callback, ms);
-    };
-})();
+function rechercher(delay=0){
+    setTimeout(function() {
+        var data = $('#filtre').val().toLowerCase();
+        $("#liste-table > tbody > tr[id]").show();
+        $("#liste-table > tbody > tr[id]").filter(function (i, v) {
+            trouve = false;
+            $(this).find('td').each(function (i,j) {
+                if (j.innerHTML.toLowerCase().indexOf(data) >= 0) {
+                    trouve = true;
+                    return false;
+                }
+            });
+            return !trouve; // on cache quand on a pas trouvé
+        }).hide();
+        maj_total($('#liste-table'));
+    }, delay);
+}
 

@@ -90,7 +90,8 @@ function noauth() {
 function maj_sortable(sens, col) {
     $('#liste-table').css('opacity', '0.3');
     var annee = $('#liste-annee option:selected').val();
-    parametres = '?annee='+annee+'&sens='+sens+'&col='+col;
+    var niveau = $('#liste-niveau option:selected').val();
+    parametres = '?annee='+annee+'&sens='+sens+'&col='+col+'&niveau='+niveau;
     $.get( "/liste"+parametres, function( data ) {
         annee = data['annee'];
         $('#liste-table > tbody').html( data['html'] );
@@ -331,7 +332,7 @@ $(document).ready(function() {
         $("#filtre").keypress(function (event) { rechercher(500); });
         $('.sortable').stupidtable();
     });
-    $('#liste-annee').on('change', function(i,j) {
+    $('#liste-annee, #liste-niveau').on('change', function(i,j) {
         $('#liste table th').removeClass('sorting-desc').removeClass('sorting-asc');
         charger_page('Liste');
     });

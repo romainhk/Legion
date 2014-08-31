@@ -256,20 +256,28 @@ class Database():
             return False
         return True
 
-    def lire(self, annee, orderby, sens='ASC'):
+    def lire(self, annee, orderby, sens='ASC', niveau=''):
         """
             Lit le contenu de la base élève
         
         :param annee: année de scolarisation
         :param orderby: clé de tri
         :param sens: ordre de tri (ASC ou DESC)
+        :param niveau: groupe de classes (Seconde, BTS...)
         :type annee: int
         :type orderby: str
         :type sens: str
+        :type niveau: str
         :rtype: OrderedDict
         """
         data = collections.OrderedDict()
-        req = 'SELECT * FROM Élèves NATURAL JOIN Affectations WHERE Année="{2}" ORDER BY {0} {1}, Nom ASC'.format(orderby, sens, annee)
+        niv= ''
+        if niveau in ['Seconde', 'Première', 'Terminal']:
+            niv= 'AND Niveau="{0}"'.format(niveau)
+        elif niveau == 'BTS':
+            niv= 'AND (Niveau="1BTS" OR Niveau="2BTS")'
+        # Listage des élèves
+        req = 'SELECT * FROM Élèves E NATURAL JOIN Affectations A JOIN Classes C ON A.Classe=C.Classe WHERE Année="{2}" {niv} ORDER BY {0} {1}, Nom ASC'.format(orderby, sens, annee, niv=niv)
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             ine = d['INE']
@@ -277,17 +285,18 @@ class Database():
             d['Âge'] = nb_annees(date(d['Naissance']))
             data[ine] = d
         # Génération du parcours
-        req = 'SELECT INE,Année,Classe,Établissement,Doublement FROM Élèves NATURAL JOIN Affectations WHERE Année<="{0}" ORDER BY Année DESC'.format(annee)
+        req = 'SELECT INE,Année,A.Classe,Établissement,Doublement FROM Élèves E NATURAL JOIN Affectations A JOIN Classes C ON A.Classe=C.Classe WHERE Année<="{0}" {niv} ORDER BY Année DESC'.format(annee,niv=niv)
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             ine = d['INE']
-            an = d['Année']
-            e = [ d['Classe'], d['Établissement'], d['Doublement'] ]
-            if 'Parcours' not in data[ine].keys():
-                data[ine]['Parcours'] = { an: e }
-            else:
-                # Déjà présent : on ajoute juste une année scolaire
-                data[ine]['Parcours'][an] = e
+            if ine in data: # ?
+                an = d['Année']
+                e = [ d['Classe'], d['Établissement'], d['Doublement'] ]
+                if 'Parcours' not in data[ine].keys():
+                    data[ine]['Parcours'] = { an: e }
+                else:
+                    # Déjà présent : on ajoute juste une année scolaire
+                    data[ine]['Parcours'][an] = e
         return data
 
     def lire_classes(self):

@@ -57,7 +57,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 if orderby == 'Âge': orderby = 'Naissance'
                 sens = query.get('sens', ['ASC']).pop().upper()
                 if sens == '': sens = 'ASC'
-                rep = self.generer_liste(annee, orderby, sens)
+                niveau = query.get('niveau', ['']).pop()
+                rep = self.generer_liste(annee, orderby, sens, niveau)
             elif params.path == '/stats':
                 stat = query['stat'].pop()
                 annee = query.get('annee', ['1970']).pop()
@@ -190,19 +191,21 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(bytes(json.dumps(reponse), 'UTF-8'))
         self.wfile.flush()
 
-    def generer_liste(self, annee, orderby, sens):
+    def generer_liste(self, annee, orderby, sens, niveau):
         """ Génère les données pour la liste : annee, tableau au format html et nombre total d'élèves
 
         :param annee: année de scolarisation
         :param orderby: clé de tri
         :param sens: ordre de tri (ASC ou DESC)
+        :param niveau: groupe de classes
         :type annee: int
         :type orderby: str
         :type sens: str
+        :type niveau: str
         :return: dict
         """
         if sens == 'ASC':
-            data = self.server.db.lire(annee, orderby, sens)
+            data = self.server.db.lire(annee, orderby, sens, niveau)
             self.server.lire = data
         elif sens == 'DESC':
             # On inverse simplement la recherche précédente ; gain de temps de ~30 %

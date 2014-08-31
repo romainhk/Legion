@@ -36,9 +36,17 @@
         <div style="width:100%;">
             <h3 style="display: inline-block;">Base des élèves</h3>
             <span id="totalListe" class="total"></span>
-            <button style="margin:0 3ex 0 5ex;" type="button" onClick="mailer_tous()">Mailer tous</button>
-            Recherche : <input type="text" value="" id="filtre" />
+            <br/>
+            <button style="margin:0 1ex 0 2ex;" type="button" onClick="mailer_tous()">Mailer tous</button>
             Année scolaire : <select id="liste-annee"></select>
+            Filtre : <select id="liste-niveau">
+                <option value="" selected>Tout le monde</option>
+                <option value="Seconde">Les secondes</option>
+                <option value="Première">Les premières</option>
+                <option value="Terminale">Les terminales</option>
+                <option value="BTS">Les BTS</option>
+            </select>
+            Recherche : <input type="text" value="" id="filtre" />
         </div>
         <table id="liste-table" class="sortable">
             <thead></thead>

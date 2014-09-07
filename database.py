@@ -299,14 +299,14 @@ class Database():
                     data[ine]['Parcours'][an] = e
         return data
 
-    def lire_classes(self):
+    def lire_classes(self, annee):
         """
             Lit le contenu de la table classes
         
         :rtype: OrderedDict
         """
         data = collections.OrderedDict()
-        req = 'SELECT * FROM Classes ORDER BY Classe ASC'
+        req = 'SELECT * FROM Classes C NATURAL JOIN Affectations A WHERE A.Année={0} ORDER BY Classe ASC'.format(annee)
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             key = d['Classe']

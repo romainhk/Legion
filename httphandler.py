@@ -35,6 +35,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 'header': self.server.header,
                 'situations': self.server.situations,
                 'niveaux' : self.server.niveaux,
+                'eps' : self.server.db.lire_classes(self.server.date.year),
                 'activités' : self.server.eps_activites }
             self.repondre(rep)
             return True
@@ -110,12 +111,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 classe = query.get('classe', ['']).pop()
                 if classe == '': eps = '' # Pas de classe, pas de chocolat
                 else: eps = self.server.db.lire_eps(self.server.date.year, classe)
-                rep = { 'classes': self.server.db.lire_classes(),
-                        'liste': eps }
+                rep = { 'liste': eps }
             elif params.path == '/pending':
                 rep = self.server.db.lire_pending()
             elif params.path == '/options':
-                rep = { 'affectations': self.server.db.lire_classes(), 
+                rep = { 'affectations': self.server.db.lire_classes(self.server.date.year), 
                     'niveaux': self.server.niveaux,
                     'sections': self.server.sections }
             elif params.path == '/quitter':
@@ -246,7 +246,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             # Construction des lignes / sous-lignes
             for a,p in parcours.items():
                 if a != annee:
-                    s = s + '<tr class="sousligne"><td colspan="5"></td><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td colspan="4"></td></tr>\n'.format(an,p['Classe'],p['Établissement'],p['Doublement'])
+                    s = s + '<tr class="sousligne"><td colspan="5"></td><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td colspan="4"></td></tr>\n'.format(a,p['Classe'],p['Établissement'],p['Doublement'])
             parite = 'paire' if parite == 'impaire' else 'impaire'
             r = r + '<tr id="{0}" class="{1}">{2}</tr>\n'.format(ine, parite, s)
         return { 'annee': annee, 'html': r, 'nb eleves': len(data) }
@@ -531,7 +531,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         :param data: le fichier à importer (passé en POST)
         :type data: flux de fichier xml
         """
-        les_classes = list(self.server.db.lire_classes().keys())
+        les_classes = list(self.server.db.lire_classes(self.server.date.year).keys())
         classes_a_ajouter = []
         # Écriture de l'xml dans un fichier
         fichier_tmp = 'cache/importation.xml'

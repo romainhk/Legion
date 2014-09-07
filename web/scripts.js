@@ -24,8 +24,6 @@ var filières = new Array();
 var sections = new Array();
 // Liste des activités possibles (EPS)
 var activités = new Array();
-// La classe sur la page EPS
-var eps_classe = '';
 // Les statistiques disponibles
 var les_stats = ['Général', 'Par niveau', 'Par section', 'Provenance', 'Provenance (classe)', 'Taux de passage', 'EPS (activite)'];
 
@@ -156,17 +154,10 @@ function charger_page(nom) {
         }).fail(noauth);
     } else if (nom == 'eps') {
         page_active = 'eps';
+        var eps_classe = $('#eps-classes option:selected').val();
+        if (eps_classe == undefined) { eps_classe = ''; }
         $.get( "/eps?classe="+eps_classe, function( data ) {
-            classes = data['classes'];
             liste = data['liste'];
-            // Liste des classes
-            options = '<option>...</option>\n';
-            $.each(classes, function( i, s ) {
-                pardefaut = '';
-                if (i == eps_classe) { pardefaut = ' selected="selected"' ; }
-                options += "<option"+pardefaut+">"+i+"</option>\n";
-            });
-            $('#eps-classes').html(options);
             // Liste des notes
             if (liste != '') {
                 $('#eps-table > tbody').html( list_to_tab_simple(liste, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','BAC']) );
@@ -308,6 +299,15 @@ $(document).ready(function() {
             entete += '<th data-sort="'+ds+'">'+j+"</th>\n";
         });
         $('#pending-table > thead').html( "<tr>"+entete+"</tr>\n" );
+        // EPS : Liste des classes
+        var options = '<option value="">...</option>\n';
+        $.each(data['eps'], function( i, s ) {
+            options += "<option>"+i+"</option>\n";
+        });
+        $('#eps-classes').html(options);
+        $('#eps-classes').on('change', function(i,j) {
+            charger_page('EPS');
+        });
         // Tri des colonnes
         $(".sortable th").click(function(event) {
             target = $(event.target);
@@ -335,10 +335,6 @@ $(document).ready(function() {
     $('#liste-annee, #liste-niveau').on('change', function(i,j) {
         $('#liste table th').removeClass('sorting-desc').removeClass('sorting-asc');
         charger_page('Liste');
-    });
-    $('#eps-classes').on('change', function(i,j) {
-        eps_classe = i.target.value;
-        charger_page('Eps');
     });
     stats_listes();
     // Chargement de la page accueil

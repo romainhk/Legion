@@ -22,6 +22,7 @@
 * Login : ne pas afficher le formulaire de login si déjà connecté
 
 ### Extension EPS
-* Authentification à distance avec ssl et droits différent de l'admin
+* Authentification à distance avec ssl
+* droits différent de l'admin global (stats...)
 * Gestion de l'appel et mail des absents pour la vie scolaire
 * contenteditable : input="number" ?

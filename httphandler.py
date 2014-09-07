@@ -40,6 +40,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             return True
         elif params.path == '/liste-annees':
             rep = self.server.db.lister('Année')
+            if len(rep) == 0: # Base non encore initialisée!
+                rep = [self.server.date.year]
             self.repondre(rep)
             return True
         # On vérifie que le cookie n'a pas expiré
@@ -292,7 +294,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             # Ouverture de la page stat
             # on envoie juste la proportion de classes affectées
             o = self.server.db.stats('ouverture', annee, les_niveaux).pop()
-            rep['data'] = round( (100*o['n']) / (o['total']*2) , 0)
+            if o['n'] is not None and o['total'] != '0': # Cas d'une base non initialisée
+                rep['data'] = round( (100*o['n']) / (o['total']*2) , 0)
+            else: rep['data'] = 0
         elif stat == 'Général':
             total_homme = totaux['homme'] # Nombre total d'hommes
             total_doublant = totaux['doublant']

@@ -26,3 +26,6 @@
 * droits différent de l'admin global (stats...)
 * Gestion de l'appel et mail des absents pour la vie scolaire
 * contenteditable : input="number" ?
+* Ne voir que les éléves de l'année en cours !
+* Pouvoir vérouiller 1 ou 2 notes par élèves
+

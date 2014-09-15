@@ -9,7 +9,6 @@
 * colonne Diplômé : importation automatisée depuis ...
 * Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
 * Histogrammes : chevauchement quand trop de xlabels
-* Verifier qu'une session est ouverte pour un ordinateur uniquement
 * Analyse des dépendances (au démarrage, vérification qu'elles sont disponibles)
 * setup.py : build d'une archive
 
@@ -23,9 +22,9 @@
 
 ### Extension EPS
 * Authentification à distance avec ssl
-* droits différent de l'admin global (stats...)
+* Différent comptes, différents accès aux services
 * Gestion de l'appel et mail des absents pour la vie scolaire
 * contenteditable : input="number" ?
 * Ne voir que les éléves de l'année en cours !
-* Pouvoir vérouiller 1 ou 2 notes par élèves
+* Pouvoir verrouiller 1 ou 2 notes par élèves
 

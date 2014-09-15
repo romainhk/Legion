@@ -10,7 +10,7 @@ var les_pages = {
         'liste': 'Liste',
         'stats': 'Stats',
         'eps': 'EPS',
-        'pending': 'En<br>Attente', 
+        'pending': 'Attente', 
         'options': 'Options' };
 // Total d'élèves dans la base
 var nb_eleves = 0;
@@ -125,13 +125,14 @@ function maj_sortable(sens, col) {
  * Le switch de page
  */
 function charger_page(nom) {
+    // Mise à jour de l'onglet actif
+    $("#onglets").children().removeClass('actif');
+    $("#onglets").find(':contains('+nom+')').addClass('actif');
+    // Cachement des pages et normalisation du nom
     $.each(les_pages, function( i, p ) {
         $("#"+i).hide();
         if (p==nom) { nom = i; }
     });
-    // Mise à jour de l'onglet actif
-    $("#onglets").children().removeClass('actif');
-    $("#onglets").find(':contains('+nom+')').addClass('actif');
 
     if (nom == 'accueil') {
         page_active = 'accueil';

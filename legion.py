@@ -31,7 +31,8 @@ class Legion(http.server.HTTPServer):
         self.auth_tries = {} # Timestamp des tentatives d'authentification récentes par IP
         # Lecture de la configuration
         self.nom_etablissement=config.get('Établissement', 'nom de l\'etablissement')
-        self.mdp=config.get('Général', 'mdp')
+        self.mdp_admin=config.get('Général', 'mdp_admin')
+        self.mdp_eps=config.get('Général', 'mdp_eps')
         self.situations=sorted([x.strip(' ') for x in config.get('Établissement', 'situations').split(',')])
         self.niveaux=['Seconde', 'Première', 'Terminale', '1BTS', '2BTS', 'Bac+1', 'Bac+3']
         self.filières = ['Générale', 'Technologique', 'Pro', 'Enseignement supérieur']

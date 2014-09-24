@@ -54,7 +54,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 return
             # Fonctions à accès limité
-            if params.path == '/liste':
+            user = self.server.cookie[ip].value
+            if params.path == '/liste' and user == 'admin':
                 annee = int(query.get('annee', ['{0}'.format(self.server.date.year)]).pop())
                 orderby = query.get('col', ['Nom,Prénom']).pop()
                 if orderby == '': orderby = 'Nom,Prénom'
@@ -65,10 +66,12 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 rep = self.generer_liste(annee, orderby, sens, niveau)
             elif params.path == '/stats':
                 stat = query['stat'].pop()
-                annee = query.get('annee', ['1970']).pop()
-                niveaux = query.get('niveaux', ['0']).pop().split(',')
-                rep = self.generer_stats(stat, int(annee), niveaux)
-            elif params.path == '/maj':
+                print(stat)
+                if user == 'admin' or (stat == 'EPS (activite)' and user == 'eps'):
+                    annee = query.get('annee', ['1970']).pop()
+                    niveaux = query.get('niveaux', ['0']).pop().split(',')
+                    rep = self.generer_stats(stat, int(annee), niveaux)
+            elif params.path == '/maj' and user == 'admin':
                 ine = query['ine'].pop()
                 champ = query['champ'].pop()
                 d = query.get('d', ['-1']).pop()
@@ -87,7 +90,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     table = 'EPS'
                 if d == '-1': donnee = '' # Cas d'une RAZ
                 rep = self.server.db.maj_champ(table, ine, champ, donnee)
-            elif params.path == '/maj_classe':
+            elif params.path == '/maj_classe' and user == 'admin':
                 classe = query['classe'].pop()
                 champ = query['champ'].pop()
                 # Traduction du val (qui n'est qu'un index)
@@ -113,9 +116,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 if classe == '': eps = '' # Pas de classe, pas de chocolat
                 else: eps = self.server.db.lire_eps(self.server.date.year, classe)
                 rep = { 'liste': eps }
-            elif params.path == '/pending':
+            elif params.path == '/pending' and user == 'admin':
                 rep = self.server.db.lire_pending()
-            elif params.path == '/options':
+            elif params.path == '/options' and user == 'admin':
                 rep = { 'affectations': self.server.db.lire_classes(self.server.date.year), 
                     'niveaux': self.server.niveaux,
                     'sections': self.server.sections }
@@ -160,13 +163,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 self.server.auth_tries[ip] = [now]
             if len(self.server.auth_tries[ip]) < 6: # s'il y en a pas eu trop
                 mdp = form.getvalue('mdp')
-                if mdp == self.server.mdp:
-                    user = 'admin'
-                    self.server.cookie[ip] = user
-                    self.maj_cookie(ip)
-                    rep['statut'] = 0
-                    rep['message'] = user
-                    logging.info('Authentification de {0} depuis {1}'.format(user, self.client_address[0]))
+                if mdp == self.server.mdp_admin:
+                    rep = self.authentifier('admin', ip, rep)
+                elif mdp == self.server.mdp_eps:
+                    rep = self.authentifier('eps', ip, rep)
                 else:
                     rep['message'] = 'Mot de passe incorrect.'
             else: # Blocage !
@@ -188,6 +188,23 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         """
         expiration = datetime.datetime.now() + datetime.timedelta(minutes=10)
         self.server.cookie[ip]['expires'] = expiration.strftime("%a, %d-%b-%Y %H:%M:%S PST")
+
+    def authentifier(self, user, ip, rep):
+        """
+            Authentifie un utilisateur
+        :param user: le nom de l'utilisateur
+        :param ip: son adresse IP
+        :param rep: la réponse à retourner
+        :type user: str
+        :type ip: str
+        :type rep: dict
+        """
+        self.server.cookie[ip] = user
+        self.maj_cookie(ip)
+        rep['statut'] = 0
+        rep['message'] = user
+        logging.info('Authentification de {0} depuis {1}'.format(user, self.client_address[0]))
+        return rep
 
     def repondre(self, reponse):
         """

@@ -22,11 +22,10 @@
 
 ### Extension EPS
 * Authentification à distance avec ssl
-* Différent comptes, différents accès aux services
 * Gestion de l'appel et mail des absents pour la vie scolaire
 * contenteditable : input="number" ?
 * Ne voir que les élèves de l'année en cours !
 * Pouvoir verrouiller 1 note par élève
 * Calcul de la moyenne : 1 note par CP
-* CP : les fixer dans la BDD ?
+* CP : les fixer dans la BDD
 

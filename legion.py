@@ -44,7 +44,10 @@ class Legion(http.server.HTTPServer):
                     self.sections.append(c)
                     self.section_filière[c] = f
         # EPS
-        self.eps_activites=sorted([x.strip(' ').capitalize() for x in config.get('EPS', 'activités').split(',')])
+        self.eps_activites={}
+        for i in range(1,5):
+            for a in sorted([x.strip(' ').capitalize() for x in config.get('EPS', 'CP_{0}'.format(i)).split(',')]):
+                self.eps_activites[a] = i
         # Les colonnes qui seront affichées, dans l'ordre
         self.header = [ 'Nom', 'Prénom', 'Âge', 'Mail', 'Genre', 'Année', 'Classe', 'Établissement', 'Doublement', 'Entrée', 'Diplômé', 'Situation', 'Lieu' ]
 

@@ -25,6 +25,8 @@
 * Différent comptes, différents accès aux services
 * Gestion de l'appel et mail des absents pour la vie scolaire
 * contenteditable : input="number" ?
-* Ne voir que les éléves de l'année en cours !
-* Pouvoir verrouiller 1 ou 2 notes par élèves
+* Ne voir que les élèves de l'année en cours !
+* Pouvoir verrouiller 1 note par élève
+* Calcul de la moyenne : 1 note par CP
+* CP : les fixer dans la BDD ?
 

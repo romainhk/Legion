@@ -36,7 +36,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 'situations': self.server.situations,
                 'niveaux' : self.server.niveaux,
                 'eps' : self.server.db.lire_classes(self.server.date.year),
-                'activités' : self.server.eps_activites }
+                'activités' : list(self.server.eps_activites.keys()) }
             self.repondre(rep)
             return True
         elif params.path == '/liste-annees':
@@ -77,7 +77,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 if champ_can == 'Situation':
                     donnee = self.server.situations[int(d)]
                 elif champ_can == 'Activité':
-                    donnee = self.server.eps_activites[int(d)]
+                    donnee = list(self.server.eps_activites.keys())[int(d)]
                     table = 'EPS'
                 elif champ_can == 'Note':
                     donnee = d.replace(',', '.') # virgule anglo-saxone
@@ -439,7 +439,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                             ('effectif','int')]
             rep['data'] = []
             act = self.server.db.stats('eps activite', annee, les_niveaux)
-            for a in self.server.eps_activites:
+            for a in self.server.eps_activites.keys():
                 somme = 0
                 eff= 0
                 for b in act: # pour chaque ligne
@@ -451,7 +451,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 else: moyenne = '?'
                 v = { 'activité': a, 'moyenne': moyenne, 'effectif': eff}
                 rep['data'].append(v)
-            print(rep['data'])
         else:
             logging.error('Statistique {0} inconnue'.format(stat))
 

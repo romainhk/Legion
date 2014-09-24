@@ -49,10 +49,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         now = datetime.datetime.now()
         ip = self.client_address[0]
         if ip in self.server.cookie:
-            if self.server.cookie[ip].output(attrs='session') != '':
-                expires = datetime.datetime.strptime(self.server.cookie[ip]['expires'], "%a, %d-%b-%Y %H:%M:%S PST")
-            else:
+            if self.server.cookie[ip].output(attrs='session') == '':
                 return
+            #expires = datetime.datetime.strptime(self.server.cookie[ip]['expires'], "%a, %d-%b-%Y %H:%M:%S PST")
             # Fonctions à accès limité
             user = self.server.cookie[ip].value
             if params.path == '/liste' and user == 'admin':
@@ -66,7 +65,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 rep = self.generer_liste(annee, orderby, sens, niveau)
             elif params.path == '/stats':
                 stat = query['stat'].pop()
-                print(stat)
                 if user == 'admin' or (stat == 'EPS (activite)' and user == 'eps'):
                     annee = query.get('annee', ['1970']).pop()
                     niveaux = query.get('niveaux', ['0']).pop().split(',')
@@ -154,10 +152,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             # On vérifie le nombre de connexions récentes ...
             if ip in self.server.auth_tries:
                 a = {}
-                for i,at in self.server.auth_tries[ip].items():
+                for at in self.server.auth_tries[ip]:
                     if now - at <= datetime.timedelta(minutes=30):
-                        if ip in a: a[ip].append(at)
-                        else:       a[ip] = [at]
+                        if ip in a: a.append(at)
+                        else:       a = [at]
                 self.server.auth_tries[ip] = a
             else:
                 self.server.auth_tries[ip] = [now]

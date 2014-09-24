@@ -299,14 +299,20 @@ class Database():
                     data[ine]['Parcours'][an] = e
         return data
 
-    def lire_classes(self, annee):
+    def lire_classes(self, annee, niveau=''):
         """
             Lit le contenu de la table classes
         
+        :param annee:  l'année [sic]
+        :param niveau: si vaut 'eps', permet de limiter les classes aux 2e, 1er, Term
+        :type annee: int
         :rtype: OrderedDict
         """
         data = collections.OrderedDict()
-        req = 'SELECT * FROM Classes C NATURAL JOIN Affectations A WHERE A.Année={0} ORDER BY Classe ASC'.format(annee)
+        n = ''
+        if niveau == 'eps':
+            n = 'AND (C.Niveau="Seconde" OR C.Niveau="Première" OR C.Niveau="Terminale")'
+        req = 'SELECT * FROM Classes C NATURAL JOIN Affectations A WHERE A.Année={0} {1} ORDER BY Classe ASC'.format(annee, n)
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             key = d['Classe']
@@ -324,7 +330,7 @@ class Database():
         :rtype: OrderedDict
         """
         data = collections.OrderedDict()
-        req = 'SELECT * FROM Élèves El JOIN EPS E ON E.INE=El.INE JOIN Affectations A ON A.INE=El.INE WHERE Classe="{0}" AND E.Année="{1}" ORDER BY Nom,Prénom ASC'.format(classe, annee)
+        req = 'SELECT * FROM Élèves El JOIN EPS E ON E.INE=El.INE JOIN Affectations A ON A.INE=El.INE WHERE Classe="{0}" AND E.Année="{1}" AND A.Année="{1}" ORDER BY Nom,Prénom ASC'.format(classe, annee)
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             d['Élèves'] = d['Nom'] + ' ' + d['Prénom']

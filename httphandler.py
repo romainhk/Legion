@@ -35,7 +35,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 'header': self.server.header,
                 'situations': self.server.situations,
                 'niveaux' : self.server.niveaux,
-                'eps' : self.server.db.lire_classes(self.server.date.year),
+                'eps' : self.server.db.lire_classes(self.server.date.year, niveau='eps'),
                 'activités' : list(self.server.eps_activites.keys()) }
             self.repondre(rep)
             return True

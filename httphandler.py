@@ -52,8 +52,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             if self.server.cookie[ip].output(attrs='session') == '':
                 return
             #expires = datetime.datetime.strptime(self.server.cookie[ip]['expires'], "%a, %d-%b-%Y %H:%M:%S PST")
-            # Fonctions à accès limité
             user = self.server.cookie[ip].value
+            # Fonctions à accès limité
             if params.path == '/liste' and user == 'admin':
                 annee = int(query.get('annee', ['{0}'.format(self.server.date.year)]).pop())
                 orderby = query.get('col', ['Nom,Prénom']).pop()
@@ -160,13 +160,21 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 self.server.auth_tries[ip] = [now]
             if len(self.server.auth_tries[ip]) < 6: # s'il y en a pas eu trop
-                mdp = form.getvalue('mdp')
-                if mdp == self.server.mdp_admin:
-                    rep = self.authentifier('admin', ip, rep)
-                elif mdp == self.server.mdp_eps:
-                    rep = self.authentifier('eps', ip, rep)
+                login = ''
+                user = ''
+                if ip in self.server.cookie:
+                    user = self.server.cookie[ip].value
+                if len(user) > 0:
+                    # Déjà authentifié
+                    login = user
                 else:
-                    rep['message'] = 'Mot de passe incorrect.'
+                    # Test du mdp
+                    mdp = form.getvalue('mdp')
+                    if mdp == self.server.mdp_admin:
+                        login = 'admin'
+                    elif mdp == self.server.mdp_eps:
+                        login = 'eps'
+                if login != '': rep = self.authentifier(login, ip, rep)
             else: # Blocage !
                 logging.warning('Trop d\'authentifications. Bloquage de {0}.'.format(self.client_address[0]))
                 return False

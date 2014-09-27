@@ -11,6 +11,7 @@
 * Histogrammes : chevauchement quand trop de xlabels
 * Analyse des dépendances (au démarrage, vérification qu'elles sont disponibles)
 * setup.py : build d'une archive
+* sauvegarde auto journalière ?
 
 ### HTML
 * envoie de mail en masse : à tester
@@ -18,7 +19,7 @@
 ** importation de la base
 * Liste - situation : la liste déroulante disparait !
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
-* Login : ne pas afficher le formulaire de login si déjà connecté
+* Logout : refaire fonctionner le bouton quitter
 
 ### Extension EPS
 * Authentification à distance avec ssl

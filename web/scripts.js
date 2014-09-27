@@ -230,32 +230,7 @@ $(document).ready(function() {
     });
     // Formulaire de login
     $("#login-message").hide();
-    $("#login").on('submit', function(e){    
-        e.preventDefault(); // no-reload
-        $("#login-message").hide();
-        $.ajax({
-            type: "POST",
-            url: "auth",
-            data: { mdp: $("#motdepasse").val() },
-            success: function(html){
-                $("#login-message").show();
-                $("#motdepasse").val('');
-                statut = html['statut'];
-                message = html['message'];
-                if (statut == 0) {
-                    $("#login").hide();
-                    $("#login-message").html('Bienvenue '+message);
-                    // Rechargement de la première page
-                    $("#onglets").children().removeClass('actif');
-                    charger_page('Accueil');
-                } else {
-                    // Échec de connection
-                    $("#login-message").html(message);
-                }
-            }
-        });
-        return false;
-    });
+    $("#login").on('submit', authentification);
     // Ajout d'une méthode de tri par date
     $.fn.stupidtable.default_sort_fns["date"] = function(a, b) {
         aa = a.split('/');
@@ -332,6 +307,8 @@ $(document).ready(function() {
         // Fonction de filtrage de la liste
         $("#filtre").keypress(function (event) { rechercher(500); });
         $('.sortable').stupidtable();
+        // Test d'authentification
+        authentification();
     });
     $('#liste-annee, #liste-niveau').on('change', function(i,j) {
         $('#liste table th').removeClass('sorting-desc').removeClass('sorting-asc');

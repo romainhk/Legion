@@ -348,3 +348,39 @@ function rechercher(delay=0){
     }, delay);
 }
 
+function authentification(e=null) {
+    if (e) { e.preventDefault(); // no-reload
+    }
+    $("#login-message").hide();
+    $.ajax({
+        type: "POST",
+        url: "auth",
+        data: { mdp: $("#motdepasse").val() },
+        success: function(html){
+            $("#login-message").show();
+            $("#motdepasse").val('');
+            statut = html['statut'];
+            message = html['message'];
+            $('#onglets li').hide();
+            if (statut == 0) {
+                $("#login").hide();
+                $("#login-message").html('Bienvenue '+message);
+                if (message == 'admin') {
+                    $('#onglets li').show();
+                } else if (message == 'eps') {
+                    $("#onglets li:contains('EPS')").show();
+                    $("#onglets li:contains('Stats')").show();
+                }
+                // Rechargement de la première page
+                $("#onglets").children().removeClass('actif');
+                $('#export').show();
+                charger_page('Accueil');
+            } else {
+                // Échec de connection
+                $("#login-message").html(message);
+                $('#export').hide();
+            }
+        }
+    });
+    return false;
+}

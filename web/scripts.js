@@ -226,7 +226,7 @@ $(document).ready(function() {
     }).mouseout(function(event) {
         $(this).attr("src", 'img/quitter.png');
     }).on('click', function (event) {
-        charger_page('Quitter');
+        charger_page('quitter');
     });
     // Formulaire de login
     $("#login-message").hide();

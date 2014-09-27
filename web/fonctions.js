@@ -348,6 +348,9 @@ function rechercher(delay=0){
     }, delay);
 }
 
+/*
+ * Test d'authentification
+ */
 function authentification(e=null) {
     if (e) { e.preventDefault(); // no-reload
     }

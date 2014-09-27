@@ -19,7 +19,6 @@
 ** importation de la base
 * Liste - situation : la liste déroulante disparait !
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
-* Logout : refaire fonctionner le bouton quitter
 
 ### Extension EPS
 * Authentification à distance avec ssl

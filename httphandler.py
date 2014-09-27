@@ -121,8 +121,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     'niveaux': self.server.niveaux,
                     'sections': self.server.sections }
             elif params.path == '/quitter':
-                logging.info('Déconnection du client')
-                self.server.cookie[ip]['expires']='Thu, 01-Jan-1970 00:00:00 PST'
+                logging.info('Déconnection du client {0}'.format(ip))
+                if ip in self.server.cookie:
+                    self.server.cookie.pop(ip)
                 rep = 'Vous pouvez éteindre votre navigateur et reprendre une activité normale.'
                 self.repondre(rep)
                 return

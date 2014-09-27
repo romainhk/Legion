@@ -218,7 +218,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.flush()
 
     def generer_liste(self, annee, orderby, sens, niveau):
-        """ Génère les données pour la liste : annee, tableau au format html et nombre total d'élèves
+        """
+            Génère les données pour la liste (vue principale)
 
         :param annee: année de scolarisation
         :param orderby: clé de tri
@@ -228,7 +229,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         :type orderby: str
         :type sens: str
         :type niveau: str
-        :return: dict
+        :return: annee, tableau au format html, et nombre total d'élèves
+        :rtype: dict
         """
         if sens == 'ASC':
             data = self.server.db.lire(annee, orderby, sens, niveau)
@@ -286,8 +288,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         :type annee: int
         :type niveaux: array(str)
 
-        :return: dict(  'data'  : [ les données à afficher ],
-                        'ordre' : [ (ordre d'affichage des colonnes, type de donnees) ] }
+        :rtype: dict
+        :return: 'data'  : [ les données à afficher ],
+                 'ordre' : [ (ordre d'affichage des colonnes, type de donnees) ]
 
         - pour l'établissement
             - effectif total

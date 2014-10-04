@@ -194,15 +194,35 @@ class Database():
             return self.FAILED
         return self.INSERT
 
-    def ecrire_classes(self, classes):
+    def ecrire_classes(self, classes, server):
         """
             Insère une liste de classes (fin d'importation)
             
         :param classes: les classes à créer
+        :param server: pointeur vers le serveur (pour accéder à ses données)
         :type classes: list
+        :type server: pointeur
         """
+        sorted_sections = sorted(server.sections, key=len, reverse=True)
         for cla in classes:
-            req = 'INSERT INTO Classes VALUES ("{0}", "", "", "")'.format(cla)
+            # Recherche automatique de la section
+            sec = ''
+            for section in sorted_sections:
+                if section in cla:
+                    sec = section
+                    break
+            # Recherche automatique de la filière
+            fil = ''
+            if sec != '':
+                fil = server.section_filière[sec]
+            # Recherche automatique du niveau
+            niv = ''
+            if fil != 'Enseignement supérieur':
+                if cla[0] == '2':   niv = server.niveaux[0]
+                elif cla[0] == '1': niv = server.niveaux[1]
+                elif cla[0] == 'T': niv = server.niveaux[2]
+            # Insertion
+            req = 'INSERT INTO Classes VALUES ("{0}", "{1}", "{2}", "{3}")'.format(cla, niv, fil, sec)
             try:
                 self.curs.execute(req)
             except sqlite3.Error as e:

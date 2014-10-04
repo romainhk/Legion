@@ -612,4 +612,4 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             if not (classe in les_classes or classe in classes_a_ajouter or classe is None) :
                 classes_a_ajouter.append(classe)
         # Ici, les données élèves ont été importé ; il ne reste qu'à ajouter les classes inconnues
-        self.server.db.ecrire_classes(classes_a_ajouter)
+        self.server.db.ecrire_classes(classes_a_ajouter, self.server)

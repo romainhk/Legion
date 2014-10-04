@@ -13,7 +13,7 @@
 * Histogrammes : chevauchement quand trop de xlabels
 * Analyse des dépendances (au démarrage, vérification qu'elles sont disponibles)
 * setup.py : build d'une archive
-* affectation auto des niveau / section par classe (à partir du MEF ?)
+* affectation auto des niveau / section par classe en utilisant le code MEF
 * lancement en tant que service 
 
 ### HTML

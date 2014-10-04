@@ -14,7 +14,6 @@
 * Analyse des dépendances (au démarrage, vérification qu'elles sont disponibles)
 * setup.py : build d'une archive
 * affectation auto des niveau / section par classe (à partir du MEF ?)
-* graphiques sans x : http://stackoverflow.com/questions/4931376/generating-matplotlib-graphs-without-a-running-x-server
 * lancement en tant que service 
 
 ### HTML

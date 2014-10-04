@@ -14,8 +14,10 @@ import cgi, http.cookies
 #lib spécifique
 from liblegion import *
 #graphiques
+import matplotlib
+# On force le mode de matplotlib pour les serveurs sans serveur X
+matplotlib.use('Agg')
 from pylab import *
-import numpy as np
 
 class HttpHandler(http.server.SimpleHTTPRequestHandler):
     """

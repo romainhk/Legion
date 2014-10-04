@@ -46,7 +46,7 @@ CREATE TABLE "Classes" (
 CREATE TABLE "EPS" (
     -- Les notes d'EPS de chaque élèves
     "INE" TEXT,
-    "Année" INTEGER,
+    "Tier" INTEGER, -- 1 = CAP, 2 = 1er/Terminal
     "Activité 1" TEXT DEFAULT (''),
     "Note 1" REAL DEFAULT (-1.0), -- 0 >= note >= 20 ; -1 = exempt
     "Activité 2" TEXT DEFAULT (''),
@@ -57,5 +57,6 @@ CREATE TABLE "EPS" (
     "Note 4" REAL DEFAULT (-1.0),
     "Activité 5" TEXT DEFAULT (''),
     "Note 5" REAL DEFAULT (-1.0),
-    PRIMARY KEY(INE,Année)
+    "Verrou" INTEGER DEFAULT(0), -- indice de la note verrouillée ; 0 = aucune
+    PRIMARY KEY(INE,Tier)
 );

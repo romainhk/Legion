@@ -128,9 +128,10 @@ class Database():
             inc_list(self.importations, self.FAILED)
             return self.FAILED
 
-        # Ajout de l'élève dans la base EPS
-        req = 'INSERT OR IGNORE INTO EPS (INE, Année) VALUES ("{0}", {1})'.format(ine, date.year)
-        self.curs.execute(req)
+        # Ajout de l'élève dans la base EPS (dans les 2 niveaux)
+        for i in range(1,3):
+            req = 'INSERT OR IGNORE INTO EPS (INE, Tier) VALUES ("{0}", {1})'.format(ine, i)
+            self.curs.execute(req)
         # Reste à affecter notre élève à sa classe de cette année et de l'année dernière
         x = self.ecrire_affectation(
                 ine, date.year, classe, enr['mef'], self.nom_etablissement, enr['doublement'])
@@ -184,7 +185,7 @@ class Database():
             #logging.info("Erreur lors de l'affectation : classe ou établissement en défaut")
             return False
         req = 'INSERT OR REPLACE INTO Affectations ' \
-              +  '(INE, Année, Classe, Établissement, MEF, Doublement) ' \
+              +  '(INE, Année, Classe, MEF, Établissement, Doublement) ' \
               + 'VALUES ("{0}", {1}, "{2}", "{3}", "{4}", {5})'.format( ine, annee, classe, mef, etab, doublement )
         try:
             self.curs.execute(req)
@@ -331,8 +332,9 @@ class Database():
         :type classe: str
         :rtype: OrderedDict
         """
+        tier = 2 # le tier voulu
         data = collections.OrderedDict()
-        req = 'SELECT * FROM Élèves El JOIN EPS E ON E.INE=El.INE JOIN Affectations A ON A.INE=El.INE WHERE Classe="{0}" AND E.Année="{1}" AND A.Année="{1}" ORDER BY Nom,Prénom ASC'.format(classe, annee)
+        req = 'SELECT * FROM Élèves El JOIN EPS E ON E.INE=El.INE JOIN Affectations A ON A.INE=El.INE WHERE Classe="{0}" AND A.Année="{1}" AND Tier={2} ORDER BY Nom,Prénom ASC'.format(classe, annee, tier)
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             d['Élèves'] = d['Nom'] + ' ' + d['Prénom']
@@ -401,8 +403,8 @@ class Database():
         les_niveaux = '('+' OR '.join(['CN.Niveau="'+s+'"' for s in niveaux])+')'
         if info == "ouverture": # ouverture
             req = """SELECT 
-            sum(CASE WHEN "Niveau" LIKE "" THEN 0 ELSE 1 END)+sum(CASE WHEN "Section" LIKE "" THEN 0 ELSE 1 END) as n,
-            count(*) as total FROM Classes"""
+            sum(CASE WHEN "Niveau" LIKE "" THEN 0 ELSE 1 END)+sum(CASE WHEN "Section" LIKE "" THEN 0 ELSE 1 END) AS n,
+            count(*) AS total FROM Classes"""
         elif info == "totaux": # totaux
             # Calcul des totaux :
             # Nombre d'élèves, d'hommes, doublants, nouveaux, issues de pro
@@ -465,7 +467,7 @@ class Database():
             "Activité 4", sum(CASE WHEN "Note 4">0 THEN "Note 4" ELSE 0 END) as n4,
             "Activité 5", sum(CASE WHEN "Note 5">0 THEN "Note 5" ELSE 0 END) as n5, count(*) as nombre
             FROM EPS JOIN Affectations A, Classes CN ON A.INE=EPS.INE AND CN.Classe=A.Classe
-            WHERE EPS.Année={0} AND Établissement="{1}" AND {niv}
+            WHERE A.Année={0} AND Établissement="{1}" AND {niv}
             GROUP BY "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5" """.format(annee, self.nom_etablissement, niv=les_niveaux)
         else:
             logging.error('Information "{0}" non disponible'.format(info))

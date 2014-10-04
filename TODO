@@ -6,7 +6,6 @@
 * Pour les élèves sorties : durée de scolarisation
 * affecter toutes les classes 2014 -> taux de 72% de couverture dans la page Stats
 * provenance : donner aussi les inconnues
-* afficher le code mef dans les stats de Provenance (classe)
 
 ### Python
 * colonne Diplômé : importation automatisée depuis ...

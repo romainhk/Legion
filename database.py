@@ -450,7 +450,7 @@ class Database():
             GROUP BY A2.Établissement""".format(annee, annee-1, niv=les_niveaux)
         elif info == "provenance classe": # provenance classe
             req = """SELECT CN.Classe classe, A2.Classe provenance, 
-            A2.Établissement, count(*) total 
+            A2.Établissement, A2.MEF, count(*) AS total 
             FROM Classes CN LEFT JOIN Affectations A ON CN.Classe=A.Classe 
             LEFT JOIN Élèves E ON A.INE=E.INE 
             LEFT JOIN Affectations A2 ON A2.INE=A.INE 

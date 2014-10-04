@@ -133,14 +133,14 @@ class Database():
         self.curs.execute(req)
         # Reste à affecter notre élève à sa classe de cette année et de l'année dernière
         x = self.ecrire_affectation(
-                ine,    date.year,     classe,  self.nom_etablissement,  enr['doublement'])
+                ine, date.year, classe, enr['mef'], self.nom_etablissement, enr['doublement'])
         etab = enr['sad_établissement']
         classe_pre = enr['sad_classe']
         if enr['doublement'] == 1: # Parfois, ces informations ne sont pas redonnées dans SIECLE
             classe_pre = classe
             etab = self.nom_etablissement
         y = self.ecrire_affectation(
-                ine,    date.year-1,   classe_pre,  etab,   9)
+                ine, date.year-1, classe_pre, enr['sad_mef'], etab, 9)
         # En cas de problème, annulation des modifications précédentes
         if x == self.FAILED:
             raison.append('Pb affectation année en cours')
@@ -163,18 +163,20 @@ class Database():
         inc_list(self.importations, self.INSERT)
         return self.INSERT
 
-    def ecrire_affectation(self, ine, annee, classe, etab, doublement):
+    def ecrire_affectation(self, ine, annee, classe, mef, etab, doublement):
         """
             Ajoute une affectations (un élève, dans une classe, dans un établissement)
 
         :param ine: l'INE de l'élève
         :param annee: l'année de scolarisation
         :param classe: sa classe
+        :param mef: le code mef de la classe affectée
         :param etab: le nom de l'établissement
         :param doublement: si c'est un redoublement
         :type ine: str
         :type annee: int
         :type classe: str
+        :type mef: str
         :type etab: str
         :type doublement: int - 0 ou 1
         """
@@ -182,8 +184,8 @@ class Database():
             #logging.info("Erreur lors de l'affectation : classe ou établissement en défaut")
             return False
         req = 'INSERT OR REPLACE INTO Affectations ' \
-              +  '(INE, Année, Classe, Établissement, Doublement) ' \
-              + 'VALUES ("{0}", {1}, "{2}", "{3}", {4})'.format( ine, annee, classe, etab, doublement )
+              +  '(INE, Année, Classe, Établissement, MEF, Doublement) ' \
+              + 'VALUES ("{0}", {1}, "{2}", "{3}", "{4}", {5})'.format( ine, annee, classe, mef, etab, doublement )
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:

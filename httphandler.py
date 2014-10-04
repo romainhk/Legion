@@ -594,15 +594,17 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             naissance = eleve.findtext('DATE_NAISS')
             genre = eleve.findtext('CODE_SEXE')
             mail = xstr(eleve.findtext('MEL'))
+            mef = xstr(eleve.findtext('CODE_MEF'))
             doublement = eleve.findtext('DOUBLEMENT')
             j, m, entrée = eleve.findtext('DATE_ENTREE').split('/')
             classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE[TYPE_STRUCTURE='D']/CODE_STRUCTURE".format(eid))
             sad_etab = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/DENOM_COMPL')).title()
             sad_classe = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_STRUCTURE')).strip(' ')
+            sad_mef = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_MEF'))
             enr = { 'eid': eid, 'ine': ine, 'nom': nom, 'prénom': prenom, \
-                    'naissance': naissance, 'genre': genre, 'mail': mail, \
+                    'naissance': naissance, 'genre': genre, 'mail': mail, 'mef': mef, \
                     'doublement': doublement, 'classe': classe, 'entrée': entrée, \
-                    'sad_établissement': sad_etab,   'sad_classe': sad_classe }
+                    'sad_établissement': sad_etab,   'sad_classe': sad_classe,  'sad_mef': sad_mef }
             self.server.db.ecrire(enr, self.server.date)
             if not (classe in les_classes or classe in classes_a_ajouter or classe is None) :
                 classes_a_ajouter.append(classe)

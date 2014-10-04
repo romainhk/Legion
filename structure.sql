@@ -16,6 +16,7 @@ CREATE TABLE "Affectations" (
     "INE" TEXT,
     "Année" INTEGER,
     "Classe" TEXT NOT NULL,
+    "MEF" TEXT DEFAULT (null),
     "Établissement" TEXT DEFAULT (null),
     "Doublement" INTEGER  DEFAULT (9), -- 0=non, 1=oui, 9=indéterminé
     PRIMARY KEY(INE,Année)
@@ -35,7 +36,7 @@ CREATE TABLE "Pending" (
     "Raison" TEXT DEFAULT (null)
 );
 CREATE TABLE "Classes" (
-    -- Classement des classes (sic)
+    -- Classification des classes de l'établissement
     "Classe" TEXT NOT NULL,
     "Niveau" TEXT NOT NULL,
     "Filière" TEXT NOT NULL,

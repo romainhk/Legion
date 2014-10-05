@@ -474,13 +474,12 @@ class Database():
             WHERE A.Année={0} AND A2.Année={1} AND {niv} 
             GROUP BY A2.Établissement""".format(annee, annee-1, niv=les_niveaux)
         elif info == "provenance classe": # provenance classe
-            req = """SELECT CN.Classe classe, A2.Classe provenance, 
-            A2.Établissement, A2.MEF, count(*) AS total 
+            req = """SELECT CN.Classe classe, IFNULL(A2.Classe,'inconnue') AS provenance,
+            IFNULL(A2.Établissement, 'inconnu') AS Établissement, IFNULL(A2.MEF, '?') AS MEF, count(*) AS total 
             FROM Classes CN LEFT JOIN Affectations A ON CN.Classe=A.Classe 
-            LEFT JOIN Élèves E ON A.INE=E.INE 
-            LEFT JOIN Affectations A2 ON A2.INE=A.INE 
-            WHERE A.Année={0} AND A2.Année={1} AND {niv} 
-            GROUP BY A2.Classe ORDER BY CN.Classe,A2.Établissement,A2.Classe""".format(annee, annee-1, niv=les_niveaux)
+            LEFT JOIN Affectations A2 ON A.INE=A2.INE AND A2.Année={1}
+            WHERE A.Année={0} AND {niv}  GROUP BY A2.Classe,A.Classe
+            ORDER BY CN.Classe,A2.Établissement,A2.Classe""".format(annee, annee-1, niv=les_niveaux)
         elif info == "taux de passage": # taux de passage
             req = """SELECT Section, Niveau, INE, Année 
             FROM Affectations A LEFT JOIN Classes CN ON A.Classe=CN.Classe 

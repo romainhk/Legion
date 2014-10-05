@@ -177,6 +177,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         login = 'admin'
                     elif mdp == self.server.mdp_eps:
                         login = 'eps'
+                    else:
+                        rep['message'] = 'Mauvais mot de passe'
                 if login != '': rep = self.authentifier(login, ip, rep)
             else: # Blocage !
                 logging.warning('Trop d\'authentifications. Bloquage de {0}.'.format(self.client_address[0]))

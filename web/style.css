@@ -276,3 +276,14 @@ header .quitter {
 #eps-classes {
     margin-bottom:0.5ex;
 }
+/*
+ * Graceful degradation (pas de js)
+ */
+#liste, #stats, #eps, #pending, #options, .action, .quitter {
+    display: none;
+}
+#noauth:after{
+    display:block;
+    margin-top:1ex;
+    content:"Javascript est nécessaire pour utiliser ce site."
+}

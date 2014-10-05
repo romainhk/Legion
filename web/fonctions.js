@@ -377,6 +377,7 @@ function authentification(e=null) {
                 // Rechargement de la première page
                 $("#onglets").children().removeClass('actif');
                 $('#export').show();
+                $('.quitter').show();
                 charger_page('Accueil');
             } else {
                 // Échec de connection

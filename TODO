@@ -4,7 +4,7 @@
 * Absentéisme : ratio du nombre d'heures de cours non suivi / nombre total d'heures de la section (-> cpe ; recoupement avec pronote ?)
 * Taux de réussite au BAC, au BTS
 * Pour les élèves sorties : durée de scolarisation
-* affecter toutes les classes 2014 -> taux de 72% de couverture dans la page Stats
+* affecter toutes les classes 2014 -> taux de 72% de couverture dans la page Stats (lier avec affectations de 2014)
 * provenance : donner aussi les inconnues
 
 ### Python
@@ -31,4 +31,5 @@
 * Calcul de la moyenne : 1 note par CP
 * CP : les fixer dans la BDD
 * découpage en tier (CAP & 1er/Terminal)
+* challenge de mot de passe en clair !
 

@@ -582,9 +582,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         tree = ET.parse(fichier_tmp)
         root = tree.getroot()
         # Nettoyage, si ce n'est pas un import d'une année précédente
-        annee = root.findtext('.//PARAMETRES/ANNEE_SCOLAIRE')
+        annee = int(root.findtext('.//PARAMETRES/ANNEE_SCOLAIRE'))
         pending = False
-        if self.server.date.year == int(annee):
+        if self.server.date.year == annee:
             pending = True
             self.server.db.vider_pending()
         # Traitement des données
@@ -613,7 +613,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     'naissance': naissance, 'genre': genre, 'mail': mail, 'mef': mef, \
                     'doublement': doublement, 'classe': classe, 'entrée': entrée, \
                     'sad_établissement': sad_etab,   'sad_classe': sad_classe,  'sad_mef': sad_mef }
-            self.server.db.ecrire(enr, self.server.date, pending)
+            self.server.db.ecrire(enr, annee, pending)
             if not (classe in les_classes or classe in classes_a_ajouter or classe is None) :
                 classes_a_ajouter.append(classe)
         # Ici, les données élèves ont été importé ; il ne reste qu'à ajouter les classes inconnues

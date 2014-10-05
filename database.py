@@ -81,15 +81,15 @@ class Database():
         self.conn.commit()
         return 'Oui'
 
-    def ecrire(self, enr, date, mise_en_pending=False):
+    def ecrire(self, enr, annee, mise_en_pending=False):
         """
             Ajoute les informations d'un élève à la bdd
 
         :param enr: les données à enregistrer
-        :param date: l'objet date de référence pour l'importation
+        :param annee: l'année de référence pour l'importation
         :param mise_en_pending: s'il faut mettre les erreurs en pending, ou non
         :type enr: dict
-        :type date: datetime
+        :type annee: int
         :type mise_en_pending: booléen
         :return: define du type d'importation effectuée
         :rtype: int
@@ -112,8 +112,6 @@ class Database():
                 else:
                     inc_list(self.importations, self.FAILED)
                     return self.FAILED
-            else:
-                return
         # Conversion de la date au format ISO-8601
         n = enr['naissance'].split('/')
         enr['naissance'] = '{0}-{1}-{2}'.format(n[2], n[1], n[0])
@@ -140,14 +138,14 @@ class Database():
             self.curs.execute(req)
         # Reste à affecter notre élève à sa classe de cette année et de l'année dernière
         x = self.ecrire_affectation(
-                ine, date.year, classe, enr['mef'], self.nom_etablissement, enr['doublement'])
+                ine, annee, classe, enr['mef'], self.nom_etablissement, enr['doublement'])
         etab = enr['sad_établissement']
         classe_pre = enr['sad_classe']
         if enr['doublement'] == 1: # Parfois, ces informations ne sont pas redonnées dans SIECLE
             classe_pre = classe
             etab = self.nom_etablissement
         y = self.ecrire_affectation(
-                ine, date.year-1, classe_pre, enr['sad_mef'], etab, 9)
+                ine, annee-1, classe_pre, enr['sad_mef'], etab, 9)
         # En cas de problème, annulation des modifications précédentes
         if x == self.FAILED:
             raison.append('Pb affectation année en cours')

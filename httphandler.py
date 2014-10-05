@@ -68,7 +68,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             elif params.path == '/stats':
                 stat = query['stat'].pop()
                 if user == 'admin' or (stat == 'EPS (activite)' and user == 'eps'):
-                    annee = query.get('annee', ['1970']).pop()
+                    annee = query.get('annee', [self.server.date.year]).pop()
                     niveaux = query.get('niveaux', ['0']).pop().split(',')
                     rep = self.generer_stats(stat, int(annee), niveaux)
             elif params.path == '/maj' and user == 'admin':
@@ -578,13 +578,15 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         f = open(fichier_tmp, 'w', encoding='ISO-8859-15')
         f.write(data)
         f.close()
-        # Nettoyage
-        self.server.db.vider_pending()
-        # Parsing
+        # Parsing du fichier
         tree = ET.parse(fichier_tmp)
         root = tree.getroot()
-        self.server.maj_date( debut_AS( int(root.findtext('.//PARAMETRES/ANNEE_SCOLAIRE')) ) )
-        date = root.findtext('.//PARAMETRES/DATE_EXPORT')
+        #self.server.maj_date( debut_AS( int(root.findtext('.//PARAMETRES/ANNEE_SCOLAIRE')) ) )
+        annee = root.findtext('.//PARAMETRES/ANNEE_SCOLAIRE')
+        # Nettoyage, si ce n'est pas un import d'une année précédente
+        if self.server.date.year == annee:
+            self.server.db.vider_pending()
+        # Traitement des données
         for eleve in root.iter('ELEVE'):
             sortie = eleve.findtext('DATE_SORTIE')
             if sortie and sortie.split('/')[1] == '09':

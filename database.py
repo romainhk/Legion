@@ -424,7 +424,8 @@ class Database():
         if info == "ouverture": # ouverture
             req = """SELECT 
             sum(CASE WHEN "Niveau" LIKE "" THEN 0 ELSE 1 END)+sum(CASE WHEN "Section" LIKE "" THEN 0 ELSE 1 END) AS n,
-            count(*) AS total FROM Classes"""
+            count(*) AS total FROM Classes
+            WHERE Classe IN (SELECT DISTINCT Classe FROM Affectations WHERE Année={0})""".format(annee)
         elif info == "totaux": # totaux
             # Calcul des totaux :
             # Nombre d'élèves, d'hommes, doublants, nouveaux, issues de pro

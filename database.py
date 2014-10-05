@@ -81,14 +81,16 @@ class Database():
         self.conn.commit()
         return 'Oui'
 
-    def ecrire(self, enr, date):
+    def ecrire(self, enr, date, mise_en_pending=False):
         """
             Ajoute les informations d'un élève à la bdd
 
         :param enr: les données à enregistrer
         :param date: l'objet date de référence pour l'importation
+        :param mise_en_pending: s'il faut mettre les erreurs en pending, ou non
         :type enr: dict
         :type date: datetime
+        :type mise_en_pending: booléen
         :return: define du type d'importation effectuée
         :rtype: int
         """
@@ -96,18 +98,22 @@ class Database():
         classe = enr['classe']
         enr['Diplômé'] = enr['Situation'] = enr['Lieu'] = ''
         raison = []
-        if ine is None:
-            raison.append("Pas d'INE")
-        if classe is None:
-            raison.append('Pas de classe')
-        if len(raison) > 0:
-            if self.ecrire_en_pending(enr, ', '.join(raison)):
-                self.conn.commit()
-                inc_list(self.importations, self.PENDING)
-                return self.PENDING
+        # Écriture des données en pending ?
+        if mise_en_pending:
+            if ine is None:
+                raison.append("Pas d'INE")
+            if classe is None:
+                raison.append('Pas de classe')
+            if len(raison) > 0:
+                if self.ecrire_en_pending(enr, ', '.join(raison)):
+                    self.conn.commit()
+                    inc_list(self.importations, self.PENDING)
+                    return self.PENDING
+                else:
+                    inc_list(self.importations, self.FAILED)
+                    return self.FAILED
             else:
-                inc_list(self.importations, self.FAILED)
-                return self.FAILED
+                return
         # Conversion de la date au format ISO-8601
         n = enr['naissance'].split('/')
         enr['naissance'] = '{0}-{1}-{2}'.format(n[2], n[1], n[0])

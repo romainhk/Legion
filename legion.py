@@ -68,14 +68,6 @@ class Legion(http.server.HTTPServer):
         #for a,b,c in pkgutil.iter_modules():
         #    modules.append(b)
 
-    #def maj_date(self, date):
-    #    """
-    #        Seter sur la date
-    #    :param date: date d'importation
-    #    :type date: datetime
-    #    """
-    #    self.date = date
-
     def quitter(self):
         """ Éteint le programme proprement """
         self.db.fermer()

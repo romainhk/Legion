@@ -18,8 +18,9 @@
 * envoie de mail en masse : à tester
 * Ajouter des tutoriels sur l'importation (quand les faire ?...)
 ** importation de la base
-* Liste - situation : la liste déroulante disparait !
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
+* Pending : date de l'exportation
+* Où est passée la page d'accueil ?
 
 ### Extension EPS
 * Authentification à distance avec ssl

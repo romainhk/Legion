@@ -79,6 +79,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 champ_can = champ.split(' ')[0] # Champ canonique = que la première partie
                 if champ_can == 'Situation':
                     donnee = self.server.situations[int(d)]
+                elif champ_can == 'Diplômé' or champ_can == 'Lieu':
+                    donnee = d
                 elif champ_can == 'Activité':
                     donnee = list(self.server.eps_activites.keys())[int(d)]
                     table = 'EPS'
@@ -88,6 +90,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         self.repondre('Non')
                         return
                     table = 'EPS'
+                else:
+                    self.repondre('Non')
+                    return
                 if d == '-1': donnee = '' # Cas d'une RAZ
                 rep = self.server.db.maj_champ(table, ine, champ, donnee)
             elif params.path == '/maj_classe' and user == 'admin':

@@ -136,9 +136,6 @@ function charger_page(nom) {
 
     if (nom == 'accueil') {
         page_active = 'accueil';
-        $.get( "/accueil.html", function( data ) {
-            $("#accueil").html(data);
-        });
     } else if (nom == 'quitter') {
         page_active = 'quitter';
         $.get( "/quitter", function( data ) {
@@ -219,6 +216,10 @@ $(document).ready(function() {
     $("#onglets li").click(function(event) {
         target = $(event.target);
         charger_page(target.html());
+    });
+    // Pré-chargement de la page d'accueil
+    $.get( "/accueil.html", function( data ) {
+        $("#accueil").html(data);
     });
     // Bouton quitter
     $(".quitter").hover(function(event) {
@@ -316,6 +317,6 @@ $(document).ready(function() {
     });
     stats_listes();
     // Chargement de la page accueil
-    charger_page('Accueil');
+    charger_page('accueil');
 });
 

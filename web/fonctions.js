@@ -367,7 +367,7 @@ function authentification(e=null) {
             $('#onglets li').hide();
             if (statut == 0) {
                 $("#login").hide();
-                $("#login-message").html('Bienvenue '+message);
+                $("#login-message").html('Bonjour '+message);
                 if (message == 'admin') {
                     $('#onglets li').show();
                 } else if (message == 'eps') {
@@ -378,7 +378,7 @@ function authentification(e=null) {
                 $("#onglets").children().removeClass('actif');
                 $('#export').show();
                 $('.quitter').show();
-                charger_page('Accueil');
+                charger_page('accueil');
             } else {
                 // Échec de connection
                 $("#login-message").html(message);

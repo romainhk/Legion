@@ -110,7 +110,7 @@ if __name__ == "__main__":
     #server.socket = ssl.wrap_socket(server, certfile='cert.pem', server_side=True, cert_reqs=ssl.CERT_REQUIRED)
     thread = threading.Thread(target = server.serve_forever)
     thread.deamon = True
-    logging.info('Démarrage du serveur sur le port {0}'.format(port))
+    logging.info('Démarrage du serveur (PID {1}) sur le port {0}'.format(port, os.getpid()))
     time.sleep(0.2)
     thread.start()
     # Interception des signaux d'extinction (2 et 15)

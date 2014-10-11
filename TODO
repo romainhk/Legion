@@ -12,7 +12,6 @@
 * Analyse des dépendances (au démarrage, vérification qu'elles sont disponibles)
 * setup.py : build d'une archive
 * affectation auto des niveau / section par classe en utilisant le code MEF
-* lancement en tant que service 
 
 ### HTML
 * envoie de mail en masse : à tester

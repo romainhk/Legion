@@ -355,10 +355,12 @@ function authentification(e=null) {
     if (e) { e.preventDefault(); // no-reload
     }
     $("#login-message").hide();
+    var shaObj = new jsSHA($("#motdepasse").val(), "TEXT");
+    motdepasse = shaObj.getHash("SHA-512", "HEX");
     $.ajax({
         type: "POST",
         url: "auth",
-        data: { mdp: $("#motdepasse").val() },
+        data: { mdp: motdepasse },
         success: function(html){
             $("#login-message").show();
             $("#motdepasse").val('');

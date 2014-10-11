@@ -217,10 +217,6 @@ $(document).ready(function() {
         target = $(event.target);
         charger_page(target.html());
     });
-    // Pré-chargement de la page d'accueil
-    $.get( "/accueil.html", function( data ) {
-        $("#accueil").html(data);
-    });
     // Bouton quitter
     $(".quitter").hover(function(event) {
         $(this).attr("src", 'img/quitter_hover.png');

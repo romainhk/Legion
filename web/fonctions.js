@@ -380,7 +380,11 @@ function authentification(e=null) {
                 $("#onglets").children().removeClass('actif');
                 $('#export').show();
                 $('.quitter').show();
-                charger_page('accueil');
+                // Chargement de la page d'accueil
+                $.get( "/accueil.html", function( data ) {
+                    $("#accueil").html(data);
+                    charger_page('accueil');
+                });
             } else {
                 // Échec de connection
                 $("#login-message").html(message);

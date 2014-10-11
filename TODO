@@ -19,7 +19,6 @@
 ** importation de la base
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * Pending : date de l'exportation
-* pas d'accueil si pas loggé
 
 ### Extension EPS
 * Authentification à distance avec ssl

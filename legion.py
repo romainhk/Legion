@@ -44,11 +44,6 @@ class Legion(http.server.HTTPServer):
                     c = b.strip(' ')
                     self.sections.append(c)
                     self.section_filière[c] = f
-        # EPS
-        self.eps_activites={}
-        for i in range(1,5):
-            for a in sorted([x.strip(' ').capitalize() for x in config.get('EPS', 'CP_{0}'.format(i)).split(',')]):
-                self.eps_activites[a] = i
         # Les colonnes qui seront affichées, dans l'ordre
         self.header = [ 'Nom', 'Prénom', 'Âge', 'Mail', 'Genre', 'Année', 'Classe', 'Établissement', 'Doublement', 'Entrée', 'Diplômé', 'Situation', 'Lieu' ]
 
@@ -60,6 +55,8 @@ class Legion(http.server.HTTPServer):
         # DB
         self.db = database.Database(root, self.nom_etablissement)
         self.lire = None
+        # EPS
+        self.eps_activites=self.db.lire_eps_activites()
         # Suite de couleurs utilisés pour les graphiques
         self.colors=('#0080FF', '#FF0080', '#80FF00',
                      '#8000FF', '#FF8000', '#00FF80',

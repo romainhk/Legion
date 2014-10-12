@@ -60,3 +60,43 @@ CREATE TABLE "EPS" (
     "Verrou" INTEGER DEFAULT(0), -- indice de la note verrouillée ; 0 = aucune
     PRIMARY KEY(INE,Tier)
 );
+CREATE TABLE "EPS_Activités" (
+    -- Liste des activités d'EPS et classement en compétence propre
+    "Activité" TEXT,
+    "CP" INTEGER,
+    PRIMARY KEY(Activité)
+);
+INSERT INTO `EPS_Activités` VALUES('Course de ½ fond',1);
+INSERT INTO `EPS_Activités` VALUES('course de haies',1);
+INSERT INTO `EPS_Activités` VALUES('course de relais-vitesse',1);
+INSERT INTO `EPS_Activités` VALUES('lancer du disque',1);
+INSERT INTO `EPS_Activités` VALUES('lancer de javelot',1);
+INSERT INTO `EPS_Activités` VALUES('saut en hauteur',1);
+INSERT INTO `EPS_Activités` VALUES('pentabond',1);
+INSERT INTO `EPS_Activités` VALUES('natation de vitesse',1);
+INSERT INTO `EPS_Activités` VALUES('natation de distance',1);
+INSERT INTO `EPS_Activités` VALUES('Triathlon',1);
+INSERT INTO `EPS_Activités` VALUES('Escalade',2);
+INSERT INTO `EPS_Activités` VALUES("course d'orientation",2);
+INSERT INTO `EPS_Activités` VALUES('natation sauvetage',2);
+INSERT INTO `EPS_Activités` VALUES('VTT',2);
+INSERT INTO `EPS_Activités` VALUES('Acrosport',3);
+INSERT INTO `EPS_Activités` VALUES('aérobic',3);
+INSERT INTO `EPS_Activités` VALUES('arts du cirque',3);
+INSERT INTO `EPS_Activités` VALUES('danse',3);
+INSERT INTO `EPS_Activités` VALUES('gymnastique',3);
+INSERT INTO `EPS_Activités` VALUES('gymnastique rythmique',3);
+INSERT INTO `EPS_Activités` VALUES('Basket-ball',4);
+INSERT INTO `EPS_Activités` VALUES('football',4);
+INSERT INTO `EPS_Activités` VALUES('handball',4);
+INSERT INTO `EPS_Activités` VALUES('rugby',4);
+INSERT INTO `EPS_Activités` VALUES('volley-ball',4);
+INSERT INTO `EPS_Activités` VALUES('badminton',4);
+INSERT INTO `EPS_Activités` VALUES('tennis de table',4);
+INSERT INTO `EPS_Activités` VALUES('boxe française',4);
+INSERT INTO `EPS_Activités` VALUES('judo',4);
+INSERT INTO `EPS_Activités` VALUES('lutte',4);
+INSERT INTO `EPS_Activités` VALUES('Course en durée',5);
+INSERT INTO `EPS_Activités` VALUES('musculation',5);
+INSERT INTO `EPS_Activités` VALUES('natation en durée',5);
+INSERT INTO `EPS_Activités` VALUES('step',5);

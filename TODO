@@ -26,6 +26,5 @@
 * contenteditable : input="number" ?
 * Pouvoir verrouiller 1 note par élève
 * Calcul de la moyenne : 1 note par CP
-* CP : les fixer dans la BDD
 * découpage en tier (CAP & 1er/Terminal)
 

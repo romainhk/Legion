@@ -384,6 +384,21 @@ class Database():
             data[d['INE']] = d
         return data
 
+    def lire_eps_activites(self):
+        """
+            Lit les activités d'EPS
+        
+        :rtype: dict
+        """
+        #data = {}
+        data = collections.OrderedDict()
+        req = 'SELECT * FROM EPS_Activités ORDER BY CP,Activité'
+        for row in self.curs.execute(req).fetchall():
+            d = dict_from_row(row)
+            clé = d['Activité'].capitalize()
+            data[clé] = d['CP']
+        return data
+
     def lire_pending(self):
         """
             Lit le contenu de la base des élèves en pending

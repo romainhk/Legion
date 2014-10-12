@@ -38,7 +38,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 'situations': self.server.situations,
                 'niveaux' : self.server.niveaux,
                 'eps' : self.server.db.lire_classes(self.server.date.year, niveau='eps'),
-                'activités' : list(self.server.eps_activites.keys()) }
+                'activités' : self.server.eps_activites }
             self.repondre(rep)
             return True
         elif params.path == '/liste-annees':

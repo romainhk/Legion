@@ -273,20 +273,33 @@ function cell_to_select(e) {
     if (s.length == 0 && c['x']) {
         valeurs = null;
         col = cell.parentsUntil('table').parent().find("th:nth-child("+(c['x']+1)+")").html();
+        var type_option = 1;
         if (col == "Niveau") { valeurs = niveaux; }
         else if (col == "Filière") { valeurs = filières; }
         else if (col == "Section") { valeurs = sections; }
         else if (col == "Situation") { valeurs = situations; }
-        else if (col == "Activité 1" || col == "Activité 2" || col == "Activité 3" || col == "Activité 4" || col == "Activité 5") { valeurs = activités; }
+        else if (col == "Activité 1" || col == "Activité 2" || col == "Activité 3" || col == "Activité 4" || col == "Activité 5") { 
+            valeurs = activités;
+            type_option = 2;
+        }
         if (valeurs != null) {
             selected = cell.html();
             cell.html('');
             var sel = $('<select>').appendTo(cell);
             sel.append('<option value="">...</option>'); // Option vide
+            var ordinal = 0;
             $.each(valeurs, function(i, j) {
                 pardefaut = "";
+                if (type_option == 1) {
+                    donnee = i
+                    label = j;
+                } else {
+                    donnee = ordinal;
+                    ordinal = ordinal + 1;
+                    label = valeurs[i]+') '+i;
+                }
                 if (j == selected) { pardefaut = ' selected="selected"' ; }
-                sel.append('<option value="'+i+'"'+pardefaut+'>'+j+'</option>');
+                sel.append('<option value="'+donnee+'"'+pardefaut+'>'+label+'</option>');
             });
             sel.change( function(){
                 // Au changement de valeur, on l'enregistre dans la base

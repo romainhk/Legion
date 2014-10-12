@@ -358,26 +358,50 @@ class Database():
         """
         tier = 2 # le tier voulu
         data = collections.OrderedDict()
-        req = 'SELECT * FROM Élèves El JOIN EPS E ON E.INE=El.INE JOIN Affectations A ON A.INE=El.INE WHERE Classe="{0}" AND A.Année="{1}" AND Tier={2} ORDER BY Nom,Prénom ASC'.format(classe, annee, tier)
+        #req = 'SELECT * FROM Élèves El JOIN EPS E ON E.INE=El.INE JOIN Affectations A ON A.INE=El.INE WHERE Classe="{0}" AND A.Année="{1}" AND Tier={2} ORDER BY Nom,Prénom ASC'.format(classe, annee, tier)
+        req = """SELECT *,EA1.CP AS CP1, EA2.CP AS CP2,EA3.CP AS CP3, EA4.CP AS CP4,EA5.CP AS CP5 
+        FROM Élèves El JOIN EPS E ON E.INE=El.INE 
+        JOIN Affectations A ON A.INE=El.INE 
+        LEFT JOIN EPS_Activités EA1 ON LOWER(EA1.Activité)=LOWER(E."Activité 1")
+        LEFT JOIN EPS_Activités EA2 ON LOWER(EA2.Activité)=LOWER(E."Activité 2")
+        LEFT JOIN EPS_Activités EA3 ON LOWER(EA3.Activité)=LOWER(E."Activité 3")
+        LEFT JOIN EPS_Activités EA4 ON LOWER(EA4.Activité)=LOWER(E."Activité 4")
+        LEFT JOIN EPS_Activités EA5 ON LOWER(EA5.Activité)=LOWER(E."Activité 5")
+        WHERE E."Activité 1" IS NOT NULL AND E."Activité 2" IS NOT NULL
+        AND E."Activité 3" IS NOT NULL AND E."Activité 5" IS NOT NULL
+        AND E."Activité 5" IS NOT NULL AND Classe="{0}" AND A.Année="{1}" AND Tier={2}
+        ORDER BY Nom,Prénom ASC """.format(classe, annee, tier)
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             d['Élèves'] = d['Nom'] + ' ' + d['Prénom']
-            # Calcul de la note du BAC : moyenne de la meilleur note de terminale + 2 autres meilleurs notes
-            premiere = []
-            terminal = []
+            # Calcul de la note du BAC : 
+            #moyenne de la meilleur note de terminale + 2 autres meilleurs notes d'autres CP
+            notes = []
             for i in range(1,6):
-                index = 'Note {0}'.format(i)
-                if d[index] is not None and d[index] >= 0:
-                    if i < 3:   premiere.append(d[index])
-                    else:       terminal.append(d[index])
-            if len(terminal) == 0: d['BAC'] = 'Manque note terminal'
+                note = d['Note {0}'.format(i)]
+                cp = d['CP{0}'.format(i)]
+                if note is None or cp is None: note = -1
+                notes.append( (note, cp) )
+            selection = [] # Notes sélectionnées
+            cp = [] # Compétences propres correspondantes
+            if notes[3][0] < 0 and notes[4][0] < 0: d['BAC'] = 'Besoin note terminal'
             else:
-                if len(terminal) > 1:
-                    premiere.append(min(terminal))
-                if len(premiere) > 1:
-                    premiere.sort(reverse=True) # tri décroissant
-                    tot = max(terminal) + premiere[0] + premiere[1]
-                    d['BAC'] = round(tot / 3.0, 2)
+                # Meilleur note de terminal
+                if notes[3][0] < notes[4][0]: j = 4
+                else: j = 3
+                selection.append(notes[j][0])
+                cp.append(notes[j][1])
+                notes.pop(j)
+                # Deux autres meilleurs notes d'autres compétences propres
+                for w in sorted(notes, reverse=True, key=lambda n: n[0]): # tri décroissant sur les notes
+                    if w[1] not in cp and w[0] >= 0 and len(selection) < 3:
+                        selection.append(w[0])
+                        cp.append(w[1])
+                # Calcul de la moyenne
+                #print(selection)
+                #print(cp)
+                if len(selection) == 3:
+                    d['BAC'] = round(sum(selection) / 3.0, 2)
                 else:
                     d['BAC'] = 'Pas assez de notes'
 
@@ -388,9 +412,8 @@ class Database():
         """
             Lit les activités d'EPS
         
-        :rtype: dict
+        :rtype: OrderedDict
         """
-        #data = {}
         data = collections.OrderedDict()
         req = 'SELECT * FROM EPS_Activités ORDER BY CP,Activité'
         for row in self.curs.execute(req).fetchall():

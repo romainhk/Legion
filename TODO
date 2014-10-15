@@ -26,4 +26,8 @@
 * contenteditable : input="number" ?
 * Pouvoir verrouiller 1 note par élève
 * découpage en tier (CAP & 1er/Terminal)
+* Moyenne : donner aussi les 3 notes sélectionnées
+* Ajouter une date d'évaluation avec chaque note
+* Préciser qu'il faut appuyer sur entrée pour sauvegarder une note, et changer les activités en cliquant
+* Stats : distinguer les résultats par garçons, filles et total
 

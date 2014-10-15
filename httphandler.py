@@ -71,7 +71,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     annee = query.get('annee', [self.server.date.year]).pop()
                     niveaux = query.get('niveaux', ['0']).pop().split(',')
                     rep = self.generer_stats(stat, int(annee), niveaux)
-            elif params.path == '/maj' and user == 'admin':
+            elif params.path == '/maj' and (user == 'admin' or user == 'eps'):
                 ine = query['ine'].pop()
                 champ = query['champ'].pop()
                 d = query.get('d', ['-1']).pop()

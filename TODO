@@ -19,6 +19,11 @@
 ** importation de la base
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * Pending : date de l'exportation
+* Stats : éclaircir le bleu marine (revoir les couleurs)
+* Stats : taux de passage ne fonctionne pas
+* Stats : Provenance (classe) : donner la liste des élèves
+* Stats : Provenance : donner la liste des élèves + les classes
+* Stats : + Par situation
 
 ### Extension EPS
 * Authentification à distance avec ssl

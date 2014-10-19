@@ -513,9 +513,11 @@ class Database():
             GROUP BY A2.Établissement""".format(annee, annee-1, niv=les_niveaux)
         elif info == "provenance classe": # provenance classe
             req = """SELECT CN.Classe classe, IFNULL(A2.Classe,'inconnue') AS provenance,
-            IFNULL(A2.Établissement, 'inconnu') AS Établissement, IFNULL(A2.MEF, '?') AS MEF, count(*) AS total 
+            IFNULL(A2.Établissement, 'inconnu') AS Établissement, IFNULL(A2.MEF, '?') AS MEF, count(*) AS total, 
+            GROUP_CONCAT(E.Nom||" "||E.Prénom, ", ")  AS liste            
             FROM Classes CN LEFT JOIN Affectations A ON CN.Classe=A.Classe 
             LEFT JOIN Affectations A2 ON A.INE=A2.INE AND A2.Année={1}
+            JOIN Élèves E ON E.INE=A.INE
             WHERE A.Année={0} AND {niv}  GROUP BY A2.Classe,A.Classe
             ORDER BY CN.Classe,A2.Établissement,A2.Classe""".format(annee, annee-1, niv=les_niveaux)
         elif info == "taux de passage": # taux de passage

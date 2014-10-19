@@ -92,6 +92,7 @@ function stats_recherche() {
         } else if (stat == "Provenance (classe)") {
             var id = "#stats-Provenanceclasse";
             list_to_tab($(id+' table'), data);
+            $('th:contains("liste")').width('35ex'); // la liste peut être longue
         } else if (stat == "Taux de passage") {
             var id = "#stats-Tauxdepassage";
             list_to_tab($(id+' table'), data);

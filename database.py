@@ -506,15 +506,19 @@ class Database():
             #req = 'SELECT A.INE,{0}-Entrée+1 AS Scolarisation FROM Affectations A JOIN Élèves E ON A.INE=E.INE WHERE Établissement="Jean Moulin"'.format(annee)
         elif info == "provenance": # provenance
             req = """SELECT A2.Établissement, count(*) total, 
-            sum(CASE WHEN CN.Niveau="Seconde" THEN 1 ELSE 0 END) "en seconde" 
+            sum(CASE WHEN CN.Niveau="Seconde" THEN 1 ELSE 0 END) "en seconde", 
+	    (CASE WHEN A2.Établissement!="{etab}" THEN 
+                GROUP_CONCAT(A.Classe||" / "||E.Nom||" "||E.Prénom, ", <br>")
+                ELSE "..." END) AS liste
             FROM Affectations A LEFT JOIN Affectations A2 ON A.INE=A2.INE 
             LEFT JOIN Classes CN ON A.Classe = CN.Classe 
+            JOIN Élèves E ON E.INE=A.INE
             WHERE A.Année={0} AND A2.Année={1} AND {niv} 
-            GROUP BY A2.Établissement""".format(annee, annee-1, niv=les_niveaux)
+            GROUP BY A2.Établissement""".format(annee, annee-1, niv=les_niveaux, etab=self.nom_etablissement)
         elif info == "provenance classe": # provenance classe
             req = """SELECT CN.Classe classe, IFNULL(A2.Classe,'inconnue') AS provenance,
             IFNULL(A2.Établissement, 'inconnu') AS Établissement, IFNULL(A2.MEF, '?') AS MEF, count(*) AS total, 
-            GROUP_CONCAT(E.Nom||" "||E.Prénom, ", ")  AS liste            
+            GROUP_CONCAT(E.Nom||" "||E.Prénom, ", <br>") AS liste            
             FROM Classes CN LEFT JOIN Affectations A ON CN.Classe=A.Classe 
             LEFT JOIN Affectations A2 ON A.INE=A2.INE AND A2.Année={1}
             JOIN Élèves E ON E.INE=A.INE

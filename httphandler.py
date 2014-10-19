@@ -439,7 +439,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         elif stat == 'Provenance':
             rep['ordre'] = [('Établissement','string'),
                             ('total','int'),
-                            ('en seconde','int')]
+                            ('en seconde','int'),
+                            ('liste','string')]
             rep['data'] = self.server.db.stats('provenance', annee, les_niveaux)
         elif stat == 'Provenance (classe)':
             rep['ordre'] = [('classe', 'string'),

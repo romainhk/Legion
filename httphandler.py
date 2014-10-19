@@ -369,9 +369,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                             ('poids','float'),
                             ('homme','float'),
                             ('doublant','float'),
-                            ('nouveau','float'),
-                            ('issue de pro','float')]
+                            ('nouveau','float')]
             rep['data'] = []
+            avec_BTS = False
             tarte = collections.OrderedDict.fromkeys(les_niveaux)
             histo = collections.OrderedDict.fromkeys(les_niveaux)
             for d in self.server.db.stats('par niveau', annee, les_niveaux):
@@ -392,10 +392,14 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 histo[g_niv] = [ d['nouveau'], d['doublant'], d['effectif']-d['nouveau']-d['doublant'] ]
 
                 if a['niveau'] == '1BTS' or a['niveau'] == '2BTS':
+                    avec_BTS = True
                     a['issue de pro'] = en_pourcentage(d['issue de pro'] / d['effectif'])
                 else:
                     a['issue de pro'] = ''
+
                 rep['data'].append(a)
+            if avec_BTS:
+                rep['ordre'].append( ('issue de pro', 'float') )
             # Génération du graphique des effectifs
             rep['graph'].append(self.generer_tarte( tarte, 'Répartition des effectifs' ))
             rep['graph'].append(self.generer_histo( histo, 'Nombre de nouveaux élèves/doublants par niveau' ))
@@ -405,9 +409,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                             ('poids','float'),
                             ('homme','float'),
                             ('doublant','float'),
-                            ('nouveau','float'),
-                            ('issue de pro','float')]
+                            ('nouveau','float')]
             rep['data'] = []
+            avec_BTS = False
             tarte = collections.OrderedDict.fromkeys(les_niveaux)
             histo = collections.OrderedDict.fromkeys(les_niveaux)
             for d in self.server.db.stats('par section', annee, les_niveaux):
@@ -429,10 +433,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
 
                 sf = self.server.section_filière
                 if a['section'] in sf and sf[a['section']] == 'Enseignement supérieur':
+                    avec_BTS = True
                     a['issue de pro'] = en_pourcentage(d['issue de pro'] / d['effectif'])
                 else:
                     a['issue de pro'] = ''
                 rep['data'].append(a)
+            if avec_BTS:
+                rep['ordre'].append( ('issue de pro', 'float') )
             # Génération du graphique des effectifs
             rep['graph'].append(self.generer_tarte( tarte, 'Répartition des effectifs' ))
             rep['graph'].append(self.generer_histo( histo, 'Nombre de nouveaux élèves/doublants par section' ))

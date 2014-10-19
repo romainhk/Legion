@@ -147,8 +147,10 @@ function charger_page(nom) {
     } else if (nom == 'stats') {
         page_active = 'stats';
         $.get( "/stats?stat=ouverture", function( data ) {
-            msg = "Les informations sur les classes sont complétées à "+data['data']+"%. Pour améliorer l'analyse des résultats, veuillez passer <a href=\"#\" onclick=\"charger_page('Options')\">sur la page d'options</a> pour définir le niveau et la section des classes de l'établissement.";
-            $('#stats-Avertissement').html(msg); 
+            if (data['data'] != "100") {
+                msg = "Les informations sur les classes sont complétées à "+data['data']+"%. Pour améliorer l'analyse des résultats, veuillez passer <a href=\"#\" onclick=\"charger_page('Options')\">sur la page d'options</a> pour définir le niveau et la section des classes de l'établissement.";
+            } else { msg = ''; }
+            $('#stats-Avertissement').html(msg);
         }).fail(noauth);
     } else if (nom == 'eps') {
         page_active = 'eps';

@@ -39,6 +39,14 @@ def date(chaine):
     """
     return datetime.datetime.strptime(chaine, "%Y-%m-%d")
 
+def date8601(dt):
+    """
+        Converti un objet datetime au format de la base (ISO-8601)
+    
+    :rtype: str
+    """
+    return dt.strftime("%Y-%m-%d")
+
 def yearsago(years, from_date=None):
     """
         La date d'il y a quelques années
@@ -86,7 +94,9 @@ def generer_nom_fichier(prefix, extension='png'):
         Génère aléatoirement un nom de fichier
 
     :param prefix: le préfix à apposer devant le nom
+    :param extension: l'extension du fichier
     :type prefix: str
+    :type extension: str
     :rtype: str
     """
     ident = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(12))

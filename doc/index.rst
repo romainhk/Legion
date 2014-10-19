@@ -31,15 +31,14 @@ Fonctions statiques
 ===================
 .. autofunction:: liblegion.xstr
 .. autofunction:: liblegion.dict_from_row
-.. autofunction:: liblegion.dict_add
 .. autofunction:: liblegion.inc_list
-.. autofunction:: liblegion.open_browser
-.. autofunction:: liblegion.datefr
+.. autofunction:: liblegion.date
+.. autofunction:: liblegion.date8601
 .. autofunction:: liblegion.yearsago
 .. autofunction:: liblegion.nb_annees
 .. autofunction:: liblegion.debut_AS
 .. autofunction:: liblegion.en_pourcentage
-.. autofunction:: liblegion.filtrer_dict
+.. autofunction:: liblegion.generer_nom_fichier
 .. autofunction:: liblegion.eteindre_serveur
 
 Index et recherche

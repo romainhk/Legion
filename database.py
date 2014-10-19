@@ -283,6 +283,22 @@ class Database():
             return False
         return True
 
+    def ecrire_option(self, nom, valeur):
+        """
+            Sauvegarde une option dans la BDD
+            
+        :param nom: la clef
+        :param valeur: la valeur [sic]
+        :type nom: str
+        :type valeur: str
+        """
+        req = 'INSERT OR REPLACE INTO Options (Nom, Valeur) VALUES ("{0}", "{1}")'.format(nom, valeur)
+        try:
+            self.curs.execute(req)
+        except sqlite3.Error as e:
+            logging.info(u"Erreur lors de la sauvegarde de l'option {0}:\n{1}".format(nom, e.args[0]))
+        self.conn.commit()
+
     def lire(self, annee, orderby, sens='ASC', niveau=''):
         """
             Lit le contenu de la base élève
@@ -421,6 +437,20 @@ class Database():
             clé = d['Activité'].capitalize()
             data[clé] = d['CP']
         return data
+
+    def lire_options(self):
+        """
+            Lit les options fixées dans la base de données
+        
+        :rtype: dict
+        """
+        data = {}
+        req = 'SELECT * FROM Options'
+        try:
+            self.curs.execute(req)
+        except sqlite3.Error as e:
+            logging.error("Erreur lors de la lecture des options :\n{0}".format(e.args[0]))
+        return {item[0]:item[1] for item in self.curs.fetchall()}
 
     def lire_pending(self):
         """

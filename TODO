@@ -7,18 +7,18 @@
 
 ### Python
 * colonne Diplômé : importation automatisée depuis ...
-* Importation : sauvegarder le champ DATE et CODE_MOTIF_SORTIE ?
+* Importation : sauvegarder le champ CODE_MOTIF_SORTIE ?
 * Histogrammes : chevauchement quand trop de xlabels
 * Analyse des dépendances (au démarrage, vérification qu'elles sont disponibles)
 * setup.py : build d'une archive
 * affectation auto des niveau / section par classe en utilisant le code MEF
+* SQL - Options : niveaux, filières, nom_étab?, sections?, header
 
 ### HTML
 * envoie de mail en masse : à tester
 * Ajouter des tutoriels sur l'importation (quand les faire ?...)
 ** importation de la base
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
-* Pending : date de l'exportation
 * Stats : taux de passage ne fonctionne pas
 * Stats : + Par situation
 

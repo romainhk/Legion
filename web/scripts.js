@@ -176,6 +176,7 @@ function charger_page(nom) {
         $.get( "/pending", function( data ) {
             $('#pending-table > tbody').html( list_to_tab_simple(data, champs_pending) );
             maj_total($('#pending'));
+            $('#pending-dateExport').html(data['date']);
         }).fail(noauth);
     } else if (nom == 'options') {
         page_active = 'options';

@@ -37,14 +37,14 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 'header': self.server.header,
                 'situations': self.server.situations,
                 'niveaux' : self.server.niveaux,
-                'eps' : self.server.db.lire_classes(self.server.date.year, niveau='eps'),
+                'eps' : self.server.db.lire_classes(self.server.debut_AS.year, niveau='eps'),
                 'activités' : self.server.eps_activites }
             self.repondre(rep)
             return True
         elif params.path == '/liste-annees':
             rep = self.server.db.lister('Année')
             if len(rep) == 0: # Base non encore initialisée!
-                rep = [self.server.date.year]
+                rep = [self.server.debut_AS.year]
             self.repondre(rep)
             return True
         # On vérifie que le cookie n'a pas expiré
@@ -57,7 +57,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             user = self.server.cookie[ip].value
             # Fonctions à accès limité
             if params.path == '/liste' and user == 'admin':
-                annee = int(query.get('annee', ['{0}'.format(self.server.date.year)]).pop())
+                annee = int(query.get('annee', ['{0}'.format(self.server.debut_AS.year)]).pop())
                 orderby = query.get('col', ['Nom,Prénom']).pop()
                 if orderby == '': orderby = 'Nom,Prénom'
                 if orderby == 'Âge': orderby = 'Naissance'
@@ -68,7 +68,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             elif params.path == '/stats':
                 stat = query['stat'].pop()
                 if user == 'admin' or (stat == 'EPS (activite)' and user == 'eps'):
-                    annee = query.get('annee', [self.server.date.year]).pop()
+                    annee = query.get('annee', [self.server.debut_AS.year]).pop()
                     niveaux = query.get('niveaux', ['0']).pop().split(',')
                     rep = self.generer_stats(stat, int(annee), niveaux)
             elif params.path == '/maj' and (user == 'admin' or user == 'eps'):
@@ -119,12 +119,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             elif params.path == '/eps':
                 classe = query.get('classe', ['']).pop()
                 if classe == '': eps = '' # Pas de classe, pas de chocolat
-                else: eps = self.server.db.lire_eps(self.server.date.year, classe)
+                else: eps = self.server.db.lire_eps(self.server.debut_AS.year, classe)
                 rep = { 'liste': eps }
             elif params.path == '/pending' and user == 'admin':
                 rep = self.server.db.lire_pending()
+                rep['date'] = date8601(self.server.date)
             elif params.path == '/options' and user == 'admin':
-                rep = { 'affectations': self.server.db.lire_classes(self.server.date.year), 
+                rep = { 'affectations': self.server.db.lire_classes(self.server.debut_AS.year), 
                     'niveaux': self.server.niveaux,
                     'sections': self.server.sections }
             elif params.path == '/quitter':
@@ -585,8 +586,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         :param data: le fichier à importer (passé en POST)
         :type data: flux de fichier xml
         """
-        les_classes = list(self.server.db.lire_classes(self.server.date.year).keys())
-        classes_a_ajouter = []
         # Écriture de l'xml dans un fichier
         fichier_tmp = 'cache/importation.xml'
         f = open(fichier_tmp, 'w', encoding='ISO-8859-15')
@@ -595,12 +594,19 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         # Parsing du fichier
         tree = ET.parse(fichier_tmp)
         root = tree.getroot()
-        # Nettoyage, si ce n'est pas un import d'une année précédente
+        # Vérification de la date d'exportation
         annee = int(root.findtext('.//PARAMETRES/ANNEE_SCOLAIRE'))
+        date_export_tab = root.findtext('.//PARAMETRES/DATE_EXPORT').split('/')
+        date_export = '{a}-{m}-{j}'.format(j=date_export_tab[0], m=date_export_tab[1], a=date_export_tab[2])
         pending = False
-        if self.server.date.year == annee:
+        if self.server.date < date(date_export):
+            self.server.maj_date(date_export)
+            # Nettoyage, si ce n'est pas un import d'une année précédente
             pending = True
             self.server.db.vider_pending()
+
+        les_classes = list(self.server.db.lire_classes(self.server.debut_AS.year).keys())
+        classes_a_ajouter = []
         # Traitement des données
         for eleve in root.iter('ELEVE'):
             sortie = eleve.findtext('DATE_SORTIE')

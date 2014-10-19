@@ -47,23 +47,37 @@ class Legion(http.server.HTTPServer):
         # Les colonnes qui seront affichées, dans l'ordre
         self.header = [ 'Nom', 'Prénom', 'Âge', 'Mail', 'Genre', 'Année', 'Classe', 'Établissement', 'Doublement', 'Entrée', 'Diplômé', 'Situation', 'Lieu' ]
 
-        ajd = datetime.date.today()
-        if ajd.month < 9:
-            self.date = debut_AS(ajd.year-1)
-        else:
-            self.date = debut_AS(ajd.year)
         # DB
         self.db = database.Database(root, self.nom_etablissement)
         self.lire = None
         # EPS
         self.eps_activites=self.db.lire_eps_activites()
+        # Lecture des options dans la BDD
+        self.options=self.db.lire_options()
+        self.date = datetime.date(year=1970, month=1, day=1)
+        self.maj_date(self.options['date export'])
         # Suite de couleurs utilisés pour les graphiques
-        self.colors=('#80C0FF', '#FF80BF', '#B0FF80',
-                     '#C080FF', '#FFC080', '#80FFC0',
-                     '#FF8080', '#80FF80', '#8080FF')
+        self.colors = tuple([x.strip() for x in self.options['couleurs'].split(',')])
+
         #modules = []
         #for a,b,c in pkgutil.iter_modules():
         #    modules.append(b)
+
+    def maj_date(self, nvl_date):
+        """ Mise à jour de la date de référence
+        
+        :param nvl_date: la nouvelle date (format ISO-8601)
+        :type nvl_date: str
+        """
+        d = date(nvl_date)
+        if d != self.date:
+            self.date = d
+            # MAJ de la base
+            self.db.ecrire_option('date export', nvl_date)
+        if d.month < 9:
+            self.debut_AS = debut_AS(d.year-1)
+        else:
+            self.debut_AS = debut_AS(d.year)
 
     def quitter(self):
         """ Éteint le programme proprement """

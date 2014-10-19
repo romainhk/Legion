@@ -58,9 +58,9 @@ class Legion(http.server.HTTPServer):
         # EPS
         self.eps_activites=self.db.lire_eps_activites()
         # Suite de couleurs utilisés pour les graphiques
-        self.colors=('#0080FF', '#FF0080', '#80FF00',
-                     '#8000FF', '#FF8000', '#00FF80',
-                     '#FF0000', '#00FF00', '#0000FF')
+        self.colors=('#80C0FF', '#FF80BF', '#B0FF80',
+                     '#C080FF', '#FFC080', '#80FFC0',
+                     '#FF8080', '#80FF80', '#8080FF')
         #modules = []
         #for a,b,c in pkgutil.iter_modules():
         #    modules.append(b)

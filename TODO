@@ -12,7 +12,7 @@
 * Analyse des dépendances (au démarrage, vérification qu'elles sont disponibles)
 * setup.py : build d'une archive
 * affectation auto des niveau / section par classe en utilisant le code MEF
-* SQL - Options : niveaux, filières, nom_étab?, sections?, header
+* SQL - Options : nom_étab?, sections?
 
 ### HTML
 * envoie de mail en masse : à tester

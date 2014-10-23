@@ -34,18 +34,6 @@ class Legion(http.server.HTTPServer):
         self.mdp_admin=config.get('Général', 'mdp_admin')
         self.mdp_eps=config.get('Général', 'mdp_eps')
         self.situations=sorted([x.strip(' ') for x in config.get('Établissement', 'situations').split(',')])
-        self.niveaux=['Seconde', 'Première', 'Terminale', '1BTS', '2BTS', 'Bac+1', 'Bac+3']
-        self.filières = ['Générale', 'Technologique', 'Pro', 'Enseignement supérieur']
-        self.sections = []
-        self.section_filière = {}
-        for f in self.filières:
-            for a in sorted([x.strip(' ') for x in config.get('Établissement', 'sections_'+f).split('\n')]):
-                for b in a.split(','):
-                    c = b.strip(' ')
-                    self.sections.append(c)
-                    self.section_filière[c] = f
-        # Les colonnes qui seront affichées, dans l'ordre
-        self.header = [ 'Nom', 'Prénom', 'Âge', 'Mail', 'Genre', 'Année', 'Classe', 'Établissement', 'Doublement', 'Entrée', 'Diplômé', 'Situation', 'Lieu' ]
 
         # DB
         self.db = database.Database(root, self.nom_etablissement)
@@ -58,6 +46,20 @@ class Legion(http.server.HTTPServer):
         self.maj_date(self.options['date export'])
         # Suite de couleurs utilisés pour les graphiques
         self.colors = tuple([x.strip() for x in self.options['couleurs'].split(',')])
+        # Les colonnes qui seront affichées, dans l'ordre
+        self.header = [x.strip() for x in self.options['header'].split(',')]
+
+        # Niveaux / Filières / Sections
+        self.niveaux = [x.strip() for x in self.options['niveaux'].split(',')]
+        self.filières = [x.strip() for x in self.options['filières'].split(',')]
+        self.sections = []
+        self.section_filière = {}
+        for f in self.filières:
+            for a in sorted([x.strip(' ') for x in config.get('Établissement', 'sections_'+f).split('\n')]):
+                for b in a.split(','):
+                    c = b.strip(' ')
+                    self.sections.append(c)
+                    self.section_filière[c] = f
 
         #modules = []
         #for a,b,c in pkgutil.iter_modules():

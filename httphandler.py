@@ -85,8 +85,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     donnee = list(self.server.eps_activites.keys())[int(d)]
                     table = 'EPS'
                 elif champ_can == 'Note':
+                    if d == '': d = "-1"
+                    elif d[0].upper() == 'A': d = "-2"
+                    elif d[0].upper() == 'D': d = "-3"
                     donnee = d.replace(',', '.') # virgule anglo-saxone
-                    if float(donnee) > 20.0 or float(donnee) < 0.0:
+                    if float(donnee) > 20.0 or float(donnee) < -3.0:
                         self.repondre('Non')
                         return
                     table = 'EPS'

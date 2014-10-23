@@ -59,7 +59,7 @@ CREATE TABLE "EPS" (
     "INE" TEXT,
     "Tier" INTEGER, -- 1 = CAP, 2 = 1er/Terminal
     "Activité 1" TEXT DEFAULT (''),
-    "Note 1" REAL DEFAULT (-1.0), -- 0 >= note >= 20 ; -1 = exempt
+    "Note 1" REAL DEFAULT (-1.0), -- 0 >= note >= 20 ; -1 = non noté, -2 = absent, -3 = exempt
     "Activité 2" TEXT DEFAULT (''),
     "Note 2" REAL DEFAULT (-1.0),
     "Activité 3" TEXT DEFAULT (''),

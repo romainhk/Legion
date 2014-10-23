@@ -158,6 +158,15 @@ function charger_page(nom) {
         if (eps_classe == undefined) { eps_classe = ''; }
         $.get( "/eps?classe="+eps_classe, function( data ) {
             liste = data['liste'];
+            // Traduction des notes, absence et dispense
+            $.each(liste, function(i, j) {
+                $.each( ['Note 1', 'Note 2', 'Note 3', 'Note 4', 'Note 5'], function (n, note) {
+                    k = j[note];
+                    if (k == -1)      { liste[i][note] = ''; }
+                    else if (k == -2) { liste[i][note] = 'Abs'; }
+                    else if (k == -3) { liste[i][note] = 'Disp'; }
+                });
+            });
             // Liste des notes
             if (liste != '') {
                 $('#eps-table > tbody').html( list_to_tab_simple(liste, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','BAC']) );

@@ -31,8 +31,5 @@
 * Moyenne : donner aussi les 3 notes sélectionnées
 * Ajouter une date d'évaluation avec chaque note
 * Stats : distinguer les résultats par garçons, filles et total
-* préciser l'usage des couleurs vert/rouge
-* Ajouter les notes A(bsent) et D(sipensé)
-* retirer les -1
-* valider un enregstrement donne le focus auto sur l'enregistrement suivant
+* valider un enregistrement donne le focus auto sur l'enregistrement suivant
 * notion de protocole (ensemble d'activité et de dates) ...

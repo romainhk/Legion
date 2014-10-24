@@ -136,8 +136,22 @@ function maj_cellule(event) {
             }
             params = "ine="+ine+"&champ="+champ+"&d="+val;
             $.get( "/maj?"+params, function( data ) {
-                if (data == 'Oui') { cell.addClass("maj_oui"); }
-                else if (data == 'Non') { cell.addClass("maj_non"); }
+                if (data == 'Oui') {
+                    cell.removeClass("maj_non");
+                    cell.addClass("maj_oui");
+                    // On passe à la cellule suivante
+                    tr = cell.closest('tr').next();
+                    // Sauf si c'est la dernière ligne
+                    if (tr.attr('id') != "borntobewild") {
+                        suivant = tr.children().eq(cell.index());
+                        suivant.focus();
+                    }
+                }
+                else if (data == 'Non') {
+                    cell.addClass("maj_non");
+                    // On reste sur la même cellule
+                    el.focus();
+                }
             });
             el.blur();
             event.preventDefault();

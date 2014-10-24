@@ -31,5 +31,4 @@
 * Moyenne : donner aussi les 3 notes sélectionnées
 * Ajouter une date d'évaluation avec chaque note
 * Stats : distinguer les résultats par garçons, filles et total
-* valider un enregistrement donne le focus auto sur l'enregistrement suivant
 * notion de protocole (ensemble d'activité et de dates) ...

@@ -414,12 +414,12 @@ class Database():
                         selection.append(w[0])
                         cp.append(w[1])
                 # Calcul de la moyenne
-                #print(selection)
-                #print(cp)
                 if len(selection) == 3:
                     d['BAC'] = round(sum(selection) / 3.0, 2)
+                    d['Notes'] = selection
                 else:
                     d['BAC'] = 'Pas assez de notes'
+                    d['Notes'] = []
 
             data[d['INE']] = d
         return data

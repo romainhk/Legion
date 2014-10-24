@@ -276,6 +276,10 @@ header .quitter {
 #eps-classes {
     margin-bottom:0.5ex;
 }
+#eps-table th:last-child, #eps-table td:last-child {
+    /* La colonne masquée "Notes" de EPS */
+    display:none;
+}
 /*
  * Graceful degradation (pas de js)
  */

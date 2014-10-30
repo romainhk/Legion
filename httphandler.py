@@ -74,7 +74,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             elif params.path == '/maj' and (user == 'admin' or user == 'eps'):
                 ine = query['ine'].pop()
                 champ = query['champ'].pop()
-                d = query.get('d', ['-1']).pop()
+                d = query.get('d', ['']).pop()
                 table = 'Élèves'
                 champ_can = champ.split(' ')[0] # Champ canonique = que la première partie
                 if champ_can == 'Situation':
@@ -85,7 +85,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     donnee = list(self.server.eps_activites.keys())[int(d)]
                     table = 'EPS'
                 elif champ_can == 'Note':
-                    if d == '': d = "-1"
+                    if d.strip(' ') == '': d = "-1"
                     elif d[0].upper() == 'A': d = "-2"
                     elif d[0].upper() == 'D': d = "-3"
                     donnee = d.replace(',', '.') # virgule anglo-saxone
@@ -96,7 +96,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     self.repondre('Non')
                     return
-                if d == '-1': donnee = '' # Cas d'une RAZ
                 rep = self.server.db.maj_champ(table, ine, champ, donnee)
             elif params.path == '/maj_classe' and user == 'admin':
                 classe = query['classe'].pop()
@@ -486,20 +485,30 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         elif stat == 'EPS (activite)':
             rep['ordre'] = [('activité','string'),
                             ('moyenne','float'),
+                            ('moyenne ♂','float'),
+                            ('moyenne ♀','float'),
                             ('effectif','int')]
             rep['data'] = []
             act = self.server.db.stats('eps activite', annee, les_niveaux)
             for a in self.server.eps_activites.keys():
                 somme = 0
+                somme_h = 0
+                somme_f = 0
                 eff= 0
                 for b in act: # pour chaque ligne
                     for c in b: # pour chaque activité
                         if b[c] == a: # si on trouve l'activité
                             somme = somme + b['n{0}'.format(c.split(' ')[1])]
+                            somme_h = somme_h + b['n{0}h'.format(c.split(' ')[1])]
+                            somme_f = somme_f + b['n{0}f'.format(c.split(' ')[1])]
                             eff = eff + b['nombre']
-                if eff != 0: moyenne = round(somme/eff,2)
-                else: moyenne = '?'
-                v = { 'activité': a, 'moyenne': moyenne, 'effectif': eff}
+                if eff != 0:
+                    moyenne = round(somme/eff,2)
+                    moyenne_h = round(somme_h/eff,2)
+                    moyenne_f = round(somme_f/eff,2)
+                else:
+                    moyenne = moyenne_h = moyenne_f = '?'
+                v = { 'activité': a, 'moyenne': moyenne, 'moyenne ♂': moyenne_h, 'moyenne ♀': moyenne_f, 'effectif': eff}
                 rep['data'].append(v)
         else:
             logging.error('Statistique {0} inconnue'.format(stat))

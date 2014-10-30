@@ -174,6 +174,16 @@ function charger_page(nom) {
                 $('#eps-table > tbody').append('<tr id="borntobewild" class="affecter_a_tous"><td><i>Affecter à tous</i></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td></td><td></td></tr>');
 
                 $("#eps-table > tbody td").click(cell_to_select);
+                // Coloration des notes utilisées pour le calcul de la moyenne
+                offset = 1; // Position de la colonne "Activité 1"
+                $.each(data['liste'], function(i, j) {
+                    ine = i;
+                    if (j['Notes']) {
+                        $.each(j['Notes'], function(k,l) {
+                            $('#eps-table #'+ine+' td:nth-child('+(offset+2*l)+')').addClass('eps-selection');
+                        });
+                    }
+                });
             }
             $('#eps-table > tbody td:nth-child(3), #eps-table > tbody td:nth-child(5)').attr('contenteditable','true');
             $('#eps-table > tbody td:nth-child(7), #eps-table > tbody td:nth-child(9)').attr('contenteditable','true');

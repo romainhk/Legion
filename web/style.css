@@ -280,6 +280,10 @@ header .quitter {
     /* La colonne masquée "Notes" de EPS */
     display:none;
 }
+.eps-selection {
+    border-color:red;
+    font-weight:bold;
+}
 /*
  * Graceful degradation (pas de js)
  */

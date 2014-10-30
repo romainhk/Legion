@@ -387,7 +387,6 @@ class Database():
         AND E."Activité 3" IS NOT NULL AND E."Activité 5" IS NOT NULL
         AND E."Activité 5" IS NOT NULL AND Classe="{0}" AND A.Année="{1}" AND Tier={2}
         ORDER BY Nom,Prénom ASC """.format(classe, annee, tier)
-        #print(req)
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             d['Élèves'] = d['Nom'] + ' ' + d['Prénom']
@@ -400,6 +399,7 @@ class Database():
                 if note is None or cp is None: note = -1
                 notes.append( (note, cp) )
             selection = [] # Notes sélectionnées
+            indices = [] # L'indice correspondant
             cp = [] # Compétences propres correspondantes
             if notes[3][0] < 0 and notes[4][0] < 0: d['BAC'] = 'Besoin note terminal'
             else:
@@ -407,17 +407,26 @@ class Database():
                 if notes[3][0] < notes[4][0]: j = 4
                 else: j = 3
                 selection.append(notes[j][0])
+                indices.append(j)
                 cp.append(notes[j][1])
-                notes.pop(j)
                 # Deux autres meilleurs notes d'autres compétences propres
-                for w in sorted(notes, reverse=True, key=lambda n: n[0]): # tri décroissant sur les notes
-                    if w[1] not in cp and w[0] >= 0 and len(selection) < 3:
-                        selection.append(w[0])
-                        cp.append(w[1])
+                for k in range(1,3):
+                    maximum = -1
+                    indice = -1
+                    for l in range(0, len(notes)):
+                        note = notes[l][0]
+                        competence = notes[l][1]
+                        if note > maximum and l not in indices and competence not in cp:
+                            maximum = note
+                            indice = l
+                    if maximum > -1 and indice > -1:
+                        selection.append(maximum)
+                        indices.append(indice)
+                        cp.append(notes[indice][1])
                 # Calcul de la moyenne
                 if len(selection) == 3:
                     d['BAC'] = round(sum(selection) / 3.0, 2)
-                    d['Notes'] = selection
+                    d['Notes'] = [a+1 for a in indices] # les gens normaux comptent à partir de 1
                 else:
                     d['BAC'] = 'Pas assez de notes'
                     d['Notes'] = []

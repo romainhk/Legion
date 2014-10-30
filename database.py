@@ -387,6 +387,7 @@ class Database():
         AND E."Activité 3" IS NOT NULL AND E."Activité 5" IS NOT NULL
         AND E."Activité 5" IS NOT NULL AND Classe="{0}" AND A.Année="{1}" AND Tier={2}
         ORDER BY Nom,Prénom ASC """.format(classe, annee, tier)
+        #print(req)
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             d['Élèves'] = d['Nom'] + ' ' + d['Prénom']
@@ -559,26 +560,17 @@ class Database():
             FROM Affectations A LEFT JOIN Classes CN ON A.Classe=CN.Classe 
             WHERE Section<>'' AND {niv} ORDER BY Section,Niveau""".format(niv=les_niveaux)
         elif info == "eps activite": # EPS: moyenne par activité
-            req = """SELECT "Activité 1", sum(CASE WHEN "Note 1">0 AND E.Genre=1 THEN "Note 1" ELSE 0 END) as n1h,
-            "Activité 1", sum(CASE WHEN "Note 1">0 AND E.Genre=2 THEN "Note 1" ELSE 0 END) as n1f,
-            "Activité 1", sum(CASE WHEN "Note 1">0 THEN "Note 1" ELSE 0 END) as n1,
-            "Activité 2", sum(CASE WHEN "Note 2">0 AND E.Genre=1 THEN "Note 2" ELSE 0 END) as n2h,
-            "Activité 2", sum(CASE WHEN "Note 2">0 AND E.Genre=2 THEN "Note 2" ELSE 0 END) as n2f,
+            tier = 2 # le tier voulu
+            req = """SELECT "Activité 1", sum(CASE WHEN "Note 1">0 THEN "Note 1" ELSE 0 END) as n1,
             "Activité 2", sum(CASE WHEN "Note 2">0 THEN "Note 2" ELSE 0 END) as n2,
-            "Activité 3", sum(CASE WHEN "Note 3">0 AND E.Genre=1 THEN "Note 3" ELSE 0 END) as n3h,
-            "Activité 3", sum(CASE WHEN "Note 3">0 AND E.Genre=2 THEN "Note 3" ELSE 0 END) as n3f,
             "Activité 3", sum(CASE WHEN "Note 3">0 THEN "Note 3" ELSE 0 END) as n3,
-            "Activité 4", sum(CASE WHEN "Note 4">0 AND E.Genre=1 THEN "Note 4" ELSE 0 END) as n4h,
-            "Activité 4", sum(CASE WHEN "Note 4">0 AND E.Genre=2 THEN "Note 4" ELSE 0 END) as n4f,
             "Activité 4", sum(CASE WHEN "Note 4">0 THEN "Note 4" ELSE 0 END) as n4,
-            "Activité 5", sum(CASE WHEN "Note 5">0 AND E.Genre=1 THEN "Note 5" ELSE 0 END) as n5h,
-            "Activité 5", sum(CASE WHEN "Note 5">0 AND E.Genre=2 THEN "Note 5" ELSE 0 END) as n5f,
             "Activité 5", sum(CASE WHEN "Note 5">0 THEN "Note 5" ELSE 0 END) as n5,
-            count(*) as nombre
+            E.Genre, count(*) as nombre
             FROM EPS JOIN Affectations A, Classes CN ON A.INE=EPS.INE AND CN.Classe=A.Classe
             LEFT JOIN Élèves E ON E.INE=A.INE
-            WHERE A.Année={0} AND Établissement="{etab}" AND {niv}
-            GROUP BY "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5" """.format(annee, etab=self.nom_etablissement, niv=les_niveaux)
+            WHERE A.Année={0} AND Établissement="{etab}" AND {niv} AND Tier={tier}
+            GROUP BY E.Genre, "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5" """.format(annee, etab=self.nom_etablissement, niv=les_niveaux, tier=tier)
         else:
             logging.error('Information "{0}" non disponible'.format(info))
             return []

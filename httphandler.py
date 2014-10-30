@@ -78,7 +78,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 table = 'Élèves'
                 champ_can = champ.split(' ')[0] # Champ canonique = que la première partie
                 if champ_can == 'Situation':
-                    donnee = self.server.situations[int(d)]
+                    if len(d) > 0: donnee = self.server.situations[int(d)]
+                    else: donnee = ''
                 elif champ_can == 'Diplômé' or champ_can == 'Lieu':
                     donnee = d
                 elif champ_can == 'Activité':
@@ -325,7 +326,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             - proportion de garçon
             - proportion de nouveaux
             - proportion d'élèves issus de section pro dans l'établissement
-        - par niveau
+        - par niveau, par situation
             - _idem_
         - provenance et provenance par classe
             - établissement : total d'élèves, total d'élèves actuellement en seconde
@@ -446,6 +447,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             # Génération du graphique des effectifs
             rep['graph'].append(self.generer_tarte( tarte, 'Répartition des effectifs' ))
             rep['graph'].append(self.generer_histo( histo, 'Nombre de nouveaux élèves/doublants par section' ))
+        elif stat == 'Par situation':
+            rep['ordre'] = [('situation','string'),
+                            ('effectif','int')]
+            rep['data'] = self.server.db.stats('par situation', annee, les_niveaux)
         elif stat == 'Provenance':
             rep['ordre'] = [('Établissement','string'),
                             ('total','int'),

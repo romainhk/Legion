@@ -86,6 +86,9 @@ function stats_recherche() {
         } else if (stat == "Par section") {
             var id = "#stats-Parsection";
             list_to_tab($(id+' table'), data);
+        } else if (stat == "Par situation") {
+            var id = "#stats-Parsituation";
+            list_to_tab($(id+' table'), data);
         } else if (stat == "Provenance") {
             var id = "#stats-Provenance";
             list_to_tab($(id+' table'), data);

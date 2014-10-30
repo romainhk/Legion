@@ -536,6 +536,12 @@ class Database():
             FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe JOIN Élèves E ON A.INE=E.INE 
             WHERE Établissement="{etab}" AND Année={0} AND {niv} 
             GROUP BY Section""".format(annee, annee-1, etab=self.nom_etablissement, niv=les_niveaux)
+        elif info == "par situation": # par situation
+            req = """SELECT (CASE WHEN Situation="" THEN '?' ELSE Situation END) as situation,
+            count(*) as effectif FROM Élèves E
+            JOIN Affectations A ON E.INE=A.INE JOIN Classes CN ON A.Classe=CN.Classe 
+            WHERE A.Année={0} AND Établissement="{etab}" AND {niv}
+            GROUP BY Situation""".format(annee, etab=self.nom_etablissement, niv=les_niveaux)
         elif info == "annees scolarisation": # annees scolarisation
             req = """SELECT INE, count(*) Scolarisation 
             FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe 

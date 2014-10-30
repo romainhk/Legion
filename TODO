@@ -20,7 +20,6 @@
 ** importation de la base
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * Stats : taux de passage ne fonctionne pas
-* Stats : + Par situation
 
 ### Extension EPS
 * Authentification à distance avec ssl

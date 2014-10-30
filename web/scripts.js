@@ -25,7 +25,7 @@ var sections = new Array();
 // Liste des activités possibles (EPS)
 var activités = new Array();
 // Les statistiques disponibles
-var les_stats = ['Général', 'Par niveau', 'Par section', 'Provenance', 'Provenance (classe)', 'Taux de passage', 'EPS (activite)'];
+var les_stats = ['Général', 'Par niveau', 'Par section', 'Par situation', 'Provenance', 'Provenance (classe)', 'Taux de passage', 'EPS (activite)'];
 
 /*
  * Mets à jour les listes de la page de statistiques

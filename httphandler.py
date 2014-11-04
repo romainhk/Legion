@@ -489,12 +489,14 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         rep['data'].append(v)
         elif stat == 'EPS (activite)':
             rep['ordre'] = [('activité','string'),
+                            ('cp','int'),
                             ('moyenne','float'),
                             ('moyenne ♂','float'),
                             ('moyenne ♀','float'),
                             ('effectif','int')]
             rep['data'] = []
             act = self.server.db.stats('eps activite', annee, les_niveaux)
+            cp = self.server.db.lire_eps_activites()
             for a in self.server.eps_activites.keys():
                 somme_h = somme_f = 0
                 eff_h = eff_f= 0
@@ -514,7 +516,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     moyenne_h = round(somme_h/eff_h,2)
                 if eff_f != 0:
                     moyenne_f = round(somme_f/eff_f,2)
-                v = {   'activité': a, 'moyenne': moyenne,
+                v = {   'activité': a, 'cp': cp[a], 'moyenne': moyenne,
                         'moyenne ♂': moyenne_h, 'moyenne ♀': moyenne_f,
                         'effectif': (eff_h + eff_f) }
                 rep['data'].append(v)

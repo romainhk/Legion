@@ -404,9 +404,11 @@ class Database():
                 for k in reversed(range(1,4)):
                     if k > 1: # Sélection des deux notes de terminal
                         kk = 1+k # 3 <= kk <= 4 ⊂ indices de notes
+                        note = notes[kk][0]
+                        note = note if note > 0 else 0 # 0 par défaut
                         competence = notes[kk][1]
                         if competence not in cp:
-                            selection.append(notes[kk][0])
+                            selection.append(note)
                             indices.append(kk)
                             cp.append(competence)
                         else:

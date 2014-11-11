@@ -390,7 +390,6 @@ class Database():
             d = dict_from_row(row)
             d['Élèves'] = d['Nom'] + ' ' + d['Prénom']
             # Calcul de la note du BAC : 
-            #moyenne de la meilleur note de terminale + 2 autres meilleurs notes d'autres CP
             notes = []
             for i in range(1,6):
                 note = d['Note {0}'.format(i)]
@@ -402,33 +401,37 @@ class Database():
             cp = [] # Compétences propres correspondantes
             if notes[3][0] < 0 and notes[4][0] < 0: d['x̄'] = 'Besoin note 4 & 5'
             else:
-                # Meilleur note de terminal
-                if notes[3][0] < notes[4][0]: j = 4
-                else: j = 3
-                selection.append(notes[j][0])
-                indices.append(j)
-                cp.append(notes[j][1])
-                # Deux autres meilleurs notes d'autres compétences propres
-                for k in range(1,3):
-                    maximum = -1
-                    indice = -1
-                    for l in range(0, len(notes)):
-                        note = notes[l][0]
-                        competence = notes[l][1]
-                        if note > maximum and l not in indices and competence not in cp:
-                            maximum = note
-                            indice = l
-                    if maximum > -1 and indice > -1:
-                        selection.append(maximum)
-                        indices.append(indice)
-                        cp.append(notes[indice][1])
-                # Calcul de la moyenne
-                if len(selection) == 3:
-                    d['x̄'] = round(sum(selection) / 3.0, 2)
-                    d['Notes'] = [a+1 for a in indices] # les gens normaux comptent à partir de 1
-                else:
-                    d['x̄'] = 'Pas assez de notes'
-                    d['Notes'] = []
+                for k in reversed(range(1,4)):
+                    if k > 1: # Sélection des deux notes de terminal
+                        kk = 1+k # 3 <= kk <= 4 ⊂ indices de notes
+                        competence = notes[kk][1]
+                        if competence not in cp:
+                            selection.append(notes[kk][0])
+                            indices.append(kk)
+                            cp.append(competence)
+                        else:
+                            d['x̄'] = 'Pb CP Term'
+                            break
+                    else: # Parcours des autres notes
+                        maximum = -1
+                        indice = -1
+                        for l in range(0, len(notes)):
+                            note = notes[l][0]
+                            competence = notes[l][1]
+                            if note > maximum and l not in indices and competence not in cp:
+                                maximum = note
+                                indice = l
+                        if maximum > -1 and indice > -1:
+                            selection.append(maximum)
+                            indices.append(indice)
+                            cp.append(notes[indice][1])
+            # Calcul de la moyenne
+            if len(selection) == 3:
+                d['x̄'] = round(sum(selection) / 3.0, 2)
+                d['Notes'] = [a+1 for a in indices] # les gens normaux comptent à partir de 1
+            else:
+                if d['x̄'] == '': d['x̄'] = 'Pas assez de notes'
+                d['Notes'] = []
 
             data[d['INE']] = d
         return data

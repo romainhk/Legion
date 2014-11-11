@@ -374,7 +374,6 @@ class Database():
         """
         tier = 2 # le tier voulu
         data = collections.OrderedDict()
-        #req = 'SELECT * FROM Élèves El JOIN EPS E ON E.INE=El.INE JOIN Affectations A ON A.INE=El.INE WHERE Classe="{0}" AND A.Année="{1}" AND Tier={2} ORDER BY Nom,Prénom ASC'.format(classe, annee, tier)
         req = """SELECT *,EA1.CP AS CP1, EA2.CP AS CP2,EA3.CP AS CP3, EA4.CP AS CP4,EA5.CP AS CP5 
         FROM Élèves El JOIN EPS E ON E.INE=El.INE 
         JOIN Affectations A ON A.INE=El.INE 
@@ -401,7 +400,7 @@ class Database():
             selection = [] # Notes sélectionnées
             indices = [] # L'indice correspondant
             cp = [] # Compétences propres correspondantes
-            if notes[3][0] < 0 and notes[4][0] < 0: d['BAC'] = 'Besoin note terminal'
+            if notes[3][0] < 0 and notes[4][0] < 0: d['x̄'] = 'Besoin note 4 & 5'
             else:
                 # Meilleur note de terminal
                 if notes[3][0] < notes[4][0]: j = 4
@@ -425,10 +424,10 @@ class Database():
                         cp.append(notes[indice][1])
                 # Calcul de la moyenne
                 if len(selection) == 3:
-                    d['BAC'] = round(sum(selection) / 3.0, 2)
+                    d['x̄'] = round(sum(selection) / 3.0, 2)
                     d['Notes'] = [a+1 for a in indices] # les gens normaux comptent à partir de 1
                 else:
-                    d['BAC'] = 'Pas assez de notes'
+                    d['x̄'] = 'Pas assez de notes'
                     d['Notes'] = []
 
             data[d['INE']] = d

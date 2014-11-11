@@ -121,9 +121,15 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     self.server.db.maj_champ('Classes', classe, "Filière", fil)
             elif params.path == '/eps':
                 classe = query.get('classe', ['']).pop()
+                tier = ''
                 if classe == '': eps = '' # Pas de classe, pas de chocolat
-                else: eps = self.server.db.lire_eps(self.server.debut_AS.year, classe)
-                rep = { 'liste': eps }
+                else:
+                    eps = self.server.db.lire_eps(self.server.debut_AS.year, classe)
+                    classes = self.server.db.lire_classes(self.server.debut_AS.year, niveau='eps')
+                    if classes[classe]['Niveau'] == self.server.niveaux[2]: # 'Terminal'
+                        tier = 'BAC'
+                    else : tier = 'BEP'
+                rep = { 'liste': eps, 'tier': tier }
             elif params.path == '/pending' and user == 'admin':
                 rep = self.server.db.lire_pending()
                 rep['date'] = date8601(self.server.date)
@@ -503,11 +509,12 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 for b in act: # pour chaque ligne
                     for c in b: # pour chaque activité
                         if b[c] == a: # si on trouve l'activité
+                            note = b['n{0}'.format(c.split(' ')[1])]
                             if b['Genre'] == 1:
-                                somme_h = somme_h + b['n{0}'.format(c.split(' ')[1])]
+                                somme_h = somme_h + note
                                 eff_h = eff_h + b['nombre']
                             elif b['Genre'] == 2:
-                                somme_f = somme_f + b['n{0}'.format(c.split(' ')[1])]
+                                somme_f = somme_f + note
                                 eff_f = eff_f + b['nombre']
                 moyenne = moyenne_h = moyenne_f = '?'
                 if eff_h + eff_f != 0:

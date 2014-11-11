@@ -169,7 +169,7 @@ function charger_page(nom) {
             });
             // Liste des notes
             if (liste != '') {
-                $('#eps-table > tbody').html( list_to_tab_simple(liste, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','BAC','Notes']) );
+                $('#eps-table > tbody').html( list_to_tab_simple(liste, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','x̄','Notes']) );
                 // Ligne pour affecter une activité à toute une classe
                 $('#eps-table > tbody').append('<tr id="borntobewild" class="affecter_a_tous"><td><i>Affecter à tous</i></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td></td><td></td></tr>');
 
@@ -184,6 +184,8 @@ function charger_page(nom) {
                         });
                     }
                 });
+                // Affichage du tier
+                $("#eps-table th:contains(x̄)").html('x̄ '+data['tier']);
             }
             $('#eps-table > tbody td:nth-child(3), #eps-table > tbody td:nth-child(5)').attr('contenteditable','true');
             $('#eps-table > tbody td:nth-child(7), #eps-table > tbody td:nth-child(9)').attr('contenteditable','true');

@@ -57,7 +57,7 @@ INSERT INTO `Options` VALUES('filières','Générale, Technologique, Pro, Enseig
 CREATE TABLE "EPS" (
     -- Les notes d'EPS de chaque élèves
     "INE" TEXT,
-    "Tier" INTEGER, -- 1 = CAP, 2 = 1er/Terminal
+    "Tier" INTEGER, -- 1 = BEP, 2 = 1er/Terminal
     "Activité 1" TEXT DEFAULT (''),
     "Note 1" REAL DEFAULT (-1.0), -- 0 >= note >= 20 ; -1 = non noté, -2 = absent, -3 = exempt
     "Activité 2" TEXT DEFAULT (''),

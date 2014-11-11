@@ -57,7 +57,7 @@ class Database():
                 self.importations[self.PENDING]) )
         self.conn.close()
 
-    def maj_champ(self, table, ident, champ, donnee):
+    def maj_champ(self, table, ident, champ, donnee, tier=2):
         """
             Mets à jour un champ de la base
 
@@ -65,14 +65,23 @@ class Database():
         :param ident: l'identifiant (clé primaire) visé
         :param champ: le champ à modifier
         :param donnee: la nouvelle valoir
+        :param tier: (OPT - EPS) le tier voulu (1 ou 2)
         :type table: str
         :type ident: str
         :type champ: str
         :type donnee: str
+        :type tier: int
         """
-        if table == 'Élèves' or table == 'EPS': col = 'INE'
-        elif table == 'Classes': col = 'Classe'
-        req = 'UPDATE {tab} SET "{champ}"="{d}" WHERE {col}="{ident}"'.format(tab=table, col=col, ident=ident, champ=champ, d=donnee)
+        if table == 'Élèves':
+            col = 'INE'
+            cond = '{col}="{ident}"'.format(col=col, ident=ident)
+        elif table == 'Classes':
+            col = 'Classe'
+            cond = '{col}="{ident}"'.format(col=col, ident=ident)
+        elif table == 'EPS':
+            col = 'INE'
+            cond = '{col}="{ident}" AND Tier={tier}'.format(col=col, ident=ident, tier=tier)
+        req = 'UPDATE {tab} SET "{champ}"="{d}" WHERE {cond}'.format(tab=table, cond=cond, champ=champ, d=donnee)
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
@@ -362,17 +371,18 @@ class Database():
             data[key] = d
         return data
 
-    def lire_eps(self, annee, classe):
+    def lire_eps(self, annee, classe, tier):
         """
             Lit les notes et activités d'EPS de toute une classe
         
         :param annee: année de scolarisation
         :param classe: la classe [sic]
+        :param tier: le tier voulu (1 ou 2 pour BEP ou BAC)
         :type annee: int
         :type classe: str
+        :type tier: int
         :rtype: OrderedDict
         """
-        tier = 2 # le tier voulu
         data = collections.OrderedDict()
         req = """SELECT *,EA1.CP AS CP1, EA2.CP AS CP2,EA3.CP AS CP3, EA4.CP AS CP4,EA5.CP AS CP5 
         FROM Élèves El JOIN EPS E ON E.INE=El.INE 
@@ -579,7 +589,6 @@ class Database():
             FROM Affectations A LEFT JOIN Classes CN ON A.Classe=CN.Classe 
             WHERE Section<>'' AND {niv} ORDER BY Section,Niveau""".format(niv=les_niveaux)
         elif info == "eps activite": # EPS: moyenne par activité
-            tier = 2 # le tier voulu
             req = """SELECT "Activité 1", sum(CASE WHEN "Note 1">0 THEN "Note 1" ELSE 0 END) as n1,
             "Activité 2", sum(CASE WHEN "Note 2">0 THEN "Note 2" ELSE 0 END) as n2,
             "Activité 3", sum(CASE WHEN "Note 3">0 THEN "Note 3" ELSE 0 END) as n3,
@@ -588,8 +597,8 @@ class Database():
             E.Genre, count(*) as nombre
             FROM EPS JOIN Affectations A, Classes CN ON A.INE=EPS.INE AND CN.Classe=A.Classe
             LEFT JOIN Élèves E ON E.INE=A.INE
-            WHERE A.Année={0} AND Établissement="{etab}" AND {niv} AND Tier={tier}
-            GROUP BY E.Genre, "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5" """.format(annee, etab=self.nom_etablissement, niv=les_niveaux, tier=tier)
+            WHERE A.Année={0} AND Établissement="{etab}" AND {niv}
+            GROUP BY E.Genre, "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5" """.format(annee, etab=self.nom_etablissement, niv=les_niveaux)
         else:
             logging.error('Information "{0}" non disponible'.format(info))
             return []

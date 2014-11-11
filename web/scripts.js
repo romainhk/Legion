@@ -22,6 +22,8 @@ var situations = new Array();
 var niveaux = new Array();
 var filières = new Array();
 var sections = new Array();
+// Des infos plus détaillées, pour chaque classe
+var infos_classes = {};
 // Liste des activités possibles (EPS)
 var activités = new Array();
 // Les statistiques disponibles
@@ -156,8 +158,11 @@ function charger_page(nom) {
         page_active = 'eps';
         var eps_classe = $('#eps-classes option:selected').val();
         if (eps_classe == undefined) { eps_classe = ''; }
-        $.get( "/eps?classe="+eps_classe, function( data ) {
+        var eps_tier = $('#eps-tier option:selected').val();
+        if (eps_tier == undefined) { eps_tier = ''; }
+        $.get( "/eps?classe="+eps_classe+"&tier="+eps_tier, function( data ) {
             liste = data['liste'];
+            infos_classes = data['classes']; // global
             // Traduction des notes, absence et dispense
             $.each(liste, function(i, j) {
                 $.each( ['Note 1', 'Note 2', 'Note 3', 'Note 4', 'Note 5'], function (n, note) {
@@ -185,7 +190,8 @@ function charger_page(nom) {
                     }
                 });
                 // Affichage du tier
-                $("#eps-table th:contains(x̄)").html('x̄ '+data['tier']);
+                var tier = $("#eps-tier option[value='"+data['tier']+"']").html();
+                $("#eps-table th:contains(x̄)").html('x̄ '+tier);
             }
             $('#eps-table > tbody td:nth-child(3), #eps-table > tbody td:nth-child(5)').attr('contenteditable','true');
             $('#eps-table > tbody td:nth-child(7), #eps-table > tbody td:nth-child(9)').attr('contenteditable','true');
@@ -202,9 +208,9 @@ function charger_page(nom) {
     } else if (nom == 'options') {
         page_active = 'options';
         $.get( "/options", function( data ) {
-            niveaux = data['niveaux'];
-            filières = data['filières'];
-            sections = data['sections'];
+            niveaux = data['niveaux']; // global
+            filières = data['filières']; // global
+            sections = data['sections']; // global
             var tab = '';
             var parite = 'paire';
             $.each(data['affectations'], function(i, j) {
@@ -273,7 +279,7 @@ $(document).ready(function() {
     // Initialisation de l'application
     $.get( "/init", function( data ) {
         situations = data['situations'];
-        niveaux = data['niveaux'];
+        niveaux = data['niveaux']; // global
         activités = data['activités'];
         $('#stats-recherche th').css({'text-transform':'none'});
         $('#stats-recherche th').last().attr('colspan', niveaux.length);
@@ -302,7 +308,17 @@ $(document).ready(function() {
             options += "<option>"+i+"</option>\n";
         });
         $('#eps-classes').html(options);
-        $('#eps-classes').on('change', function(i,j) {
+        $('#eps-classes, #eps-tier').on('change', function(i,j) {
+            // Sélection auto du bon niveau si le choix est fait par classe
+            if (i.target.id == "eps-classes") {
+                classe = $('#eps-classes option:selected').val();
+                niveau = infos_classes[classe]['Niveau'];
+                if (niveau == niveaux[0]) {         // Seconde
+                    $("#eps-tier option[value='1']").prop('selected', true);
+                } else if (niveau == niveaux[2]) {  // Terminale
+                    $("#eps-tier option[value='2']").prop('selected', true);
+                }
+            }
             charger_page('EPS');
         });
         // Tri des colonnes

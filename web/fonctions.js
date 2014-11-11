@@ -138,6 +138,10 @@ function maj_cellule(event) {
                 var champ = champs_liste[cell.index()];
             }
             params = "ine="+ine+"&champ="+champ+"&d="+val;
+            if (page_active == 'eps') {
+                var tier = $('#eps-tier option:selected').val();
+                params = params + "&tier="+tier;
+            }
             $.get( "/maj?"+params, function( data ) {
                 if (data == 'Oui') {
                     cell.removeClass("maj_non");
@@ -343,6 +347,10 @@ function enregistrer_select(cell, col, val, txt, ine) {
     // Génération de l'url
     if (col == "Situation" || col == "Activité 1" || col == "Activité 2" || col == "Activité 3" || col == "Activité 4" || col == "Activité 5") {
         params = "ine="+ine+"&d="+val+"&champ="+col;
+        if (col != 'Situation') { // Page d'EPS, ajout du tier
+            var tier = $('#eps-tier option:selected').val();
+            params = params + "&tier="+tier;
+        }
         url = "/maj?"+params;
     } else {
         row = cell.parents('tr').find('td').first().html();

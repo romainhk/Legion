@@ -33,6 +33,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         rep = "";
         # Fonctions autorisées
         if params.path == '/init':
+            # ACTION : Initialisation de l'application (côté client)
             rep = {
                 'header': self.server.header,
                 'situations': self.server.situations,
@@ -42,6 +43,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             self.repondre(rep)
             return True
         elif params.path == '/liste-annees':
+            # ACTION : Renvoie la liste des années connues
             rep = self.server.db.lister('Année')
             if len(rep) == 0: # Base non encore initialisée!
                 rep = [self.server.debut_AS.year]
@@ -57,6 +59,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             user = self.server.cookie[ip].value
             # Fonctions à accès limité
             if params.path == '/liste' and user == 'admin':
+                # ACTION : Ouverture de la liste principale
                 annee = int(query.get('annee', ['{0}'.format(self.server.debut_AS.year)]).pop())
                 orderby = query.get('col', ['Nom,Prénom']).pop()
                 if orderby == '': orderby = 'Nom,Prénom'
@@ -66,15 +69,18 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 niveau = query.get('niveau', ['']).pop()
                 rep = self.generer_liste(annee, orderby, sens, niveau)
             elif params.path == '/stats':
+                # ACTION : Ouverture de la page de statistiques
                 stat = query['stat'].pop()
                 if user == 'admin' or (stat == 'EPS (activite)' and user == 'eps'):
                     annee = query.get('annee', [self.server.debut_AS.year]).pop()
                     niveaux = query.get('niveaux', ['0']).pop().split(',')
                     rep = self.generer_stats(stat, int(annee), niveaux)
             elif params.path == '/maj' and (user == 'admin' or user == 'eps'):
+                # ACTION : Mise à jour d'un champ
                 ine = query['ine'].pop()
                 champ = query['champ'].pop()
                 d = query.get('d', ['']).pop()
+                tier = int(query.get('tier', ['2']).pop())
                 table = 'Élèves'
                 champ_can = champ.split(' ')[0] # Champ canonique = que la première partie
                 if champ_can == 'Situation':
@@ -97,8 +103,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     self.repondre('Non')
                     return
-                rep = self.server.db.maj_champ(table, ine, champ, donnee)
+                rep = self.server.db.maj_champ(table, ine, champ, donnee, tier)
             elif params.path == '/maj_classe' and user == 'admin':
+                # ACTION : Changement d'affectation pour une classe
                 classe = query['classe'].pop()
                 champ = query['champ'].pop()
                 # Traduction du val (qui n'est qu'un index)
@@ -110,7 +117,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         val = les[int(val)]
                 else:
                     val = ''
-                # MAJ
                 rep = self.server.db.maj_champ('Classes', classe, champ, val)
                 # En cas de la modification d'une section, il faux modifier la filière en conséquence
                 if champ == "Section":
@@ -120,24 +126,25 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         fil = self.server.section_filière[val]
                     self.server.db.maj_champ('Classes', classe, "Filière", fil)
             elif params.path == '/eps':
+                # ACTION : Ouverture de la page EPS
                 classe = query.get('classe', ['']).pop()
-                tier = ''
+                tier = int(query.get('tier', ['2']).pop())
                 if classe == '': eps = '' # Pas de classe, pas de chocolat
                 else:
-                    eps = self.server.db.lire_eps(self.server.debut_AS.year, classe)
-                    classes = self.server.db.lire_classes(self.server.debut_AS.year, niveau='eps')
-                    if classes[classe]['Niveau'] == self.server.niveaux[2]: # 'Terminal'
-                        tier = 'BAC'
-                    else : tier = 'BEP'
-                rep = { 'liste': eps, 'tier': tier }
+                    eps = self.server.db.lire_eps(self.server.debut_AS.year, classe, tier)
+                classes = self.server.db.lire_classes(self.server.debut_AS.year, niveau='eps')
+                rep = { 'liste': eps, 'classes': classes, 'tier': tier }
             elif params.path == '/pending' and user == 'admin':
+                # ACTION : Ouverture de la page de pending
                 rep = self.server.db.lire_pending()
                 rep['date'] = date8601(self.server.date)
             elif params.path == '/options' and user == 'admin':
+                # ACTION : Ouverture de la page des options
                 rep = { 'affectations': self.server.db.lire_classes(self.server.debut_AS.year), 
                     'niveaux': self.server.niveaux,
                     'sections': self.server.sections }
             elif params.path == '/quitter':
+                # ACTION : Fermeture de l'application
                 logging.info('Déconnection du client {0}'.format(ip))
                 if ip in self.server.cookie:
                     self.server.cookie.pop(ip)

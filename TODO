@@ -26,6 +26,5 @@
 * Gestion de l'appel et mail des absents pour la vie scolaire
 * contenteditable : input="number" ?
 * Pouvoir verrouiller 1 note par élève
-* découpage en tier (CAP & 1er/Terminal)
 * Ajouter une date d'évaluation avec chaque note
 * notion de protocole (ensemble d'activité et de dates) ...

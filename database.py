@@ -399,51 +399,45 @@ class Database():
         for row in self.curs.execute(req).fetchall():
             d = dict_from_row(row)
             d['Élèves'] = d['Nom'] + ' ' + d['Prénom']
+            d['x̄'] = 'Pas assez de notes'
             # Calcul de la note du BAC : 
             notes = []
-            for i in range(1,6):
+            for i in range(1,6): # Récupération des notes
                 note = d['Note {0}'.format(i)]
                 cp = d['CP{0}'.format(i)]
                 if note is None or cp is None: note = -1
                 notes.append( (note, cp) )
             selection = [] # Notes sélectionnées
             indices = [] # L'indice correspondant
-            cp = [] # Compétences propres correspondantes
-            if notes[3][0] < 0 and notes[4][0] < 0: d['x̄'] = 'Besoin note 4 & 5'
+            cp = [] # Les Compétences Propres correspondantes
+            # Nombre d'éléments positifs sur les notes de terminal
+            notes_term = sum(x >= 0 for x,y in notes[2:])
+            if notes_term < 2: d['x̄'] = 'Manque note Term'
             else:
                 for k in reversed(range(1,4)):
-                    if k > 1: # Sélection des deux notes de terminal
-                        kk = 1+k # 3 <= kk <= 4 ⊂ indices de notes
-                        note = notes[kk][0]
-                        note = note if note > 0 else 0 # 0 par défaut
-                        competence = notes[kk][1]
-                        if competence not in cp:
-                            selection.append(note)
-                            indices.append(kk)
-                            cp.append(competence)
-                        else:
-                            d['x̄'] = 'Pb CP Term'
-                            break
-                    else: # Parcours des autres notes
-                        maximum = -1
-                        indice = -1
-                        for l in range(0, len(notes)):
-                            note = notes[l][0]
-                            competence = notes[l][1]
-                            if note > maximum and l not in indices and competence not in cp:
-                                maximum = note
-                                indice = l
-                        if maximum > -1 and indice > -1:
-                            selection.append(maximum)
-                            indices.append(indice)
-                            cp.append(notes[indice][1])
-            # Calcul de la moyenne
-            if len(selection) == 3:
-                d['x̄'] = round(sum(selection) / 3.0, 2)
-                d['Notes'] = [a+1 for a in indices] # les gens normaux comptent à partir de 1
-            else:
-                if d['x̄'] == '': d['x̄'] = 'Pas assez de notes'
-                d['Notes'] = []
+                    if k > 1:
+                        # Sélection des deux premières notes en terminal
+                        select_range = range(2,len(notes))
+                    else:
+                        select_range = range(0,len(notes))
+                    maximum = -1
+                    indice = -1
+                    for l in select_range:
+                        note = notes[l][0]
+                        competence = notes[l][1]
+                        if note > maximum and l not in indices and competence not in cp:
+                            maximum = note
+                            indice = l
+                    if maximum > -1 and indice > -1:
+                        selection.append(maximum)
+                        indices.append(indice)
+                        cp.append(notes[indice][1])
+                # Calcul de la moyenne
+                if len(selection) == 3:
+                    d['x̄'] = round(sum(selection) / 3.0, 2)
+                    d['Notes'] = [a+1 for a in indices] # les gens normaux comptent à partir de 1
+                else:
+                    d['Notes'] = []
 
             data[d['INE']] = d
         return data

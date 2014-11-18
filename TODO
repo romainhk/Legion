@@ -13,6 +13,7 @@
 * setup.py : build d'une archive
 * affectation auto des niveau / section par classe en utilisant le code MEF
 * SQL - Options : nom_étab?, sections?
+* Import : un même élève peut avoir plusieurs INE successivement
 
 ### HTML
 * envoie de mail en masse : à tester

@@ -127,12 +127,12 @@ class Database():
 
         # Ajout de l'élève
         req = 'INSERT OR REPLACE INTO Élèves ' \
-            + '(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu) ' \
-            + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", "{9}")'.format(
-                    ine,                enr['nom'],         enr['prénom'],
-                    enr['naissance'],   int(enr['genre']),  enr['mail'],
-                    int(enr['entrée']), enr['Diplômé'],     enr['Situation'],
-                    enr['Lieu'])
+            + '(ELEVE_ID, INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu) ' \
+            + 'VALUES ("{0}", "{1}", "{2}", "{3}", "{4}", {5}, "{6}", {7}, "{8}", "{9}", "{10}")'.format(
+                    enr['eid'],         ine,                enr['nom'],
+                    enr['prénom'],      enr['naissance'],   int(enr['genre']),
+                    enr['mail'],        int(enr['entrée']), enr['Diplômé'],
+                    enr['Situation'],   enr['Lieu'])
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:

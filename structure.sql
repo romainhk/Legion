@@ -1,6 +1,7 @@
 CREATE TABLE "Élèves" (
     -- Les données administratives des élèves
-    "INE" TEXT PRIMARY KEY  NOT NULL,
+    "ELEVE_ID" TEXT PRIMARY KEY NOT NULL,
+    "INE" TEXT NOT NULL,
     "Nom" TEXT,
     "Prénom" TEXT,
     "Naissance" DATE,

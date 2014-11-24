@@ -406,6 +406,7 @@ class Database():
                 note = d['Note {0}'.format(i)]
                 cp = d['CP{0}'.format(i)]
                 if note is None or cp is None: note = -1
+                if note == -2: note = 0 # Abs => 0.0
                 notes.append( (note, cp) )
             selection = [] # Notes sélectionnées
             indices = [] # L'indice correspondant
@@ -433,11 +434,13 @@ class Database():
                         indices.append(indice)
                         cp.append(notes[indice][1])
                 # Calcul de la moyenne
+                d['Notes'] = []
                 if len(selection) == 3:
-                    d['x̄'] = round(sum(selection) / 3.0, 2)
-                    d['Notes'] = [a+1 for a in indices] # les gens normaux comptent à partir de 1
-                else:
-                    d['Notes'] = []
+                    if selection[0] == selection[1] == selection[2] == 0: # Note éliminatoire
+                        d['x̄'] = 'Abs'
+                    else:
+                        d['x̄'] = round(sum(selection) / 3.0, 2)
+                        d['Notes'] = [a+1 for a in indices] # les gens normaux comptent à partir de 1
 
             data[d['INE']] = d
         return data

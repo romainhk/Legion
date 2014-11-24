@@ -30,7 +30,6 @@
 * Pouvoir verrouiller 1 note par élève
 * Ajouter une date d'évaluation avec chaque note (en dessous ?)
 * notion de protocole (ensemble d'activité et de dates) ...
-* Abs = noté 0 (3 abs => éliminatoire)
 * Moyenne BEP: maximum 2 APS en seconde, les autres évaluées en classe de première
 * Stats : niveaux bep et bac
 * Ajouter une colonne pour saisir les protocoles (p1, p3...)

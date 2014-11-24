@@ -587,10 +587,15 @@ class Database():
             WHERE Section<>'' AND {niv} ORDER BY Section,Niveau""".format(niv=les_niveaux)
         elif info == "eps activite": # EPS: moyenne par activité
             req = """SELECT "Activité 1", sum(CASE WHEN "Note 1">0 THEN "Note 1" ELSE 0 END) as n1,
+            sum(CASE WHEN "Note 1"<0 THEN 1 ELSE 0 END) as a1,
             "Activité 2", sum(CASE WHEN "Note 2">0 THEN "Note 2" ELSE 0 END) as n2,
+            sum(CASE WHEN "Note 2"<0 THEN 1 ELSE 0 END) as a2,
             "Activité 3", sum(CASE WHEN "Note 3">0 THEN "Note 3" ELSE 0 END) as n3,
+            sum(CASE WHEN "Note 3"<0 THEN 1 ELSE 0 END) as a3,
             "Activité 4", sum(CASE WHEN "Note 4">0 THEN "Note 4" ELSE 0 END) as n4,
+            sum(CASE WHEN "Note 4"<0 THEN 1 ELSE 0 END) as a4,
             "Activité 5", sum(CASE WHEN "Note 5">0 THEN "Note 5" ELSE 0 END) as n5,
+            sum(CASE WHEN "Note 5"<0 THEN 1 ELSE 0 END) as a5,
             E.Genre, count(*) as nombre
             FROM EPS JOIN Affectations A, Classes CN ON A.INE=EPS.INE AND CN.Classe=A.Classe
             LEFT JOIN Élèves E ON E.INE=A.INE

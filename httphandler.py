@@ -516,13 +516,17 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 for b in act: # pour chaque ligne
                     for c in b: # pour chaque activité
                         if b[c] == a: # si on trouve l'activité
-                            note = b['n{0}'.format(c.split(' ')[1])]
-                            if b['Genre'] == 1:
-                                somme_h = somme_h + note
-                                eff_h = eff_h + b['nombre']
-                            elif b['Genre'] == 2:
-                                somme_f = somme_f + note
-                                eff_f = eff_f + b['nombre']
+                            excl = b['a{0}'.format(c.split(' ')[1])]
+                            # Seul compte les notes positives dans le calcul de la moyenne
+                            notes_comptantes = b['nombre'] - excl
+                            if notes_comptantes > 0:
+                                note = b['n{0}'.format(c.split(' ')[1])]
+                                if b['Genre'] == 1:
+                                    somme_h = somme_h + note
+                                    eff_h = eff_h + notes_comptantes
+                                elif b['Genre'] == 2:
+                                    somme_f = somme_f + note
+                                    eff_f = eff_f + notes_comptantes
                 moyenne = moyenne_h = moyenne_f = '?'
                 if eff_h + eff_f != 0:
                     moyenne = round( (somme_h+somme_f)/ (eff_h+eff_f),2)

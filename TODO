@@ -13,6 +13,7 @@
 * setup.py : build d'une archive
 * affectation auto des niveau / section par classe en utilisant le code MEF
 * SQL - Options : nom_étab?, sections?
+* Importation : retiré d'autres pending en regardant la date de sortie
 
 ### HTML
 * envoie de mail en masse : à tester
@@ -20,11 +21,18 @@
 ** importation de la base
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * Pouvoir changer certaines options statiques (nom_etab...)
+* l'adresse en extranet.lycee-... ne fonctionne pas en interne
 
 ### Extension EPS
 * Authentification à distance avec ssl
 * Gestion de l'appel et mail des absents pour la vie scolaire
 * contenteditable : input="number" ?
 * Pouvoir verrouiller 1 note par élève
-* Ajouter une date d'évaluation avec chaque note
+* Ajouter une date d'évaluation avec chaque note (en dessous ?)
 * notion de protocole (ensemble d'activité et de dates) ...
+* Abs = noté 0 (3 abs => éliminatoire)
+* Moyenne BEP: maximum 2 APS en seconde, les autres évaluées en classe de première
+* Stats : niveaux bep et bac
+* Ajouter une colonne pour saisir les protocoles (p1, p3...)
+* Stats : exclure les notes négatives
+* Différencier/regrouper par niveaux

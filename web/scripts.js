@@ -197,6 +197,9 @@ function charger_page(nom) {
             $('#eps-table > tbody td:nth-child(7), #eps-table > tbody td:nth-child(9)').attr('contenteditable','true');
             $('#eps-table > tbody td:nth-child(11)').attr('contenteditable','true');
             $('#eps-table td[contenteditable]').on('keydown', maj_cellule);
+            // Ligne de démarcation selon le niveau
+            if (eps_tier == "1") { col = '7'; } else { col = '5'; }
+            $('#eps-table > tbody td:nth-child('+col+')').css({'border-right':'3px dashed #5b6b5b'});
         }).fail(noauth);
     } else if (nom == 'pending') {
         page_active = 'pending';

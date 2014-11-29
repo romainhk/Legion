@@ -14,7 +14,6 @@
 * affectation auto des niveau / section par classe en utilisant le code MEF
 * SQL - Options : nom_étab?, sections?
 * Importation : retiré d'autres pending en regardant la date de sortie
-* SQL : protection d'injection : https://docs.python.org/3.4/library/sqlite3.html
 
 ### HTML
 * envoie de mail en masse : à tester

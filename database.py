@@ -73,17 +73,14 @@ class Database():
         :type tier: int
         """
         if table == 'Élèves':
-            col = 'INE'
-            cond = '{col}="{ident}"'.format(col=col, ident=ident)
+            req = 'UPDATE {tab} SET "{champ}"=:d WHERE INE=:ident'.format(tab=table, champ=champ)
         elif table == 'Classes':
-            col = 'Classe'
-            cond = '{col}="{ident}"'.format(col=col, ident=ident)
+            req = 'UPDATE {tab} SET "{champ}"=:d WHERE Classe=:ident'.format(tab=table, champ=champ)
         elif table == 'EPS':
-            col = 'INE'
-            cond = '{col}="{ident}" AND Tier={tier}'.format(col=col, ident=ident, tier=tier)
-        req = 'UPDATE {tab} SET "{champ}"="{d}" WHERE {cond}'.format(tab=table, cond=cond, champ=champ, d=donnee)
+            req = 'UPDATE {tab} SET "{champ}"=:d WHERE INE=:ident AND Tier=:tier'.format(tab=table, champ=champ)
+        donnees = {'d': donnee, 'ident':ident, 'tier':tier}
         try:
-            self.curs.execute(req)
+            self.curs.execute(req, donnees)
         except sqlite3.Error as e:
             logging.error(u"Mise à jour d'un champ : {0}\n{1}".format(e.args[0], req))
             return 'Non'
@@ -128,13 +125,13 @@ class Database():
         # Ajout de l'élève
         req = 'INSERT OR REPLACE INTO Élèves ' \
             + '(ELEVE_ID, INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu) ' \
-            + 'VALUES ("{0}", "{1}", "{2}", "{3}", "{4}", {5}, "{6}", {7}, "{8}", "{9}", "{10}")'.format(
-                    enr['eid'],         ine,                enr['nom'],
+            + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        donnees = ( enr['eid'],         ine,                enr['nom'],
                     enr['prénom'],      enr['naissance'],   int(enr['genre']),
                     enr['mail'],        int(enr['entrée']), enr['Diplômé'],
                     enr['Situation'],   enr['Lieu'])
         try:
-            self.curs.execute(req)
+            self.curs.execute(req, donnees)
         except sqlite3.Error as e:
             # Pour toute autre erreur, on laisse tomber
             logging.error(u"Insertion d'un élève : {0}\n{1}".format(e.args[0], req))
@@ -143,8 +140,8 @@ class Database():
 
         # Ajout de l'élève dans la base EPS (dans les 2 niveaux)
         for i in range(1,3):
-            req = 'INSERT OR IGNORE INTO EPS (INE, Tier) VALUES ("{0}", {1})'.format(ine, i)
-            self.curs.execute(req)
+            req = 'INSERT OR IGNORE INTO EPS (INE, Tier) VALUES (?, ?)'
+            self.curs.execute(req, (ine, i))
         # Reste à affecter notre élève à sa classe de cette année et de l'année dernière
         x = self.ecrire_affectation(
                 ine, annee, classe, enr['mef'], self.nom_etablissement, enr['doublement'])
@@ -199,9 +196,10 @@ class Database():
             return False
         req = 'INSERT OR REPLACE INTO Affectations ' \
               +  '(INE, Année, Classe, MEF, Établissement, Doublement) ' \
-              + 'VALUES ("{0}", {1}, "{2}", "{3}", "{4}", {5})'.format( ine, annee, classe, mef, etab, doublement )
+              + 'VALUES (?, ?, ?, ?, ?, ?)'
+        donnees = ( ine, annee, classe, mef, etab, doublement )
         try:
-            self.curs.execute(req)
+            self.curs.execute(req, donnees)
         except sqlite3.Error as e:
             logging.error(u"Insertion d'une affectation : {0}\n{1}".format(e.args[0], req))
             return self.FAILED
@@ -235,9 +233,10 @@ class Database():
                 elif cla[0] == '1': niv = server.niveaux[1]
                 elif cla[0] == 'T': niv = server.niveaux[2]
             # Insertion
-            req = 'INSERT INTO Classes VALUES ("{0}", "{1}", "{2}", "{3}")'.format(cla, niv, fil, sec)
+            req = 'INSERT INTO Classes VALUES (?, ?, ?, ?)'
+            donnees = (cla, niv, fil, sec)
             try:
-                self.curs.execute(req)
+                self.curs.execute(req, donnees)
             except sqlite3.Error as e:
                 logging.info(u"Erreur lors de l'ajout de la classe {0}:\n{1}".format(cla, e.args[0]))
         self.conn.commit()
@@ -280,13 +279,13 @@ class Database():
 
         req = 'INSERT OR REPLACE INTO Pending ' \
                 + '(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Classe, Établissement, Doublement, Raison) ' \
-                + 'VALUES ("{0}", "{1}", "{2}", "{3}", {4}, "{5}", {6}, "{7}", "{8}", {9}, "{10}")'.format(
-                    enr['ine'],             enr['nom'],             enr['prénom'],
+                + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        donnees = ( enr['ine'],             enr['nom'],             enr['prénom'],
                     enr['naissance'],       int(enr['genre']),      enr['mail'],
                     int(enr['entrée']),     enr['classe'],          enr['sad_établissement'],
                     int(enr['doublement']),     raison)
         try:
-            self.curs.execute(req)
+            self.curs.execute(req, donnees)
         except sqlite3.Error as e:
             logging.error(u"Insertion en pending : {0}\n{1}".format(e.args[0], req))
             return False
@@ -301,9 +300,9 @@ class Database():
         :type nom: str
         :type valeur: str
         """
-        req = 'INSERT OR REPLACE INTO Options (Nom, Valeur) VALUES ("{0}", "{1}")'.format(nom, valeur)
+        req = 'INSERT OR REPLACE INTO Options (Nom, Valeur) VALUES (?, ?)'
         try:
-            self.curs.execute(req)
+            self.curs.execute(req, (nom, valeur))
         except sqlite3.Error as e:
             logging.info(u"Erreur lors de la sauvegarde de l'option {0}:\n{1}".format(nom, e.args[0]))
         self.conn.commit()
@@ -329,16 +328,16 @@ class Database():
         elif niveau == 'BTS':
             niv= 'AND (Niveau="1BTS" OR Niveau="2BTS")'
         # Listage des élèves
-        req = 'SELECT * FROM Élèves E NATURAL JOIN Affectations A JOIN Classes C ON A.Classe=C.Classe WHERE Année="{2}" {niv} ORDER BY {0} {1}, Nom ASC'.format(orderby, sens, annee, niv=niv)
-        for row in self.curs.execute(req).fetchall():
+        req = 'SELECT * FROM Élèves E NATURAL JOIN Affectations A JOIN Classes C ON A.Classe=C.Classe WHERE Année=? {niv} ORDER BY {0} {1}, Nom ASC'.format(orderby, sens, niv=niv)
+        for row in self.curs.execute(req, (annee,)).fetchall():
             d = dict_from_row(row)
             ine = d['INE']
             # Calcul de l'âge actuel
             d['Âge'] = nb_annees(date(d['Naissance']))
             data[ine] = d
         # Génération du parcours
-        req = 'SELECT INE,Année,A.Classe,Établissement,Doublement FROM Élèves E NATURAL JOIN Affectations A JOIN Classes C ON A.Classe=C.Classe WHERE Année<="{0}" {niv} ORDER BY Année DESC'.format(annee,niv=niv)
-        for row in self.curs.execute(req).fetchall():
+        req = 'SELECT INE,Année,A.Classe,Établissement,Doublement FROM Élèves E NATURAL JOIN Affectations A JOIN Classes C ON A.Classe=C.Classe WHERE Année<=? {niv} ORDER BY Année DESC'.format(niv=niv)
+        for row in self.curs.execute(req, (annee,)).fetchall():
             d = dict_from_row(row)
             ine = d['INE']
             if ine in data: # ?
@@ -364,8 +363,8 @@ class Database():
         n = ''
         if niveau == 'eps':
             n = 'AND (C.Niveau="Seconde" OR C.Niveau="Première" OR C.Niveau="Terminale")'
-        req = 'SELECT * FROM Classes C NATURAL JOIN Affectations A WHERE A.Année={0} {1} ORDER BY Classe ASC'.format(annee, n)
-        for row in self.curs.execute(req).fetchall():
+        req = 'SELECT * FROM Classes C NATURAL JOIN Affectations A WHERE A.Année=? {0} ORDER BY Classe ASC'.format(n)
+        for row in self.curs.execute(req, (annee,)).fetchall():
             d = dict_from_row(row)
             key = d['Classe']
             data[key] = d
@@ -394,9 +393,9 @@ class Database():
         LEFT JOIN EPS_Activités EA5 ON LOWER(EA5.Activité)=LOWER(E."Activité 5")
         WHERE E."Activité 1" IS NOT NULL AND E."Activité 2" IS NOT NULL
         AND E."Activité 3" IS NOT NULL AND E."Activité 5" IS NOT NULL
-        AND E."Activité 5" IS NOT NULL AND Classe="{0}" AND A.Année="{1}" AND Tier={2}
-        ORDER BY Nom,Prénom ASC """.format(classe, annee, tier)
-        for row in self.curs.execute(req).fetchall():
+        AND E."Activité 5" IS NOT NULL AND Classe=? AND A.Année=? AND Tier=?
+        ORDER BY Nom,Prénom ASC """
+        for row in self.curs.execute(req, (classe, annee, tier) ).fetchall():
             d = dict_from_row(row)
             d['Élèves'] = d['Nom'] + ' ' + d['Prénom']
             d['x̄'] = 'Pas assez de notes'
@@ -518,73 +517,79 @@ class Database():
             req = """SELECT 
             sum(CASE WHEN "Niveau" LIKE "" THEN 0 ELSE 1 END)+sum(CASE WHEN "Section" LIKE "" THEN 0 ELSE 1 END) AS n,
             count(*) AS total FROM Classes
-            WHERE Classe IN (SELECT DISTINCT Classe FROM Affectations WHERE Année={0})""".format(annee)
+            WHERE Classe IN (SELECT DISTINCT Classe FROM Affectations WHERE Année=?)"""
+            donnees = (annee,)
         elif info == "totaux": # totaux
             # Calcul des totaux :
             # Nombre d'élèves, d'hommes, doublants, nouveaux, issues de pro
             req = """SELECT count(*) total, 
             COALESCE(sum(CASE WHEN Genre="1" THEN 1 ELSE 0 END),0) homme, 
             IFNULL(sum(CASE WHEN Doublement="1" THEN 1 ELSE 0 END),0) doublant, 
-            COALESCE(sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année={0} AND Établissement<>"{etab}") THEN 1 ELSE 0 END),0) nouveau, 
+            COALESCE(sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année=:an1 AND Établissement<>:etab) THEN 1 ELSE 0 END),0) nouveau, 
             IFNULL(sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END),0) "issue de pro" 
             FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe JOIN Élèves E ON A.INE=E.INE 
-            WHERE Établissement="{etab}" AND Année={0} AND {niv}""".format(annee, etab=self.nom_etablissement, niv=les_niveaux)
+            WHERE Établissement=:etab AND Année=:an1 AND {niv} """.format(niv=les_niveaux)
+            donnees = { 'an1':annee, 'etab':self.nom_etablissement }
         elif info == "par niveau": # par niveau
             req = """SELECT Niveau, count(A.INE) effectif, 
             sum(CASE WHEN Genre="1" THEN 1 ELSE 0 END) homme, 
             sum(CASE WHEN Doublement="1" THEN 1 ELSE 0 END) doublant, 
-            sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année={1} AND Établissement<>"{etab}") THEN 1 ELSE 0 END) nouveau, 
+            sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année=:an0 AND Établissement<>:etab) THEN 1 ELSE 0 END) nouveau, 
             sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END) "issue de pro" 
             FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe JOIN Élèves E ON A.INE=E.INE 
-            WHERE Établissement="{etab}" AND Année={0} AND {niv} 
-            GROUP BY Niveau""".format(annee, annee-1, etab=self.nom_etablissement, niv=les_niveaux)
+            WHERE Établissement=:etab AND Année=:an1 AND {niv} 
+            GROUP BY Niveau""".format(niv=les_niveaux)
+            donnees = { 'an1':annee, 'an0':annee-1, 'etab':self.nom_etablissement }
         elif info == "par section": # par section
             req = """SELECT Section, count(A.INE) effectif, 
             sum(CASE WHEN Genre="1" THEN 1 ELSE 0 END) homme, 
             sum(CASE WHEN Doublement="1" THEN 1 ELSE 0 END) doublant, 
-            sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année={1} AND Établissement<>"{etab}") THEN 1 ELSE 0 END) nouveau, 
+            sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année=:an0 AND Établissement<>:etab) THEN 1 ELSE 0 END) nouveau, 
             sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END) "issue de pro" 
             FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe JOIN Élèves E ON A.INE=E.INE 
-            WHERE Établissement="{etab}" AND Année={0} AND {niv} 
-            GROUP BY Section""".format(annee, annee-1, etab=self.nom_etablissement, niv=les_niveaux)
+            WHERE Établissement=:etab AND Année=:an1 AND {niv} 
+            GROUP BY Section""".format(niv=les_niveaux)
+            donnees = { 'an1':annee, 'an0':annee-1, 'etab':self.nom_etablissement }
         elif info == "par situation": # par situation
             req = """SELECT (CASE WHEN Situation="" THEN '?' ELSE Situation END) as situation,
             count(*) as effectif FROM Élèves E
             JOIN Affectations A ON E.INE=A.INE JOIN Classes CN ON A.Classe=CN.Classe 
-            WHERE A.Année={0} AND Établissement="{etab}" AND {niv}
-            GROUP BY Situation""".format(annee, etab=self.nom_etablissement, niv=les_niveaux)
+            WHERE A.Année=:an1 AND Établissement=:etab AND {niv} 
+            GROUP BY Situation""".format(niv=les_niveaux)
+            donnees = { 'an1':annee, 'etab':self.nom_etablissement }
         elif info == "annees scolarisation": # annees scolarisation
             req = """SELECT INE, count(*) Scolarisation 
             FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe 
-            WHERE Établissement="{0}" AND {niv} 
-            GROUP BY INE""".format(self.nom_etablissement, niv=les_niveaux)
-            # Autre calcul utilisant la date d'entrée
-            #(pb: l'élèves a pu partir puis revenir l'année suivante)
-            #req = 'SELECT A.INE,{0}-Entrée+1 AS Scolarisation FROM Affectations A JOIN Élèves E ON A.INE=E.INE WHERE Établissement="Jean Moulin"'.format(annee)
+            WHERE Établissement=:etab AND {niv} 
+            GROUP BY INE""".format(niv=les_niveaux)
+            donnees = {'etab':self.nom_etablissement}
         elif info == "provenance": # provenance
             req = """SELECT A2.Établissement, count(*) total, 
             sum(CASE WHEN CN.Niveau="Seconde" THEN 1 ELSE 0 END) "en seconde", 
-	    (CASE WHEN A2.Établissement!="{etab}" THEN 
+	    (CASE WHEN A2.Établissement!=:etab THEN 
                 GROUP_CONCAT(A.Classe||" / "||E.Nom||" "||E.Prénom, ", <br>")
                 ELSE "..." END) AS liste
             FROM Affectations A LEFT JOIN Affectations A2 ON A.INE=A2.INE 
             LEFT JOIN Classes CN ON A.Classe = CN.Classe 
             JOIN Élèves E ON E.INE=A.INE
-            WHERE A.Année={0} AND A2.Année={1} AND {niv} 
-            GROUP BY A2.Établissement""".format(annee, annee-1, niv=les_niveaux, etab=self.nom_etablissement)
+            WHERE A.Année=:an1 AND A2.Année=:an0 AND {niv} 
+            GROUP BY A2.Établissement""".format(niv=les_niveaux)
+            donnees = { 'an1':annee, 'an0':annee-1, 'etab':self.nom_etablissement }
         elif info == "provenance classe": # provenance classe
             req = """SELECT CN.Classe classe, IFNULL(A2.Classe,'inconnue') AS provenance,
             IFNULL(A2.Établissement, 'inconnu') AS Établissement, IFNULL(A2.MEF, '?') AS MEF, count(*) AS total, 
             GROUP_CONCAT(E.Nom||" "||E.Prénom, ", <br>") AS liste            
             FROM Classes CN LEFT JOIN Affectations A ON CN.Classe=A.Classe 
-            LEFT JOIN Affectations A2 ON A.INE=A2.INE AND A2.Année={1}
+            LEFT JOIN Affectations A2 ON A.INE=A2.INE AND A2.Année=?
             JOIN Élèves E ON E.INE=A.INE
-            WHERE A.Année={0} AND {niv}  GROUP BY A2.Classe,A.Classe
-            ORDER BY CN.Classe,A2.Établissement,A2.Classe""".format(annee, annee-1, niv=les_niveaux)
+            WHERE A.Année=? AND {niv}  GROUP BY A2.Classe,A.Classe
+            ORDER BY CN.Classe,A2.Établissement,A2.Classe""".format(niv=les_niveaux)
+            donnees = ( annee-1, annee )
         elif info == "taux de passage": # taux de passage
             req = """SELECT Section, Niveau, INE, Année 
             FROM Affectations A LEFT JOIN Classes CN ON A.Classe=CN.Classe 
             WHERE Section<>'' AND {niv} ORDER BY Section,Niveau""".format(niv=les_niveaux)
+            donnees = ()
         elif info == "eps activite": # EPS: moyenne par activité
             req = """SELECT "Activité 1", sum(CASE WHEN "Note 1">0 THEN "Note 1" ELSE 0 END) as n1,
             sum(CASE WHEN "Note 1"<0 THEN 1 ELSE 0 END) as a1,
@@ -599,21 +604,21 @@ class Database():
             E.Genre, count(*) as nombre
             FROM EPS JOIN Affectations A, Classes CN ON A.INE=EPS.INE AND CN.Classe=A.Classe
             LEFT JOIN Élèves E ON E.INE=A.INE
-            WHERE A.Année={0} AND Établissement="{etab}" AND {niv}
-            GROUP BY E.Genre, "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5" """.format(annee, etab=self.nom_etablissement, niv=les_niveaux)
+            WHERE A.Année=:annee AND Établissement=:etab AND {niv} 
+            GROUP BY E.Genre, "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5" """.format(niv=les_niveaux)
+            donnees = {'annee':annee, 'etab':self.nom_etablissement }
         else:
             logging.error('Information "{0}" non disponible'.format(info))
             return []
-        logging.debug('> {0}'.format(req))
+        logging.debug('> {0}\n>> {1}'.format(req, donnees))
         try:
-            self.curs.execute(req)
+            self.curs.execute(req, donnees)
         except sqlite3.Error as e:
             logging.error("Erreur lors de la génération de stats '{0}' :\n{1}".format(info, e.args[0]))
         data = []
-        for row in self.curs.execute(req).fetchall():
+        for row in self.curs.execute(req, donnees).fetchall():
             d = dict_from_row(row)
             data.append(d)
-        #logging.debug(data)
         return data
 
     def vider_pending(self):

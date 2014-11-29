@@ -72,6 +72,7 @@ CREATE TABLE "EPS" (
     "Activité 5" TEXT DEFAULT (''),
     "Note 5" REAL DEFAULT (-1.0),
     "Verrou" INTEGER DEFAULT(0), -- indice de la note verrouillée ; 0 = aucune
+    "Protocole" TEXT DEFAULT (''), -- p1, p2...
     PRIMARY KEY(INE,Tier)
 );
 CREATE TABLE "EPS_Activités" (

@@ -14,6 +14,7 @@
 * affectation auto des niveau / section par classe en utilisant le code MEF
 * SQL - Options : nom_étab?, sections?
 * Importation : retiré d'autres pending en regardant la date de sortie
+* SQL : protection d'injection : https://docs.python.org/3.4/library/sqlite3.html
 
 ### HTML
 * envoie de mail en masse : à tester
@@ -32,4 +33,4 @@
 * notion de protocole (ensemble d'activité et de dates) ...
 * Moyenne BEP: maximum 2 APS en seconde, les autres évaluées en classe de première
 * Stats : niveaux bep et bac
-* Ajouter une colonne pour saisir les protocoles (p1, p3...)
+* La ligne "Affecter à tous" devrait être non affecté par le tri et en haut

@@ -369,7 +369,8 @@ function enregistrer_select(cell, col, val, txt, ine) {
 /*
  * Recherche les éléments dans la liste
  */
-function rechercher(delay=0){
+function rechercher(delay){
+    delay = typeof delay !== 'undefined' ? delay : 0;
     setTimeout(function() {
         var data = $('#filtre').val().toLowerCase();
         $("#liste-table > tbody > tr[id]").show();
@@ -390,7 +391,8 @@ function rechercher(delay=0){
 /*
  * Test d'authentification
  */
-function authentification(e=null) {
+function authentification(e) {
+    e = typeof e !== 'undefined' ? e : null;
     if (e) { e.preventDefault(); // no-reload
     }
     $("#login-message").hide();

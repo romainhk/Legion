@@ -4,3 +4,8 @@ data*
 *.log
 *.xml
 web/cache/*
+*.aux
+*.dvi
+*.ps
+*.out
+*.toc

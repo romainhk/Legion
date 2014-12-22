@@ -1,0 +1,77 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[francais]{babel}
+\usepackage[top=1cm, bottom=1.8cm, left=2cm, right=2cm, marginparwidth=0cm, marginparsep=0cm]{geometry}
+\usepackage[utf8]{inputenc}
+
+\usepackage{hyperref}
+\usepackage{graphicx}
+%\usepackage{listings}
+
+% Commande \code
+\usepackage{xcolor}
+\definecolor{gris}{gray}{0.75}
+\definecolor{grisleger}{gray}{0.95}
+\definecolor{magenta}{HTML}{DD1144}
+\newcommand{\code}[1]{\fcolorbox{gris}{grisleger}{{\color{magenta}{\texttt{#1}}}}}
+% Commande bouton
+\newcommand{\bouton}[1]{« \textit{#1} »}
+
+\begin{document}
+\title{Guide d'utilisation de Legion}
+\author{Romain Hennuyer\\
+	Lycée Jean Moulin - Roubaix}
+\date{\today}
+ 
+\maketitle
+\tableofcontents
+\pagebreak
+
+\section{Installation}
+\subsection{Pré-requis}
+Legion nécessite python 3 ainsi que notamment les librairies sqlite3, urllib, json, numpy et matplotlib.
+
+\subsection{Fichiers}
+Il faut d'abord cloner le dépôt public de Legion :\\
+\code{git clone https://github.com/romainhk/Legion.git}
+
+Ou récupérer l'archive à l'adresse :\\
+\url{https://github.com/romainhk/Legion/archive/master.zip}
+
+Il ne reste plus qu'à personnaliser le fichier \texttt{config.cfg} avec :
+\begin{itemize}
+\item le port de connexion ;
+\item les mot de passe administrateur et eps, encodés en SHA512 ;
+\item le nom de l'établissement ;
+\item le nom des sections pour chaque filière.
+\end{itemize}
+
+\subsection{Exécution}
+\code{python3 legion.py}
+
+Ou pour une utilisation en mode démon :
+
+\code{nohup python3 legion.py \&}
+
+Alors, le fichier legion.log est remplacé par nohup.log
+
+\subsection{Sélection de port}
+...
+
+%\pagebreak
+\section{Initialisation d'une année scolaire}
+\subsection{Récupération des données}
+...
+
+\subsection{Importation}
+Décompresser le fichier récupéré ; on obtient le fichier \texttt{ElevesSansAdresses.xml}.
+
+Se connecter à Legion et aller dans l'onglet \bouton{Options}. Cliquer sur \bouton{Parcourir}, sélectionner le fichier xml précédent puis cliquer sur \bouton{Importer}.
+
+L'importation peut durer plusieurs minutes. Une fois terminée, la page revient automatiquement sur l'accueil.
+
+\subsection{Affectation des classes}
+Chaque classe doit être rattachée à un niveau et une section. Une correspondance est calculée automatiquement ; il faut la vérifier et la compléter en allant dans l'onglet \bouton{Options}.
+
+Voilà ! Legion est prêt :)
+
+\end{document}

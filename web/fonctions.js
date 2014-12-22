@@ -423,7 +423,11 @@ function authentification(e) {
                 $('.quitter').show();
                 // Chargement de la page d'accueil
                 $.get( "/accueil.html", function( data ) {
-                    $("#accueil").html(data);
+                    if (message == "admin") {
+                        $("#accueil").html(data);
+                    } else {
+                        $("#accueil").html("<h2>Bienvenue sur Legion/EPS</h2>");
+                    }
                     charger_page('accueil');
                 });
             } else {

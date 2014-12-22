@@ -1,8 +1,8 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
+#
+# Lancer la compilation avec la commande 'python setup.py sdist'
 
-# Lancer la compilation avec la commande 'python setup.py build'
-
-import platform, os
 from distutils.core import setup
 
 setup(name='legion',
@@ -11,5 +11,5 @@ setup(name='legion',
       author='Romain Hennuyer',
       author_email='romain.hennuyer@gmail.com',
       #url='',
-      license='GPLv3',
+      license='GPLv3'
       )

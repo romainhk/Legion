@@ -410,14 +410,16 @@ class Database():
             selection = [] # Notes sélectionnées
             indices = [] # L'indice correspondant
             cp = [] # Les Compétences Propres correspondantes
-            # Nombre d'éléments positifs sur les notes de terminal
-            notes_term = sum(x >= 0 for x,y in notes[2:])
-            if notes_term < 2: d['x̄'] = 'Manque note Term'
+            # sum(x >= 0 for x,y in notes) <=> Nombre d'éléments positifs sur les notes
+            if   tier == 2 and sum(x >= 0 for x,y in notes[2:]) < 2: d['x̄'] = 'Manque note Term'
+            elif tier == 1 and sum(x >= 0 for x,y in notes[3:]) < 1: d['x̄'] = 'Manque note 1er'
             else:
                 for k in reversed(range(1,4)):
-                    if k > 1:
+                    if   tier == 2 and k > 1:
                         # Sélection des deux premières notes en terminal
                         select_range = range(2,len(notes))
+                    elif tier == 1 and k > 2:
+                        select_range = range(3,len(notes))
                     else:
                         select_range = range(0,len(notes))
                     maximum = -1

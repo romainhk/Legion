@@ -12,14 +12,13 @@
 * Analyse des dépendances (au démarrage, vérification qu'elles sont disponibles)
 * setup.py : build d'une archive
 * affectation auto des niveau / section par classe en utilisant le code MEF
-* SQL - Options : nom_étab?, sections?
+* SQL - Options : nom_étab?, sections? => Pouvoir changer certaines options statiques
 
 ### HTML
 * envoie de mail en masse : à tester
 * Ajouter des tutoriels sur l'importation (quand les faire ?...)
 ** importation de la base
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
-* Pouvoir changer certaines options statiques (nom_etab...)
 * l'adresse en extranet.lycee-... ne fonctionne pas en interne
 
 ### Extension EPS
@@ -28,6 +27,5 @@
 * contenteditable : input="number" ?
 * Pouvoir verrouiller 1 note par élève
 * Ajouter une date d'évaluation avec chaque note (en dessous ?)
-* Moyenne BEP: maximum 2 APS en seconde, les autres évaluées en classe de première
 * Stats : niveaux bep et bac
 * La ligne "Affecter à tous" devrait être non affecté par le tri et en haut

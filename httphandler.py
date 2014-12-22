@@ -653,10 +653,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         # Traitement des données
         for eleve in root.iter('ELEVE'):
             sortie = eleve.findtext('DATE_SORTIE')
-            if sortie and sortie.split('/')[1] == '09':
-                # Si la date de sortie est en septembre, il s'agit d'un élève affecté automatiquement au lycée
-                # mais qui est parti dans un autre
-                # => On laisse tomber
+            if sortie:
+                # S'il y a une date de sortie, on laisse tomber
                 continue
             eid = eleve.get('ELEVE_ID')
             ine = eleve.findtext('ID_NATIONAL')

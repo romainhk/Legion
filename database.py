@@ -57,7 +57,7 @@ class Database():
                 self.importations[self.PENDING]) )
         self.conn.close()
 
-    def maj_champ(self, table, ident, champ, donnee, tier=2):
+    def maj_champ(self, table, ident, champ, donnee, tier='BAC'):
         """
             Mets à jour un champ de la base
 
@@ -65,12 +65,12 @@ class Database():
         :param ident: l'identifiant (clé primaire) visé
         :param champ: le champ à modifier
         :param donnee: la nouvelle valoir
-        :param tier: (OPT - EPS) le tier voulu (1 ou 2)
+        :param tier: (OPT - EPS) le tier voulu
         :type table: str
         :type ident: str
         :type champ: str
         :type donnee: str
-        :type tier: int
+        :type tier: str
         """
         if table == 'Élèves':
             req = 'UPDATE {tab} SET "{champ}"=:d WHERE INE=:ident'.format(tab=table, champ=champ)
@@ -139,7 +139,7 @@ class Database():
             return self.FAILED
 
         # Ajout de l'élève dans la base EPS (dans les 2 niveaux)
-        for i in range(1,3):
+        for i in ['BEP', 'BAC']:
             req = 'INSERT OR IGNORE INTO EPS (INE, Tier) VALUES (?, ?)'
             self.curs.execute(req, (ine, i))
         # Reste à affecter notre élève à sa classe de cette année et de l'année dernière
@@ -376,10 +376,10 @@ class Database():
         
         :param annee: année de scolarisation
         :param classe: la classe [sic]
-        :param tier: le tier voulu (1 ou 2 pour BEP ou BAC)
+        :param tier: le tier voulu (BEP ou BAC)
         :type annee: int
         :type classe: str
-        :type tier: int
+        :type tier: str
         :rtype: OrderedDict
         """
         data = collections.OrderedDict()
@@ -411,14 +411,14 @@ class Database():
             indices = [] # L'indice correspondant
             cp = [] # Les Compétences Propres correspondantes
             # sum(x >= 0 for x,y in notes) <=> Nombre d'éléments positifs sur les notes
-            if   tier == 2 and sum(x >= 0 for x,y in notes[2:]) < 2: d['x̄'] = 'Manque note Term'
-            elif tier == 1 and sum(x >= 0 for x,y in notes[3:]) < 1: d['x̄'] = 'Manque note 1er'
+            if   tier == 'BAC' and sum(x >= 0 for x,y in notes[2:]) < 2: d['x̄'] = 'Manque note Term'
+            elif tier == 'BEP' and sum(x >= 0 for x,y in notes[3:]) < 1: d['x̄'] = 'Manque note 1er'
             else:
                 for k in reversed(range(1,4)):
-                    if   tier == 2 and k > 1:
+                    if   tier == 'BAC' and k > 1:
                         # Sélection des deux premières notes en terminal
                         select_range = range(2,len(notes))
-                    elif tier == 1 and k > 2:
+                    elif tier == 'BEP' and k > 2:
                         select_range = range(3,len(notes))
                     else:
                         select_range = range(0,len(notes))
@@ -593,6 +593,7 @@ class Database():
             WHERE Section<>'' AND {niv} ORDER BY Section,Niveau""".format(niv=les_niveaux)
             donnees = ()
         elif info == "eps activite": # EPS: moyenne par activité
+            les_niveaux = '('+' OR '.join(['EPS.Tier="'+s+'"' for s in niveaux])+')'
             req = """SELECT "Activité 1", sum(CASE WHEN "Note 1">0 THEN "Note 1" ELSE 0 END) as n1,
             sum(CASE WHEN "Note 1"<0 THEN 1 ELSE 0 END) as a1,
             "Activité 2", sum(CASE WHEN "Note 2">0 THEN "Note 2" ELSE 0 END) as n2,

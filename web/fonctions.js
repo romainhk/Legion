@@ -63,8 +63,13 @@ function stats_recherche() {
     var stat = $('#stats-liste option:selected').text();
     var annee = $('#stats-annee option:selected').text();
     var niveaux = [];
+    // Traduction des niveaux sélectionnés
+    var les_niveaux = new Array();
+    $('#stats-niveaux td').not(":empty").each( function(i,j) {
+        les_niveaux.push($(j).text());
+    });
     $('#stats-options td input:checked').each(function(i, j) {
-        niveaux.push($(j).val());
+        niveaux.push(les_niveaux[$(j).val()]);
     }); // S'il te plaît, n'ajoute pas d'autres checkbox à stats-options
     params = "stat="+stat+"&annee="+annee+"&niveaux="+niveaux;
     // On masque la recherche précédente
@@ -406,14 +411,14 @@ function authentification(e) {
             $("#login-message").show();
             $("#motdepasse").val('');
             statut = html['statut'];
-            message = html['message'];
+            login = html['message'];
             $('#onglets li').hide();
             if (statut == 0) {
                 $("#login").hide();
-                $("#login-message").html('Bonjour '+message);
-                if (message == 'admin') {
+                $("#login-message").html('Bonjour '+login);
+                if (login == 'admin') {
                     $('#onglets li').show();
-                } else if (message == 'eps') {
+                } else if (login == 'eps') {
                     $("#onglets li:contains('EPS')").show();
                     $("#onglets li:contains('Stats')").show();
                 }
@@ -423,16 +428,18 @@ function authentification(e) {
                 $('.quitter').show();
                 // Chargement de la page d'accueil
                 $.get( "/accueil.html", function( data ) {
-                    if (message == "admin") {
+                    if (login == "admin") {
                         $("#accueil").html(data);
-                    } else {
+                    } else if (login == "eps") {
                         $("#accueil").html("<h2>Bienvenue sur Legion/EPS</h2>");
+                        // Modification de l'écran de stats
+                        stats_listes(['EPS (activite)'], ['BEP','BAC']);
                     }
                     charger_page('accueil');
                 });
             } else {
                 // Échec de connection
-                $("#login-message").html(message);
+                $("#login-message").html(login);
                 $('#export').hide();
             }
         }

@@ -19,6 +19,7 @@
 * Ajouter des tutoriels sur l'importation (quand les faire ?...)
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * l'adresse en extranet.lycee-... ne fonctionne pas en interne
+* Stats EPS : mettre le même menu BEP/BAC
 
 ### Extension EPS
 * Authentification à distance avec ssl
@@ -26,5 +27,4 @@
 * contenteditable : input="number" ?
 * Pouvoir verrouiller 1 note par élève
 * Ajouter une date d'évaluation avec chaque note (en dessous ?)
-* Stats : niveaux bep et bac
 * La ligne "Affecter à tous" devrait être non affecté par le tri et en haut

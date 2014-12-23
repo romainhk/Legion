@@ -28,11 +28,13 @@ var infos_classes = {};
 var activités = new Array();
 // Les statistiques disponibles
 var les_stats = ['Général', 'Par niveau', 'Par section', 'Par situation', 'Provenance', 'Provenance (classe)', 'Taux de passage', 'EPS (activite)'];
+// Le login de l'utilisateur connecté
+var login = '';
 
 /*
  * Mets à jour les listes de la page de statistiques
  */
-function stats_listes() {
+function stats_listes(les_stats, niveaux) {
     // Masquage des tableaux de résultat, sauf Général
     $.each(les_stats, function( i, p ) {
         $("#stats-"+p.replace(/ |\(|\)/g, '')).hide();
@@ -55,6 +57,19 @@ function stats_listes() {
         $('#stats-annee option:last').attr("selected","selected");
         $('#liste-annee').html( options_ascolaire );
         $('#liste-annee option:last').attr("selected","selected");
+    });
+    // Liste des niveaux
+    $('#stats-recherche th').css({'text-transform':'none'});
+    $('#stats-recherche th').last().attr('colspan', niveaux.length);
+    if ($("#stats-options td").size() > 3) { // = déjà initialisé => nettoyage
+        $("#stats-boutton-rech").insertAfter("#stats-options td:eq(1)");
+        $("#stats-niveaux td:gt(1)").remove();
+        $("#stats-options td:gt(2)").remove();
+    }
+    $.each(niveaux, function( i, j ) {
+        $("#stats-niveaux").append('<td>'+j+'</td>');
+        if (i < 3) { checked = ' checked="checked"'; } else { checked = ''; }
+        $("#stats-options td").last().before('<td><input type="checkbox"'+checked+' value="'+i+'" /></td>');
     });
 }
 
@@ -287,13 +302,8 @@ $(document).ready(function() {
         situations = data['situations'];
         niveaux = data['niveaux']; // global
         activités = data['activités'];
-        $('#stats-recherche th').css({'text-transform':'none'});
-        $('#stats-recherche th').last().attr('colspan', niveaux.length);
-        $.each(niveaux, function( i, j ) {
-            $("#stats-niveaux").append('<td>'+j+'</td>');
-            if (i < 3) { checked = ' checked="checked"'; } else { checked = ''; }
-            $("#stats-options td").last().before('<td><input type="checkbox"'+checked+' value="'+i+'" /></td>');
-        });
+
+        stats_listes(les_stats, niveaux);
         // Init des entêtes
         var entete = "";
         $.each(data['header'], function( i, j ) {
@@ -320,9 +330,9 @@ $(document).ready(function() {
                 classe = $('#eps-classes option:selected').val();
                 niveau = infos_classes[classe]['Niveau'];
                 if (niveau == niveaux[0]) {         // Seconde
-                    $("#eps-tier option[value='1']").prop('selected', true);
+                    $("#eps-tier option[value='BEP']").prop('selected', true);
                 } else if (niveau == niveaux[2]) {  // Terminale
-                    $("#eps-tier option[value='2']").prop('selected', true);
+                    $("#eps-tier option[value='BAC']").prop('selected', true);
                 }
             }
             charger_page('EPS');
@@ -357,7 +367,6 @@ $(document).ready(function() {
         $('#liste table th').removeClass('sorting-desc').removeClass('sorting-asc');
         charger_page('Liste');
     });
-    stats_listes();
     // Chargement de la page accueil
     charger_page('accueil');
 });

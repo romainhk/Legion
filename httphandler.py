@@ -71,16 +71,17 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             elif params.path == '/stats':
                 # ACTION : Ouverture de la page de statistiques
                 stat = query['stat'].pop()
-                if user == 'admin' or (stat == 'EPS (activite)' and user == 'eps'):
+                if user == 'admin' or (stat in ['ouverture', 'EPS (activite)'] and user == 'eps'):
                     annee = query.get('annee', [self.server.debut_AS.year]).pop()
                     niveaux = query.get('niveaux', ['0']).pop().split(',')
-                    rep = self.generer_stats(stat, int(annee), niveaux)
+                    if len(''.join(('niveaux'))) < 45:
+                        rep = self.generer_stats(stat, int(annee), niveaux)
             elif params.path == '/maj' and (user == 'admin' or user == 'eps'):
                 # ACTION : Mise à jour d'un champ
                 ine = query['ine'].pop()
                 champ = query['champ'].pop()
                 d = query.get('d', ['']).pop()
-                tier = int(query.get('tier', ['2']).pop())
+                tier = query.get('tier', ['BAC']).pop()
                 table = 'Élèves'
                 champ_can = champ.split(' ')[0] # Champ canonique = que la première partie
                 if champ_can == 'Situation':
@@ -131,10 +132,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             elif params.path == '/eps':
                 # ACTION : Ouverture de la page EPS
                 classe = query.get('classe', ['']).pop()
-                tier = int(query.get('tier', ['2']).pop())
+                tier = query.get('tier', ['2']).pop()
+                val_tier = ''
+                if   tier == '1': val_tier = 'BEP'
+                elif tier == '2': val_tier = 'BAC'
                 if classe == '': eps = '' # Pas de classe, pas de chocolat
                 else:
-                    eps = self.server.db.lire_eps(self.server.debut_AS.year, classe, tier)
+                    eps = self.server.db.lire_eps(self.server.debut_AS.year, classe, val_tier)
                 classes = self.server.db.lire_classes(self.server.debut_AS.year, niveau='eps')
                 rep = { 'liste': eps, 'classes': classes, 'tier': tier }
             elif params.path == '/pending' and user == 'admin':
@@ -350,15 +354,14 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             - le taux de passage pour chaque transition de classe dans une même section
         """
         # Liste des niveaux à prendre en compte au format textuel
-        les_niveaux = [self.server.niveaux[int(n)] for n in niveaux]
-        totaux = self.server.db.stats('totaux', annee, les_niveaux).pop()
+        totaux = self.server.db.stats('totaux', annee, niveaux).pop()
         eff_total = totaux['total'] # Effectif total
 
         rep = { 'ordre': {}, 'data': {}, 'graph': [] }
         if stat == 'ouverture':
             # Ouverture de la page stat
             # on envoie juste la proportion de classes affectées
-            o = self.server.db.stats('ouverture', annee, les_niveaux).pop()
+            o = self.server.db.stats('ouverture', annee, niveaux).pop()
             if o['n'] is not None and o['total'] != '0': # Cas d'une base non initialisée
                 rep['data'] = round( (100*o['n']) / (o['total']*2) , 0)
             else: rep['data'] = 0
@@ -378,7 +381,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 #rep['data']['Proportion issue de Pro'] = en_pourcentage(total_issue_de_pro / eff_total)
                 # Années de scolarisation moyenne par élève
                 #a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, les_niveaux)])
-                a = numpy.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, les_niveaux)])
+                a = numpy.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, niveaux)])
                 rep['data']['Nb moyen d\'années de scolarisation par élève'] = str(round( a, 2 )) + ' ans'
                 prop_homme = round(100*total_homme/eff_total,1)
                 rep['graph'].append( self.generer_tarte(
@@ -392,9 +395,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                             ('nouveau','float')]
             rep['data'] = []
             avec_BTS = False
-            tarte = collections.OrderedDict.fromkeys(les_niveaux)
-            histo = collections.OrderedDict.fromkeys(les_niveaux)
-            for d in self.server.db.stats('par niveau', annee, les_niveaux):
+            tarte = collections.OrderedDict.fromkeys(niveaux)
+            histo = collections.OrderedDict.fromkeys(niveaux)
+            for d in self.server.db.stats('par niveau', annee, niveaux):
                 a = {}
                 a['niveau'] = d['Niveau']
                 g_niv = a['niveau']
@@ -432,9 +435,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                             ('nouveau','float')]
             rep['data'] = []
             avec_BTS = False
-            tarte = collections.OrderedDict.fromkeys(les_niveaux)
-            histo = collections.OrderedDict.fromkeys(les_niveaux)
-            for d in self.server.db.stats('par section', annee, les_niveaux):
+            tarte = collections.OrderedDict.fromkeys(niveaux)
+            histo = collections.OrderedDict.fromkeys(niveaux)
+            for d in self.server.db.stats('par section', annee, niveaux):
                 a = {}
                 a['section'] = d['Section']
                 g_niv = a['section']
@@ -466,13 +469,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         elif stat == 'Par situation':
             rep['ordre'] = [('situation','string'),
                             ('effectif','int')]
-            rep['data'] = self.server.db.stats('par situation', annee, les_niveaux)
+            rep['data'] = self.server.db.stats('par situation', annee, niveaux)
         elif stat == 'Provenance':
             rep['ordre'] = [('Établissement','string'),
                             ('total','int'),
                             ('en seconde','int'),
                             ('liste','string')]
-            rep['data'] = self.server.db.stats('provenance', annee, les_niveaux)
+            rep['data'] = self.server.db.stats('provenance', annee, niveaux)
         elif stat == 'Provenance (classe)':
             rep['ordre'] = [('classe', 'string'),
                             ('provenance','string'),
@@ -480,13 +483,13 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                             ('Établissement','string'),
                             ('total','int'),
                             ('liste','string')]
-            rep['data'] = self.server.db.stats('provenance classe', annee, les_niveaux)
+            rep['data'] = self.server.db.stats('provenance classe', annee, niveaux)
         elif stat == 'Taux de passage':
             rep['ordre'] = [('section','string'),
                             ('passage','string'),
                             ('taux','float')]
             rep['data'] = []
-            passage = self.server.db.stats('taux de passage', annee, les_niveaux)
+            passage = self.server.db.stats('taux de passage', annee, niveaux)
             for sect in self.server.sections:
                 # On filtre les éléments de data concernant la section voulue
                 e = [dictio for dictio in passage if dictio['Section'] == sect]
@@ -511,7 +514,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                             ('moyenne ♀','float'),
                             ('effectif','int')]
             rep['data'] = []
-            act = self.server.db.stats('eps activite', annee, les_niveaux)
+            act = self.server.db.stats('eps activite', annee, niveaux)
             cp = self.server.db.lire_eps_activites()
             for a in self.server.eps_activites.keys():
                 somme_h = somme_f = 0

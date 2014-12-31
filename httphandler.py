@@ -101,7 +101,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         self.repondre('Non')
                         return
                     table = 'EPS'
-                elif champ_can == 'Protocole':
+                elif champ_can in ['Protocole', 'Date']:
                     donnee = d
                     table = 'EPS'
                 else:

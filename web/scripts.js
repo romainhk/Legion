@@ -26,6 +26,8 @@ var sections = new Array();
 var infos_classes = {};
 // Liste des activités possibles (EPS)
 var activités = new Array();
+// Les données bruts pour la page EPS
+var liste_eps = {};
 // Les statistiques disponibles
 var les_stats = ['Général', 'Par niveau', 'Par section', 'Par situation', 'Provenance', 'Provenance (classe)', 'Taux de passage', 'EPS (activite)'];
 // Le login de l'utilisateur connecté
@@ -176,20 +178,24 @@ function charger_page(nom) {
         var eps_tier = $('#eps-tier option:selected').val();
         if (eps_tier == undefined) { eps_tier = ''; }
         $.get( "/eps?classe="+eps_classe+"&tier="+eps_tier, function( data ) {
-            liste = data['liste'];
+            liste_eps = data['liste']; // global
             infos_classes = data['classes']; // global
             // Traduction des notes, absence et dispense
-            $.each(liste, function(i, j) {
+            $.each(liste_eps, function(i, j) {
                 $.each( ['Note 1', 'Note 2', 'Note 3', 'Note 4', 'Note 5'], function (n, note) {
                     k = j[note];
-                    if (k == -1)      { liste[i][note] = ''; }
-                    else if (k == -2) { liste[i][note] = 'Abs'; }
-                    else if (k == -3) { liste[i][note] = 'Disp'; }
+                    if (k == -1)      { liste_eps[i][note] = ''; }
+                    else if (k == -2) { liste_eps[i][note] = 'Abs'; }
+                    else if (k == -3) { liste_eps[i][note] = 'Disp'; }
                 });
             });
             // Liste des notes
-            if (liste != '') {
-                $('#eps-table > tbody').html( list_to_tab_simple(liste, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','x̄','Protocole','Notes']) );
+            if (liste_eps != '') {
+                $('#eps-table > tbody').html( list_to_tab_simple(liste_eps, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','x̄','Protocole','Notes']) );
+                // Ajout des dates
+                $("#eps-table td:nth-child(2),#eps-table td:nth-child(4),#eps-table td:nth-child(6),#eps-table td:nth-child(8),#eps-table td:nth-child(10)").each(function(a,b){
+                    ajouter_datetimepicker($(b));
+                });
                 // Ligne pour affecter une activité à toute une classe
                 $('#eps-table > tbody').append('<tr id="borntobewild" class="affecter_a_tous"><td><i>Affecter à tous</i></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td></td><td></td></tr>');
 

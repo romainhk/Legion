@@ -63,14 +63,19 @@ CREATE TABLE "EPS" (
     -- BAC : 2 dernières notes de Première (1 2) , 3 notes de Terminale (3 4 5)
     "Activité 1" TEXT DEFAULT (''),
     "Note 1" REAL DEFAULT (-1.0), -- 0 >= note >= 20 ; -1 = non noté, -2 = absent, -3 = exempt
+    "Date 1" DATE DEFAULT (''),
     "Activité 2" TEXT DEFAULT (''),
     "Note 2" REAL DEFAULT (-1.0),
+    "Date 2" DATE DEFAULT (''),
     "Activité 3" TEXT DEFAULT (''),
     "Note 3" REAL DEFAULT (-1.0),
+    "Date 3" DATE DEFAULT (''),
     "Activité 4" TEXT DEFAULT (''),
     "Note 4" REAL DEFAULT (-1.0),
+    "Date 4" DATE DEFAULT (''),
     "Activité 5" TEXT DEFAULT (''),
     "Note 5" REAL DEFAULT (-1.0),
+    "Date 5" DATE DEFAULT (''),
     "Verrou" INTEGER DEFAULT(0), -- indice de la note verrouillée ; 0 = aucune
     "Protocole" TEXT DEFAULT (''), -- p1, p2...
     PRIMARY KEY(INE,Tier)

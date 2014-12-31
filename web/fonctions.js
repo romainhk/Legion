@@ -368,6 +368,9 @@ function enregistrer_select(cell, col, val, txt, ine) {
         if (data == 'Oui') { c.addClass("maj_oui"); }
         else if (data == 'Non') { c.addClass("maj_non"); }
         c.html(txt); // Et on retire le select
+        if (tier != undefined) { // EPS : selection d'une activité
+            ajouter_datetimepicker(c);
+        }
     });
 }
 
@@ -445,4 +448,43 @@ function authentification(e) {
         }
     });
     return false;
+}
+
+/*
+ * Ajouter datetimepicker à une cellule
+ */
+function ajouter_datetimepicker(cell) {
+    ine = cell.closest('tr').attr('id');
+    indice = 'Date '+( (cell.index()+1)/2 );
+    if (ine in liste_eps && indice in liste_eps[ine]) {
+        d = liste_eps[ine][indice].split('-');
+        if (d.length == 3) { date = d[2]+'/'+d[1]+'/'+d[0]; }
+        else { date = ''; }
+        cell.append('<br><input type="text" class="datetimepicker" size="10" maxlength="10" value="'+date+'">');
+        cell.find('.datetimepicker').datetimepicker({
+            lazyInit:true,
+            lang:'fr',
+            timepicker:false,
+            closeOnDateSelect:true,
+            format:'d/m/Y',
+            yearStart:'2010',
+            onChangeDateTime:function(dp,$input){
+                ine = $input.closest('tr').attr('id');
+                indice = 'Date '+( ($input.parent().index()+1)/2 );
+                a = $input.val().split('/');
+                date = a[2]+'-'+a[1]+'-'+a[0];
+                url = "/maj?ine="+ine+"&champ="+indice+"&d="+date;
+                $.get( url, function( data ) {
+                    if (data == 'Oui') {
+                        $input.removeClass("maj_non");
+                        $input.addClass("maj_oui");
+                        liste_eps[ine][indice] = date;
+                    } else {
+                        $input.addClass("maj_non");
+                        $input.removeClass("maj_oui");
+                    }
+                });
+            }
+        });
+    }
 }

@@ -6,6 +6,7 @@
 \usepackage{hyperref}
 \usepackage{graphicx}
 %\usepackage{listings}
+\usepackage{keystroke}
 
 % Commande \code
 \usepackage{xcolor}
@@ -26,11 +27,11 @@
 \tableofcontents
 \pagebreak
 
-\section{Installation}
+\section{Installation et Usage}
 \subsection{Pré-requis}
 Legion nécessite python 3 ainsi que notamment les librairies sqlite3, urllib, json, numpy et matplotlib.
 
-\subsection{Fichiers}
+\subsection{Configuration}
 Il faut d'abord cloner le dépôt public de Legion :\\
 \code{git clone https://github.com/romainhk/Legion.git}
 
@@ -40,24 +41,35 @@ Ou récupérer l'archive à l'adresse :\\
 Il ne reste plus qu'à personnaliser le fichier \texttt{config.cfg} avec :
 \begin{itemize}
 \item le port de connexion ;
-\item les mot de passe administrateur et eps, encodés en SHA512 ;
+\item les mot de passe administrateur et eps, encodés en SHA512 ; un outil en ligne permet de générer ça facilement : \url{http://caligatio.github.io/jsSHA/} ;
 \item le nom de l'établissement ;
 \item le nom des sections pour chaque filière.
 \end{itemize}
 
-\subsection{Exécution}
+\subsubsection{Choix du port}
+N'importe quel numéro de port est assignable, tant que l'on vérifie qu'il n'est pas filtré par le par-feu.
+
+À noter que sur le réseau académique, la plupart des ports sont bloqués en entrée et en sortie. Le BAIP peut faire remonter une demande d'ouverture de port au DAIP, comme par exemple le 49300 utilisé par pronote.
+
+\subsection{Exécution du serveur}
+En mode interactif :
 \code{python3 legion.py}
 
-Ou pour une utilisation en mode démon :
+Ou pour une utilisation en mode démon (à préférer) :
 
 \code{nohup python3 legion.py \&}
 
 Alors, le fichier legion.log est remplacé par nohup.log
 
-\subsection{Sélection de port}
-...
+\subsection{Se connecter sur la base}
+Il suffit de rentrer l'adresse \url{http://IP_DU_SERVER:PORT} dans n'importe quel navigateur web (nécessite simplement javascript), puis de rentrer le mot de passe administrateur.
 
-%\pagebreak
+\subsection{Extinction du serveur}
+En mode démon, le PID du processus serveur est noté dans le fichier de log au démarrage. Il suffit de faire un \code{kill -15 PID} pour que le serveur s'éteigne proprement.
+
+En mode interactif, il suffit de faire un \keystroke{Ctrl} + \keystroke{C}.
+
+\pagebreak
 \section{Initialisation d'une année scolaire}
 \subsection{Récupération des données}
 ...
@@ -70,7 +82,7 @@ Se connecter à Legion et aller dans l'onglet \bouton{Options}. Cliquer sur \bou
 L'importation peut durer plusieurs minutes. Une fois terminée, la page revient automatiquement sur l'accueil.
 
 \subsection{Affectation des classes}
-Chaque classe doit être rattachée à un niveau et une section. Une correspondance est calculée automatiquement ; il faut la vérifier et la compléter en allant dans l'onglet \bouton{Options}.
+Pour que la génération des statistiques soit plus précise, chaque classe doit être rattachée à un niveau et une section. Une correspondance est calculée automatiquement à l'importation ; il faut la vérifier et la compléter en allant dans l'onglet \bouton{Options}.
 
 Voilà ! Legion est prêt :)
 

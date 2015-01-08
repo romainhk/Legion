@@ -6,21 +6,21 @@ Legion est une application de suivi de cohorte pour lycée.
 .. toctree::
    :maxdepth: 2
 
-Classe Legion
-=============
-.. autoclass:: legion.Legion
+:mod:`Legion`
+=====================
+.. automodule:: legion
     :members:
     :undoc-members:
     :private-members:
 
-Classe HttpHandler
+:mod:`Httphandler`
 ==================
 .. autoclass:: httphandler.HttpHandler
     :members:
     :undoc-members:
     :private-members:
 
-Classe Database
+:mod:`Database`
 ===============
 .. autoclass:: database.Database
     :members:

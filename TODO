@@ -20,6 +20,14 @@
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * l'adresse en extranet.lycee-... ne fonctionne pas en interne
 * Stats EPS : mettre le même menu BEP/BAC
+* Liste : recherche distincte par colonne (et non globale) (pouvoir trouver "les BTS 1er année issus de pro")
+* Liste : revoir le fonctionnement du parcours (toujours l'afficher ?), ajouter l'établissement précédent
+* Stats : Année "2014-2015" !
+* Stats Provenance : camembert des établissements les + représentés (> 4)
+* Stats Provenance : ajouter une colonne "En 1er", "En Terminal" selon le contexte ?
+* Liste Entrée : mettre une date complète
+* Export Liste : laisser un select génère toute la liste des valeurs
+* Stats : Provenance par nationalité ?
 
 ### Extension EPS
 * Authentification à distance avec ssl
@@ -27,3 +35,4 @@
 * contenteditable : input="number" ?
 * Pouvoir verrouiller 1 note par élève
 * La ligne "Affecter à tous" devrait être non affecté par le tri et en haut
+* Export EPS : ignorer la ligne "Affecter à tous"

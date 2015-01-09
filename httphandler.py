@@ -476,6 +476,20 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                             ('en seconde','int'),
                             ('liste','string')]
             rep['data'] = self.server.db.stats('provenance', annee, niveaux)
+            # Graphique sur les établissement de provenance
+            tarte = collections.OrderedDict.fromkeys([])
+            autres = 0
+            for d in rep['data']:
+                total = d['total']
+                etab = d['Établissement']
+                if etab != self.server.nom_etablissement:
+                    if total > 5:
+                        tarte[d['Établissement']] = total
+                    else:
+                        autres = autres + total
+            tarte = collections.OrderedDict(sorted(tarte.items(), key=lambda x: x[1], reverse=True))
+            tarte['"Autres"'] = autres
+            rep['graph'].append(self.generer_tarte( tarte, "Arrivants par établissement de provenance" ))
         elif stat == 'Provenance (classe)':
             rep['ordre'] = [('classe', 'string'),
                             ('provenance','string'),
@@ -563,7 +577,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         """
         fichier = generer_nom_fichier('cache/tarte_')
         # Création d'un espace de dessin
-        figure(1, figsize=(6,6))
+        fig = figure(1, figsize=(6,6))
         ax = axes([0.1, 0.1, 0.8, 0.8])
 
         x = [] # les valeurs à afficher
@@ -579,6 +593,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 pctdistance=0.8, # distance au centre des textes dans les parts
                 shadow=True, startangle=90)
         title(titre, weight='demi') # Ajout d'un titre
+        #fig.tight_layout()
         savefig(fichier, transparent=True) # Génération du fichier
         clf() # Nettoyage du graphique pour le run suivant
         return fichier

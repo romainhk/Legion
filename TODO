@@ -22,10 +22,10 @@
 * Stats EPS : mettre le même menu BEP/BAC
 * Liste : recherche distincte par colonne (et non globale) (pouvoir trouver "les BTS 1er année issus de pro")
 * Liste : revoir le fonctionnement du parcours (toujours l'afficher ?), ajouter l'établissement précédent
-* Stats Provenance : camembert des établissements les + représentés (> 4)
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminal" selon le contexte ?
 * Liste Entrée : mettre une date complète
 * Stats : Provenance par nationalité ?
+* Stats / Provenance : les labels de la tarte sont parfois coupés
 
 ### Extension EPS
 * Authentification à distance avec ssl

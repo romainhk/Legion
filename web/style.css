@@ -21,6 +21,9 @@ h4 {
     margin-left:6em;
     text-decoration:underline;
 }
+.graph img {
+    width:600px;
+}
 input {
     margin:0.5ex;
 }

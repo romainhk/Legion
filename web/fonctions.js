@@ -60,8 +60,8 @@ function envoie_du_fichier(event) {
  * Recherche dans les statistiques
  */
 function stats_recherche() {
-    var stat = $('#stats-liste option:selected').text();
-    var annee = $('#stats-annee option:selected').text();
+    var stat = $('#stats-liste').val();
+    var annee = $('#stats-annee').val();
     var niveaux = [];
     // Traduction des niveaux sélectionnés
     var les_niveaux = new Array();

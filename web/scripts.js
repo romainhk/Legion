@@ -50,14 +50,12 @@ function stats_listes(les_stats, niveaux) {
     // Choix de l'année
     $.get( "/liste-annees", function( data ) {
         var options = "";
-        var options_ascolaire = "";
         $.each(data, function( i, an ) {
-            options += "<option>"+an+"</option>\n";
-            options_ascolaire += '<option value="'+an+'">'+an+'-'+(an+1)+"</option>\n";
+            options+= '<option value="'+an+'">'+an+'-'+(an+1)+"</option>\n";
         });
         $('#stats-annee').html( options );
         $('#stats-annee option:last').attr("selected","selected");
-        $('#liste-annee').html( options_ascolaire );
+        $('#liste-annee').html( options );
         $('#liste-annee option:last').attr("selected","selected");
     });
     // Liste des niveaux

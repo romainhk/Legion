@@ -225,7 +225,7 @@ function list_to_tab(cell, list) {
  * FROM http://jsfiddle.net/terryyounghk/KPEGU/
  */
 function exportTableToCSV($table, filename) {
-    var $rows = $table.find('tr:visible:has(td,th):not(".removeme")'),
+    var $rows = $table.find('tr:visible:has(td,th):not(".removeme"):not(".affecter_a_tous")'),
 
     // Temporary delimiter characters unlikely to be typed by keyboard
     // This is to avoid accidentally splitting the actual contents
@@ -312,7 +312,7 @@ function cell_to_select(e) {
         if (valeurs != null) {
             selected = cell.html();
             cell.html('');
-            var sel = $('<select>').appendTo(cell);
+            var sel = $('<select>').appendTo(cell).addClass("cell_to_select");
             sel.append('<option value="">...</option>'); // Option vide
             var ordinal = 0;
             $.each(valeurs, function(i, j) {

@@ -257,6 +257,11 @@ $(document).ready(function() {
 
     // Création du lien d'exportation
     $("#export").on('click', function (event) {
+        // Suppression des select en attente de validation
+        $("#"+page_active).find(".cell_to_select").each( function (i,cell) {
+            var val = $(cell).find("option:selected").text();
+            $(cell).parent().html(val);
+        });
         exportTableToCSV.apply(this, [$('#'+page_active), 'export_'+page_active+'.csv']);
         // IF CSV, don't do event.preventDefault() or return false
         // We actually need this to be a typical hyperlink

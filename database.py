@@ -128,7 +128,7 @@ class Database():
             + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         donnees = ( enr['eid'],         ine,                enr['nom'],
                     enr['prénom'],      enr['naissance'],   int(enr['genre']),
-                    enr['mail'],        int(enr['entrée']), enr['Diplômé'],
+                    enr['mail'],        enr['entrée'],      enr['Diplômé'],
                     enr['Situation'],   enr['Lieu'])
         try:
             self.curs.execute(req, donnees)
@@ -282,7 +282,7 @@ class Database():
                 + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         donnees = ( enr['ine'],             enr['nom'],             enr['prénom'],
                     enr['naissance'],       int(enr['genre']),      enr['mail'],
-                    int(enr['entrée']),     enr['classe'],          enr['sad_établissement'],
+                    enr['entrée'],          enr['classe'],          enr['sad_établissement'],
                     int(enr['doublement']),     raison)
         try:
             self.curs.execute(req, donnees)

@@ -683,7 +683,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             mail = xstr(eleve.findtext('MEL'))
             mef = xstr(eleve.findtext('CODE_MEF'))
             doublement = eleve.findtext('DOUBLEMENT')
-            j, m, entrée = eleve.findtext('DATE_ENTREE').split('/')
+            entrée = eleve.findtext('DATE_ENTREE')
             classe = root.findtext(".//*[@ELEVE_ID='{0}']/STRUCTURE[TYPE_STRUCTURE='D']/CODE_STRUCTURE".format(eid))
             sad_etab = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/DENOM_COMPL')).title()
             sad_classe = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_STRUCTURE')).strip(' ')

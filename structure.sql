@@ -7,7 +7,7 @@ CREATE TABLE "Élèves" (
     "Naissance" DATE,
     "Genre" INTEGER NOT NULL  DEFAULT (0), -- 1=homme, 2=femme
     "Mail" TEXT DEFAULT (null),
-    "Entrée" INTEGER DEFAULT (null),
+    "Entrée" DATE DEFAULT (''),
     "Diplômé" TEXT DEFAULT (null),
     "Situation" TEXT DEFAULT (null),
     "Lieu" TEXT DEFAULT (null)
@@ -30,7 +30,7 @@ CREATE TABLE "Pending" (
     "Naissance" TEXT,
     "Genre" INTEGER NOT NULL  DEFAULT (0),
     "Mail" TEXT DEFAULT (null),
-    "Entrée" INTEGER DEFAULT (null),
+    "Entrée" DATE DEFAULT (''),
     "Classe" TEXT,
     "Établissement" TEXT DEFAULT (null),
     "Doublement" INTEGER  DEFAULT (0),

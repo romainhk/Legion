@@ -9,22 +9,20 @@
 * colonne Diplômé : importation automatisée depuis ...
 * Importation : sauvegarder le champ CODE_MOTIF_SORTIE ?
 * Histogrammes : chevauchement quand trop de xlabels
+* Stats / Provenance : les labels de la tarte sont parfois coupés
 * Analyse des dépendances (au démarrage, vérification qu'elles sont disponibles)
-* setup.py : build d'une archive
 * affectation auto des niveau / section par classe en utilisant le code MEF
 * SQL - Options : nom_étab?, sections? => Pouvoir changer certaines options statiques
 
 ### HTML
-* envoie de mail en masse : à tester
-* Ajouter des tutoriels sur l'importation (quand les faire ?...)
+* Finir le tutoriel sur l'importation SIECLE
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * l'adresse en extranet.lycee-... ne fonctionne pas en interne
 * Stats EPS : mettre le même menu BEP/BAC
 * Liste : recherche distincte par colonne (et non globale) (pouvoir trouver "les BTS 1er année issus de pro")
 * Liste : revoir le fonctionnement du parcours (toujours l'afficher ?), ajouter l'établissement précédent
-* Stats Provenance : ajouter une colonne "En 1er", "En Terminal" selon le contexte ?
+* Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
-* Stats / Provenance : les labels de la tarte sont parfois coupés
 
 ### Extension EPS
 * Authentification à distance avec ssl

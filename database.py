@@ -323,7 +323,7 @@ class Database():
         """
         data = collections.OrderedDict()
         niv= ''
-        if niveau in ['Seconde', 'Première', 'Terminal']:
+        if niveau in ['Seconde', 'Première', 'Terminale']:
             niv= 'AND Niveau="{0}"'.format(niveau)
         elif niveau == 'BTS':
             niv= 'AND (Niveau="1BTS" OR Niveau="2BTS")'
@@ -416,7 +416,7 @@ class Database():
             else:
                 for k in reversed(range(1,4)):
                     if   tier == 'BAC' and k > 1:
-                        # Sélection des deux premières notes en terminal
+                        # Sélection des deux premières notes en terminale
                         select_range = range(2,len(notes))
                     elif tier == 'BEP' and k > 2:
                         select_range = range(3,len(notes))

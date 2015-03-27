@@ -6,10 +6,15 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="style_impression.css" media="print">
     <link rel="stylesheet" type="text/css" href="lib/jquery.datetimepicker.css">
+    <link rel="stylesheet" type="text/css" href="lib/tablesorter/theme.blue.min.css">    
     <script type="text/javascript" src="lib/jquery.js"></script>
     <script type="text/javascript" src="lib/stupidtable.js"></script>
     <script type="text/javascript" src="lib/sha512.js"></script>
     <script type="text/javascript" src="lib/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="lib/tablesorter/jquery.tablesorter.js"></script>
+    <script type="text/javascript" src="lib/tablesorter/jquery.tablesorter.widgets.js"></script>
+    <script type="text/javascript" src="lib/tablesorter/widget-cssStickyHeaders.min.js"></script>
+    <script type="text/javascript" src="lib/tablesorter/widget-editable.min.js"></script>
     <script type="text/javascript" src="fonctions.js"></script>
     <script type="text/javascript" src="scripts.js"></script>
     <link rel="icon" href="img/favicon.png" sizes="64x64" type="image/png">
@@ -40,7 +45,6 @@
             <h3 style="display: inline-block;">Base des élèves</h3>
             <span id="totalListe" class="total"></span>
             <br/>
-            <button style="margin:0 1ex 0 2ex;" type="button" onClick="mailer_tous()">Mailer tous</button>
             Année scolaire : <select id="liste-annee"></select>
             Filtre : <select id="liste-niveau">
                 <option value="" selected>Tout le monde</option>
@@ -49,9 +53,9 @@
                 <option value="Terminale">Les terminales</option>
                 <option value="BTS">Les BTS</option>
             </select>
-            Recherche : <input type="text" value="" id="filtre" />
+            <span style="margin:0 1ex 0;">—</span> <button type="button" onClick="mailer_tous()">Mailer tous</button>
         </div>
-        <table id="liste-table" class="sortable">
+        <table id="liste-table" class="tablesorter">
             <thead></thead>
             <tbody></tbody>
         </table>

@@ -32,6 +32,21 @@ var liste_eps = {};
 var les_stats = ['Général', 'Par niveau', 'Par section', 'Par situation', 'Provenance', 'Provenance (classe)', 'Taux de passage', 'EPS (activite)'];
 // Le login de l'utilisateur connecté
 var login = '';
+// Exemples à placer dans les filtres de recherche de la liste
+var liste_data_placeholder = {
+    'Nom': 'ABC',
+    'Prénom': 'Abc',
+    'Âge': '<18',
+    'Mail': '@',
+    'Genre': '',
+    'Année': '',
+    'Classe': 'MUC',
+    'Établissement': '',
+    'Doublement': '',
+    'Entrée': 'jj/mm/aaaa',
+    'Diplômé': 'O/N',
+    'Situation': 'Activité',
+    'Lieu': '' };
 
 /*
  * Mets à jour les listes de la page de statistiques
@@ -77,7 +92,7 @@ function stats_listes(les_stats, niveaux) {
  * Mises à jour du total (après une recherche)
  */
 function maj_total(tableau){
-    var a = tableau.find('tr:visible:not("sousligne")').length - 1; // - le header
+    var a = tableau.find('tr:visible:not("sousligne"):not(".tablesorter-filter-row")').length - 1; // - le header
     var id = '';
     if (page_active == 'liste') {
         id = 'totalListe';
@@ -111,13 +126,14 @@ function maj_sortable(sens, col) {
         annee = data['annee'];
         $('#liste-table > tbody').html( data['html'] );
         nb_eleves = data['nb eleves'];
+        /*
         $('#liste-table tr').hover(function() { // On mouse over
             tr = $(this).nextUntil('tr:not(".sousligne")');
             tr.removeClass('sousligne');
         }, function() { // On mouse out
             tr = $(this).nextUntil('tr[id]');
             tr.addClass('sousligne');
-        });
+        }); */
         // Remplacement des adresses mails
         $('#liste-table tr[id] td:nth-child(4)').each(function(i,j) {
             v = $(j).html();
@@ -133,8 +149,15 @@ function maj_sortable(sens, col) {
         $('#liste-table td[contenteditable]').on('keydown', maj_cellule);
         $('#liste-table').css('opacity', '1');
         maj_total($('#liste-table'));
-        // On relance le filtrage
-        rechercher();
+        // Initialisation des filtres de recherche, du tri
+        $("#liste-table").tablesorter({
+            widthFixed : true,
+            ignoreCase: true,
+            widgetOptions: {
+                filter_hideFilters : false,
+                filter_columnFilters: true
+            }
+        });
     }).fail(noauth);
 }
 
@@ -317,16 +340,34 @@ $(document).ready(function() {
         var entete = "";
         $.each(data['header'], function( i, j ) {
             champs_liste.push(j);
-            entete += '<th>'+j+"</th>\n";
+            classe = "";
+            if ($.inArray(j, ["Établissement", "Année", "Genre", "Doublement"]) != -1) {
+                classe = "filter-select";
+            }
+            entete += '<th class="'+classe+'" data-placeholder="'+liste_data_placeholder[j]+'">'+j+"</th>\n";
         });
         $('#liste-table > thead').html( "<tr>"+entete+"</tr>\n" );
         entete = ""
         $.each(champs_pending, function( i, j ) {
+            entete += '<th>'+j+"</th>\n";
+            /*
             if (j == 'Naissance') { ds = "date"; }
             else { ds = "string"; }
             entete += '<th data-sort="'+ds+'">'+j+"</th>\n";
+            */
         });
         $('#pending-table > thead').html( "<tr>"+entete+"</tr>\n" );
+        
+        // Paramétrage général de tablesorter
+        $.tablesorter.defaults.sortList = [ [0,0] ];
+        $.tablesorter.defaults.widgets = ["cssStickyHeaders", "filter"];
+        $.tablesorter.defaults.widgetOptions.cssStickyHeaders_offset = 4;
+        $.tablesorter.defaults.theme = 'blue';
+        // add French support
+        $.extend($.tablesorter.language, {
+            to: 'à',  or: 'ou', and: 'et'
+        });
+
         // EPS : Liste des classes
         var options = '<option value="">...</option>\n';
         $.each(data['eps'], function( i, s ) {
@@ -367,7 +408,6 @@ $(document).ready(function() {
             }
         });
         // Fonction de filtrage de la liste
-        $("#filtre").keypress(function (event) { rechercher(500); });
         $('.sortable').stupidtable();
         // Test d'authentification
         authentification();

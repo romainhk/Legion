@@ -72,15 +72,16 @@ td, th {
     border-width: 0 1px 1px 0;
     vertical-align:top;
 }
+/*
 thead {
-    /* Entête collante (FF32) */
+    / Entête collante (FF32) /
     position: sticky;
     position: -webkit-sticky;
     position: -moz-sticky;
     position: -ms-sticky;
     position: -o-sticky;
     top: 4px;
-}
+}*/
 th {
     text-align:center;
     text-transform: capitalize;
@@ -92,6 +93,10 @@ table td[contenteditable=true]:focus {
     background: #eee !important;
     resize: none;
 }
+/*.tablesorter-headerRow th {
+    color:#fff !important;
+    background-color:#272e27 !important;
+}*/
 .affecter_a_tous {
     empty-cells:hide;
     text-align:center;
@@ -102,6 +107,9 @@ table td[contenteditable=true]:focus {
 }
 .impaire, #pending-table tr:nth-child(odd), #stats > div tr:nth-child(odd), #eps-table tr:nth-child(odd) {
     background-color: #edf5ed;
+}
+.tablesorter-blue td {
+    background-color: transparent !important;
 }
 /* tableau triable */
 table.sortable tr:hover, #liste-table tr:not([id]) td:not([colspan]) {

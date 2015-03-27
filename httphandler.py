@@ -312,9 +312,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     s = s + '<td>{0}</td>'.format(d[h])
             # Construction des lignes / sous-lignes
-            for a,p in parcours.items():
-                if a != annee:
-                    s = s + '<tr class="sousligne"><td colspan="5"></td><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td colspan="4"></td></tr>\n'.format(a,p['Classe'],p['Établissement'],p['Doublement'])
+            #for a,p in parcours.items():
+            #    if a != annee:
+            #        s = s + '<tr class="sousligne"><td colspan="5"></td><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td colspan="4"></td></tr>\n'.format(a,p['Classe'],p['Établissement'],p['Doublement'])
             parite = 'paire' if parite == 'impaire' else 'impaire'
             r = r + '<tr id="{0}" class="{1}">{2}</tr>\n'.format(ine, parite, s)
         return { 'annee': annee, 'html': r, 'nb eleves': len(data) }
@@ -488,7 +488,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     else:
                         autres = autres + total
             tarte = collections.OrderedDict(sorted(tarte.items(), key=lambda x: x[1], reverse=True))
-            tarte['"Autres"'] = autres
+            tarte['« Autres »'] = autres
             rep['graph'].append(self.generer_tarte( tarte, "Arrivants par établissement de provenance" ))
         elif stat == 'Provenance (classe)':
             rep['ordre'] = [('classe', 'string'),

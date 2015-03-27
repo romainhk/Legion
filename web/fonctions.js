@@ -225,7 +225,7 @@ function list_to_tab(cell, list) {
  * FROM http://jsfiddle.net/terryyounghk/KPEGU/
  */
 function exportTableToCSV($table, filename) {
-    var $rows = $table.find('tr:visible:has(td,th):not(".removeme"):not(".affecter_a_tous")'),
+    var $rows = $table.find('tr:visible:has(td,th):not(".removeme"):not(".affecter_a_tous"):not(".tablesorter-filter-row")'),
 
     // Temporary delimiter characters unlikely to be typed by keyboard
     // This is to avoid accidentally splitting the actual contents
@@ -372,28 +372,6 @@ function enregistrer_select(cell, col, val, txt, ine) {
             ajouter_datetimepicker(c);
         }
     });
-}
-
-/*
- * Recherche les éléments dans la liste
- */
-function rechercher(delay){
-    delay = typeof delay !== 'undefined' ? delay : 0;
-    setTimeout(function() {
-        var data = $('#filtre').val().toLowerCase();
-        $("#liste-table > tbody > tr[id]").show();
-        $("#liste-table > tbody > tr[id]").filter(function (i, v) {
-            trouve = false;
-            $(this).find('td').each(function (i,j) {
-                if (j.innerHTML.toLowerCase().indexOf(data) >= 0) {
-                    trouve = true;
-                    return false;
-                }
-            });
-            return !trouve; // on cache quand on a pas trouvé
-        }).hide();
-        maj_total($('#liste-table'));
-    }, delay);
 }
 
 /*

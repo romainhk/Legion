@@ -4,6 +4,9 @@
 * Absentéisme : ratio du nombre d'heures de cours non suivi / nombre total d'heures de la section (-> cpe ; recoupement avec pronote ?)
 * Taux de réussite au BAC, au BTS
 * Pour les élèves sorties : durée de scolarisation
+* Taux de passage : ne fonctionne qui si on coche 1er & Term ?
+* Taux de passage : Générale est l'antécédent de S, ES, ST2S, STMG
+* Importation de la colonne "Diplômé" depuis Océean, ou depuis des xls générés
 
 ### Python
 * colonne Diplômé : importation automatisée depuis ...
@@ -16,12 +19,22 @@
 
 ### HTML
 * Finir le tutoriel sur l'importation SIECLE
+* Tuto : ajouter une présentation des fonctionnalités
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * l'adresse en extranet.lycee-... ne fonctionne pas en interne
 * Stats EPS : mettre le même menu BEP/BAC
 * Liste : revoir le fonctionnement du parcours (toujours l'afficher ?), ajouter l'établissement précédent
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
+* Liste : Retirer les colonnes Mail, Année, Établissement
+* Liste : la colonne situation ne fonctionne plus !
+* Liste & Stats : Renommer Situation -> N+1
+* Liste : montrer le parcours en surimpression
+* select : toujours les faire apparaitre
+* Option : Renommer Générale -> GT
+* Différencier Général et Technologique
+* Stats - Recherche : sélecteur de filière
+* Liste : le filtre par colonne ne fonctionne pas !
 
 ### Extension EPS
 * Authentification à distance avec ssl

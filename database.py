@@ -124,12 +124,11 @@ class Database():
 
         # Ajout de l'élève
         req = 'INSERT OR REPLACE INTO Élèves ' \
-            + '(ELEVE_ID, INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Diplômé, Situation, Lieu) ' \
-            + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            + '(ELEVE_ID, INE, Nom, Prénom, Naissance, Genre, Entrée, Diplômé, Situation, Lieu) ' \
+            + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         donnees = ( enr['eid'],         ine,                enr['nom'],
                     enr['prénom'],      enr['naissance'],   int(enr['genre']),
-                    enr['mail'],        enr['entrée'],      enr['Diplômé'],
-                    enr['Situation'],   enr['Lieu'])
+                    enr['entrée'],      enr['Diplômé'],     enr['Situation'],   enr['Lieu'])
         try:
             self.curs.execute(req, donnees)
         except sqlite3.Error as e:
@@ -278,11 +277,11 @@ class Database():
             r = self.curs.fetchone()
 
         req = 'INSERT OR REPLACE INTO Pending ' \
-                + '(INE, Nom, Prénom, Naissance, Genre, Mail, Entrée, Classe, Établissement, Doublement, Raison) ' \
-                + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                + '(INE, Nom, Prénom, Naissance, Genre, Entrée, Classe, Établissement, Doublement, Raison) ' \
+                + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         donnees = ( enr['ine'],             enr['nom'],             enr['prénom'],
-                    enr['naissance'],       int(enr['genre']),      enr['mail'],
-                    enr['entrée'],          enr['classe'],          enr['sad_établissement'],
+                    enr['naissance'],       int(enr['genre']),      enr['entrée'],
+                    enr['classe'],          enr['sad_établissement'],
                     int(enr['doublement']),     raison)
         try:
             self.curs.execute(req, donnees)

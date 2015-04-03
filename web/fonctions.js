@@ -251,9 +251,6 @@ function exportTableToCSV($table, filename) {
                 for (var m=0; m < colspan; m++) { t.push(''); }
                 return t;
             }
-            // Cas de la colonne mail
-            if (text == "@") { return $col.find('a').attr('href').replace('mailto:',''); }
-
             return text.replace('"', '""'); // escape double quotes
         }).get().join(tmpColDelim);
 
@@ -268,25 +265,6 @@ function exportTableToCSV($table, filename) {
         'href': csvData,
         'target': '_blank'
     });
-}
-
-/*
- * Mailer toutes les personnes affichée
- */
-function mailer_tous() {
-    index = $.inArray('Mail', champs_liste) + 1;
-    col_mail = $("#liste-table > tbody").children('tr').children('td:nth-child('+index+')');
-    mailto = new Array();
-    $.each(col_mail, function(i,j){
-        val = $(j).html();
-        if (val) {
-            mailto.push($(val).attr('href').split(':')[1]);
-        }
-    });
-    window.location.href = "mailto:"+mailto.join(' ,');
-    // À tester : l'utilisation du , pour de multiples destinataires n'est pas standard
-    // http://www.sightspecific.com/~mosh/www_faq/multrec.html
-    // Une autre solution serait d'envoyer ça au serveur python
 }
 
 /*

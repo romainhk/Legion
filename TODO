@@ -26,7 +26,7 @@
 * Liste : revoir le fonctionnement du parcours (toujours l'afficher ?), ajouter l'établissement précédent
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
-* Liste : Retirer les colonnes Mail, Année, Établissement
+* Liste : Retirer les colonnes Année, Établissement
 * Liste : la colonne situation ne fonctionne plus !
 * Liste & Stats : Renommer Situation -> N+1
 * Liste : montrer le parcours en surimpression

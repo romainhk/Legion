@@ -15,7 +15,7 @@ var les_pages = {
 // Total d'élèves dans la base
 var nb_eleves = 0;
 // Champs du pending (tous)
-var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Genre", "Mail", "Entrée", "Classe", "Établissement", "Doublement", "Raison" ];
+var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Genre", "Entrée", "Classe", "Établissement", "Doublement", "Raison" ];
 // Liste des situations possibles
 var situations = new Array();
 // Les niveaux, filières et sections reconnues
@@ -36,8 +36,7 @@ var login = '';
 var liste_data_placeholder = {
     'Nom': 'ABC',
     'Prénom': 'Abc',
-    'Âge': '<18',
-    'Mail': '@',
+    'Âge': '>18',
     'Genre': '',
     'Année': '',
     'Classe': 'MUC',
@@ -134,13 +133,8 @@ function maj_sortable(sens, col) {
             tr = $(this).nextUntil('tr[id]');
             tr.addClass('sousligne');
         }); */
-        // Remplacement des adresses mails
-        $('#liste-table tr[id] td:nth-child(4)').each(function(i,j) {
-            v = $(j).html();
-            if (v != "") { $(j).html('<a href="mailto:'+v+'">@</a>'); }
-        });
         // Remplacement des années scolaires
-        $('#liste-table tr[id] td:nth-child(6), #liste-table tr.sousligne td:nth-child(2)').each(function(i,j) {
+        $('#liste-table tr[id] td:nth-child(5), #liste-table tr.sousligne td:nth-child(2)').each(function(i,j) {
             v = $(j).html();
             if (v != "") { $(j).html(v+'-'+(parseInt(v)+1)); }
         });

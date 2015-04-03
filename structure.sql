@@ -6,7 +6,6 @@ CREATE TABLE "Élèves" (
     "Prénom" TEXT,
     "Naissance" DATE,
     "Genre" INTEGER NOT NULL  DEFAULT (0), -- 1=homme, 2=femme
-    "Mail" TEXT DEFAULT (null),
     "Entrée" DATE DEFAULT (''),
     "Diplômé" TEXT DEFAULT (null),
     "Situation" TEXT DEFAULT (null),
@@ -29,7 +28,6 @@ CREATE TABLE "Pending" (
     "Prénom" TEXT,
     "Naissance" TEXT,
     "Genre" INTEGER NOT NULL  DEFAULT (0),
-    "Mail" TEXT DEFAULT (null),
     "Entrée" DATE DEFAULT (''),
     "Classe" TEXT,
     "Établissement" TEXT DEFAULT (null),
@@ -52,7 +50,7 @@ CREATE TABLE "Options" (
 );
 INSERT INTO `Options` VALUES('couleurs','#80C0FF, #FF80BF, #B0FF80, #C080FF, #FFC080, #80FFC0, #FF8080, #80FF80, #8080FF'); -- liste ordonnée des couleurs pour les graphiques
 INSERT INTO `Options` VALUES('date export','1970-01-01'); -- date de la plus récente d'exportation importée
-INSERT INTO `Options` VALUES('header','Nom, Prénom, Âge, Mail, Genre, Année, Classe, Établissement, Doublement, Entrée, Diplômé, Situation, Lieu'); -- les en-têtes de la liste
+INSERT INTO `Options` VALUES('header','Nom, Prénom, Âge, Genre, Année, Classe, Établissement, Doublement, Entrée, Diplômé, Situation, Lieu'); -- les en-têtes de la liste
 INSERT INTO `Options` VALUES('niveaux','Seconde, Première, Terminale, 1BTS, 2BTS, Bac+1, Bac+3'); -- les niveaux
 INSERT INTO `Options` VALUES('filières','Générale, Technologique, Pro, Enseignement supérieur'); -- les filières
 CREATE TABLE "EPS" (

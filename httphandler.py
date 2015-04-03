@@ -680,7 +680,6 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             prenom = eleve.findtext('PRENOM')
             naissance = eleve.findtext('DATE_NAISS')
             genre = eleve.findtext('CODE_SEXE')
-            mail = xstr(eleve.findtext('MEL'))
             mef = xstr(eleve.findtext('CODE_MEF'))
             doublement = eleve.findtext('DOUBLEMENT')
             entrée = eleve.findtext('DATE_ENTREE')
@@ -689,7 +688,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             sad_classe = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_STRUCTURE')).strip(' ')
             sad_mef = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_MEF'))
             enr = { 'eid': eid, 'ine': ine, 'nom': nom, 'prénom': prenom, \
-                    'naissance': naissance, 'genre': genre, 'mail': mail, 'mef': mef, \
+                    'naissance': naissance, 'genre': genre, 'mef': mef, \
                     'doublement': doublement, 'classe': classe, 'entrée': entrée, \
                     'sad_établissement': sad_etab,   'sad_classe': sad_classe,  'sad_mef': sad_mef }
             self.server.db.ecrire(enr, annee, pending)

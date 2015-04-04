@@ -271,13 +271,14 @@ function exportTableToCSV($table, filename) {
  * Ajoute une liste de choix à un element
  */
 function cell_to_select(e) {
-    cell = $(e.target);
-    c = coordonnees(e.target);
+    cell = $(this);
+    c = coordonnees(this);
     s = cell.find('select');
-    // S'il n'y a pas encore de select et si le click vient d'une cellule
-    if (s.length == 0 && c['x']) {
+    t = cell.find('input');
+    // S'il n'y a pas encore de select, de input (tablesorter-filter), et si le click vient d'une cellule
+    if (s.length == 0 && t.length == 0 && c['x']) {
         valeurs = null;
-        col = cell.parentsUntil('table').parent().find("th:nth-child("+(c['x']+1)+")").html();
+        col = cell.parentsUntil('table').parent().find('th:nth-child('+(c['x']+1)+') div').html();
         var type_option = 1;
         if (col == "Niveau") { valeurs = niveaux; }
         else if (col == "Filière") { valeurs = filières; }

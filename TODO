@@ -27,14 +27,14 @@
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
 * Liste : Retirer les colonnes Année, Établissement
-* Liste : la colonne situation ne fonctionne plus !
 * Liste & Stats : Renommer Situation -> N+1
 * Liste : montrer le parcours en surimpression
-* select : toujours les faire apparaitre
 * Option : Renommer Générale -> GT
 * Différencier Général et Technologique
 * Stats - Recherche : sélecteur de filière
 * Liste : le filtre par colonne ne fonctionne pas !
+* Liste : insérer les select en python ? (plus rapide)
+* Mettre un fond sur les cases éditables
 
 ### Extension EPS
 * Authentification à distance avec ssl

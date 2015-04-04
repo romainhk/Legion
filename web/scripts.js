@@ -139,19 +139,18 @@ function maj_sortable(sens, col) {
             if (v != "") { $(j).html(v+'-'+(parseInt(v)+1)); }
         });
         // Colonnes éditables
-        $("#liste-table td:nth-child(12)").click(cell_to_select);
         $('#liste-table td[contenteditable]').on('keydown', maj_cellule);
         $('#liste-table').css('opacity', '1');
         maj_total($('#liste-table'));
         // Initialisation des filtres de recherche, du tri
         $("#liste-table").tablesorter({
-            widthFixed : true,
-            ignoreCase: true,
+            widgets: ["cssStickyHeaders", "filter"],
             widgetOptions: {
                 filter_hideFilters : false,
                 filter_columnFilters: true
             }
         });
+        $("#liste-table td:nth-child(11)").each(cell_to_select);
     }).fail(noauth);
 }
 
@@ -214,7 +213,7 @@ function charger_page(nom) {
                 // Ligne pour affecter une activité à toute une classe
                 $('#eps-table > tbody').append('<tr id="borntobewild" class="affecter_a_tous"><td><i>Affecter à tous</i></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td></td><td></td></tr>');
 
-                $("#eps-table > tbody td").click(cell_to_select);
+                $("#eps-table > tbody td").each(cell_to_select);
                 // Coloration des notes utilisées pour le calcul de la moyenne
                 offset = 1; // Position de la colonne "Activité 1"
                 $.each(data['liste'], function(i, j) {
@@ -263,7 +262,8 @@ function charger_page(nom) {
                 tab += '<tr class="'+parite+'"><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
             });
             $('#options-table > tbody').html(tab);
-            $("#options-table td").click(cell_to_select);
+            $("#options-table").tablesorter();
+            $("#options-table td").each(cell_to_select);
         }).fail(noauth);
     }
     $("#"+page_active).show();
@@ -354,9 +354,11 @@ $(document).ready(function() {
         
         // Paramétrage général de tablesorter
         $.tablesorter.defaults.sortList = [ [0,0] ];
-        $.tablesorter.defaults.widgets = ["cssStickyHeaders", "filter"];
+        $.tablesorter.defaults.widgets = ["cssStickyHeaders"];
         $.tablesorter.defaults.widgetOptions.cssStickyHeaders_offset = 4;
         $.tablesorter.defaults.theme = 'blue';
+        $.tablesorter.defaults.widthFixed = true;
+        $.tablesorter.defaults.ignoreCase = true;
         // add French support
         $.extend($.tablesorter.language, {
             to: 'à',  or: 'ou', and: 'et'

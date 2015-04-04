@@ -57,7 +57,8 @@ table, td, th { border: 1px solid #cdcdcd; }
 table {
     border-spacing:0;
     border-width: 1px 0 0 1px;
-    margin:0 auto;
+    margin:0.5ex auto !important;
+    width:auto !important;
 }
 #liste-table, #pending-table {
     width:100%;

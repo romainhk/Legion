@@ -32,7 +32,6 @@
 * Liste : le filtre par colonne ne fonctionne pas !
 * Liste : insérer les select en python ? (plus rapide) + "selected" sur l'ancienne valeur
 * Mettre un fond sur les cases éditables
-* Parcours qui ne sort pas de l'écran
 
 ### Extension EPS
 * Authentification à distance avec ssl

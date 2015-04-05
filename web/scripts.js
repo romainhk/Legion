@@ -142,9 +142,11 @@ function maj_sortable(sens, col) {
             ine = $(this).attr("id");
             if (ine != undefined && parcours[ine] != "") {
                 $("#tooltip table tbody").html(parcours[ine]);
+                gauche = Math.min(e.pageX + 10, $(window).width() - $("#tooltip").width() - 10)
+                haut = $(this).position().top + $(this).height() + 1
                 $("#tooltip").css({
-                    left: e.pageX + 10,
-                    top: $(this).position().top + $(this).height() + 1
+                    left: gauche,
+                    top: haut
                 }).stop().show();
             }
         }).mouseleave(function() {

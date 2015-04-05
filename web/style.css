@@ -139,10 +139,6 @@ table.sortable th:not(.sorting-asc):not(.sorting-desc):not(.non_sortable):after 
     margin:0 auto 1ex;
     width:auto;
 }
-/* les sous-lignes de liste-table sont masquées par défaut */
-.sousligne {
-    display:none;
-}
 /* pour les select dans un table */
 td select {
     width:100%;
@@ -306,4 +302,20 @@ header .quitter {
     display:block;
     margin-top:1ex;
     content:"Javascript est nécessaire pour utiliser ce site."
+}
+
+/* Tooltip (affichage du parcours) */
+#tooltip {
+    position: absolute;
+    display: none;
+    background: #ddd;
+    border: 2px outset;
+    /*padding:0 0.5ex;*/
+    margin: 0 !important;
+}
+#tooltip table {
+    margin: 0;
+}
+#tooltip tr {
+    background: #fff;
 }

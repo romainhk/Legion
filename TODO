@@ -6,7 +6,7 @@
 * Pour les élèves sorties : durée de scolarisation
 * Taux de passage : ne fonctionne qui si on coche 1er & Term ?
 * Taux de passage : Générale est l'antécédent de S, ES, ST2S, STMG
-* Importation de la colonne "Diplômé" depuis Océean, ou depuis des xls générés
+* Importation de la colonne "Diplômé" depuis Océan, ou depuis des xls générés
 
 ### Python
 * colonne Diplômé : importation automatisée depuis ...
@@ -26,9 +26,7 @@
 * Liste : revoir le fonctionnement du parcours (toujours l'afficher ?), ajouter l'établissement précédent
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
-* Liste : Retirer les colonnes Année, Établissement
 * Liste & Stats : Renommer Situation -> N+1
-* Liste : montrer le parcours en surimpression
 * Option : Renommer Générale -> GT
 * Différencier Général et Technologique
 * Stats - Recherche : sélecteur de filière

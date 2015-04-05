@@ -38,9 +38,7 @@ var liste_data_placeholder = {
     'Prénom': 'Abc',
     'Âge': '>18',
     'Genre': '',
-    'Année': '',
     'Classe': 'MUC',
-    'Établissement': '',
     'Doublement': '',
     'Entrée': 'jj/mm/aaaa',
     'Diplômé': 'O/N',
@@ -91,7 +89,7 @@ function stats_listes(les_stats, niveaux) {
  * Mises à jour du total (après une recherche)
  */
 function maj_total(tableau){
-    var a = tableau.find('tr:visible:not("sousligne"):not(".tablesorter-filter-row")').length - 1; // - le header
+    var a = tableau.find('tr:visible:not(".tablesorter-filter-row")').length - 1; // - le header
     var id = '';
     if (page_active == 'liste') {
         id = 'totalListe';
@@ -125,19 +123,6 @@ function maj_sortable(sens, col) {
         annee = data['annee'];
         $('#liste-table > tbody').html( data['html'] );
         nb_eleves = data['nb eleves'];
-        /*
-        $('#liste-table tr').hover(function() { // On mouse over
-            tr = $(this).nextUntil('tr:not(".sousligne")');
-            tr.removeClass('sousligne');
-        }, function() { // On mouse out
-            tr = $(this).nextUntil('tr[id]');
-            tr.addClass('sousligne');
-        }); */
-        // Remplacement des années scolaires
-        $('#liste-table tr[id] td:nth-child(5), #liste-table tr.sousligne td:nth-child(2)').each(function(i,j) {
-            v = $(j).html();
-            if (v != "") { $(j).html(v+'-'+(parseInt(v)+1)); }
-        });
         // Colonnes éditables
         $('#liste-table td[contenteditable]').on('keydown', maj_cellule);
         $('#liste-table').css('opacity', '1');
@@ -150,7 +135,21 @@ function maj_sortable(sens, col) {
                 filter_columnFilters: true
             }
         });
-        $("#liste-table td:nth-child(11)").each(cell_to_select);
+        $("#liste-table td:nth-child(9)").each(cell_to_select);
+        // Affichage du parcours
+        parcours = data['parcours'];
+        $("#liste-table tr").mouseenter(function(e) {
+            ine = $(this).attr("id");
+            if (ine != undefined && parcours[ine] != "") {
+                $("#tooltip table tbody").html(parcours[ine]);
+                $("#tooltip").css({
+                    left: e.pageX + 10,
+                    top: $(this).position().top + $(this).height() + 1
+                }).stop().show();
+            }
+        }).mouseleave(function() {
+            $("#tooltip").hide();
+        });
     }).fail(noauth);
 }
 
@@ -335,7 +334,7 @@ $(document).ready(function() {
         $.each(data['header'], function( i, j ) {
             champs_liste.push(j);
             classe = "";
-            if ($.inArray(j, ["Établissement", "Année", "Genre", "Doublement"]) != -1) {
+            if ($.inArray(j, ["Genre", "Doublement"]) != -1) {
                 classe = "filter-select";
             }
             entete += '<th class="'+classe+'" data-placeholder="'+liste_data_placeholder[j]+'">'+j+"</th>\n";

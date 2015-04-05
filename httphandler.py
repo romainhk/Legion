@@ -286,6 +286,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             data = c
         r = ''
         parite = ''
+        tab_parcours = {}
         for ine,d in data.items():
             d['Genre'] = 'Homme' if d['Genre'] == 1 else 'Femme'
             d['Année'] = annee
@@ -303,21 +304,21 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             d['Classe'] = parcours[annee]['Classe']
             d['Établissement'] = parcours[annee]['Établissement']
             d['Doublement'] = parcours[annee]['Doublement']
+            # Construction du parcours
+            tab_parcours[ine] = ""
+            for a,p in parcours.items():
+                if a != annee:
+                    tab_parcours[ine] = tab_parcours[ine] + '<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>\n'.format(
+                            '{0}-{1}'.format(int(a), int(a)+1), p['Classe'], p['Établissement'], p['Doublement'])
             # Construction de la première ligne
             for h in self.server.header:
-                if h in ['Année', 'Classe', 'Établissement', 'Doublement']:
-                    s = s + '<td>{0}</td>'.format(parcours[annee][h])
-                elif h in ['Diplômé', 'Lieu']:
+                if h in ['Diplômé', 'Lieu']:
                     s = s + '<td contenteditable="true">{0}</td>'.format(d[h])
                 else:
                     s = s + '<td>{0}</td>'.format(d[h])
-            # Construction des lignes / sous-lignes
-            #for a,p in parcours.items():
-            #    if a != annee:
-            #        s = s + '<tr class="sousligne"><td colspan="5"></td><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td colspan="4"></td></tr>\n'.format(a,p['Classe'],p['Établissement'],p['Doublement'])
             parite = 'paire' if parite == 'impaire' else 'impaire'
             r = r + '<tr id="{0}" class="{1}">{2}</tr>\n'.format(ine, parite, s)
-        return { 'annee': annee, 'html': r, 'nb eleves': len(data) }
+        return { 'annee': annee, 'html': r, 'parcours': tab_parcours, 'nb eleves': len(data) }
 
     def generer_stats(self, stat, annee, niveaux):
         """

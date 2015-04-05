@@ -308,12 +308,15 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             tab_parcours[ine] = ""
             for a,p in parcours.items():
                 if a != annee:
-                    tab_parcours[ine] = tab_parcours[ine] + '<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>\n'.format(
-                            '{0}-{1}'.format(int(a), int(a)+1), p['Classe'], p['Établissement'], p['Doublement'])
+                    tab_parcours[ine] = tab_parcours[ine] + \
+                        '<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>\n'.format(
+                            '{0}-{1}'.format(int(a), int(a)+1),
+                            p['Classe'], p['Établissement'], p['Doublement'])
             # Construction de la première ligne
             for h in self.server.header:
                 if h in ['Diplômé', 'Lieu']:
                     s = s + '<td contenteditable="true">{0}</td>'.format(d[h])
+                elif h == 'Situation N+1':  s = s + '<td>Situation</td>'
                 else:
                     s = s + '<td>{0}</td>'.format(d[h])
             parite = 'paire' if parite == 'impaire' else 'impaire'
@@ -468,7 +471,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             rep['graph'].append(self.generer_tarte( tarte, 'Répartition des effectifs' ))
             rep['graph'].append(self.generer_histo( histo, 'Nombre de nouveaux élèves/doublants par section' ))
         elif stat == 'Par situation':
-            rep['ordre'] = [('situation','string'),
+            rep['ordre'] = [('situation n+1','string'),
                             ('effectif','int')]
             rep['data'] = self.server.db.stats('par situation', annee, niveaux)
         elif stat == 'Provenance':

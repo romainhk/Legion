@@ -42,7 +42,7 @@ var liste_data_placeholder = {
     'Doublement': '',
     'Entrée': 'jj/mm/aaaa',
     'Diplômé': 'O/N',
-    'Situation': 'Activité',
+    'Situation N+1': 'Activité',
     'Lieu': '' };
 
 /*

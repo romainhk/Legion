@@ -50,7 +50,7 @@ CREATE TABLE "Options" (
 );
 INSERT INTO `Options` VALUES('couleurs','#80C0FF, #FF80BF, #B0FF80, #C080FF, #FFC080, #80FFC0, #FF8080, #80FF80, #8080FF'); -- liste ordonnée des couleurs pour les graphiques
 INSERT INTO `Options` VALUES('date export','1970-01-01'); -- date de la plus récente d'exportation importée
-INSERT INTO `Options` VALUES('header','Nom, Prénom, Âge, Genre, Classe, Doublement, Entrée, Diplômé, Situation, Lieu'); -- les en-têtes de la liste
+INSERT INTO `Options` VALUES('header','Nom, Prénom, Âge, Genre, Classe, Doublement, Entrée, Diplômé, Situation N+1, Lieu'); -- les en-têtes de la liste
 INSERT INTO `Options` VALUES('niveaux','Seconde, Première, Terminale, 1BTS, 2BTS, Bac+1, Bac+3'); -- les niveaux
 INSERT INTO `Options` VALUES('filières','Générale, Technologique, Pro, Enseignement supérieur'); -- les filières
 CREATE TABLE "EPS" (

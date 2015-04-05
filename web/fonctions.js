@@ -283,7 +283,7 @@ function cell_to_select(e) {
         if (col == "Niveau") { valeurs = niveaux; }
         else if (col == "Filière") { valeurs = filières; }
         else if (col == "Section") { valeurs = sections; }
-        else if (col == "Situation") { valeurs = situations; }
+        else if (col == "Situation N+1") { valeurs = situations; }
         else if (col == "Activité 1" || col == "Activité 2" || col == "Activité 3" || col == "Activité 4" || col == "Activité 5") { 
             valeurs = activités;
             type_option = 2;
@@ -309,6 +309,7 @@ function cell_to_select(e) {
             });
             sel.change( function(){
                 // Au changement de valeur, on l'enregistre dans la base
+                cell = $(this);
                 val = $(this).val();
                 txt = $('option:selected', this).text(); // option sélectionnée fils de l'élément this
                 ine = cell.closest('tr').attr('id');
@@ -329,6 +330,7 @@ function cell_to_select(e) {
  */
 function enregistrer_select(cell, col, val, txt, ine) {
     // Génération de l'url
+    if (col == "Situation N+1") { col = "Situation"; }
     if (col == "Situation" || col == "Activité 1" || col == "Activité 2" || col == "Activité 3" || col == "Activité 4" || col == "Activité 5") {
         params = "ine="+ine+"&d="+val+"&champ="+col;
         if (col != 'Situation') { // Page d'EPS, ajout du tier
@@ -346,7 +348,6 @@ function enregistrer_select(cell, col, val, txt, ine) {
         c = cell.parents('td');
         if (data == 'Oui') { c.addClass("maj_oui"); }
         else if (data == 'Non') { c.addClass("maj_non"); }
-        c.html(txt); // Et on retire le select
         if (tier != undefined) { // EPS : selection d'une activité
             ajouter_datetimepicker(c);
         }

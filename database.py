@@ -552,7 +552,7 @@ class Database():
             GROUP BY Section""".format(niv=les_niveaux)
             donnees = { 'an1':annee, 'an0':annee-1, 'etab':self.nom_etablissement }
         elif info == "par situation": # par situation
-            req = """SELECT (CASE WHEN Situation="" THEN '?' ELSE Situation END) as situation,
+            req = """SELECT (CASE WHEN Situation="" THEN '?' ELSE Situation END) as "situation n+1",
             count(*) as effectif FROM Élèves E
             JOIN Affectations A ON E.INE=A.INE JOIN Classes CN ON A.Classe=CN.Classe 
             WHERE A.Année=:an1 AND Établissement=:etab AND {niv} 

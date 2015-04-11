@@ -2,6 +2,7 @@
 # -*- coding: utf-8  -*-
 import logging
 import xlrd
+import os
 #import statistics
 import numpy
 import collections # OrderedDict
@@ -231,7 +232,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 data = form[f].value
                 open(fichier_tmp, "wb").write(data)
             tot_import = self.importer_diplome(fichier_tmp)
-            # TODO : remove file ?
+            os.remove(fichier_tmp)
             rep['statut'] = 0
             rep['message'] = "L'importation s'est bien terminée."
             rep['tot_import'] = tot_import

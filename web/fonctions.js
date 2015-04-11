@@ -312,6 +312,7 @@ function cell_to_select(e) {
             sel.change( function(){
                 // Au changement de valeur, on l'enregistre dans la base
                 cell = $(this);
+                col = cell.parentsUntil('table').parent().find('th').eq($(this).parent().index()).find('div').html();
                 val = $(this).val();
                 txt = $('option:selected', this).text(); // option sélectionnée fils de l'élément this
                 ine = cell.closest('tr').attr('id');

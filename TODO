@@ -32,7 +32,6 @@
 * Liste : insérer les select en python ? (plus rapide) + "selected" sur l'ancienne valeur
 * Mettre un fond sur les cases éditables
 * /cache est lisible !
-* Option - Niveau : le select est cassé
 
 ### Extension EPS
 * Authentification à distance avec ssl

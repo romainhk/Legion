@@ -8,7 +8,6 @@
 * Taux de passage : Générale est l'antécédent de S, ES, ST2S, STMG
 
 ### Python
-* colonne Diplômé : importation automatisée depuis ...
 * Importation : sauvegarder le champ CODE_MOTIF_SORTIE ?
 * Histogrammes : chevauchement quand trop de xlabels
 * Stats / Provenance : les labels de la tarte sont parfois coupés
@@ -29,7 +28,6 @@
 * Différencier Général et Technologique
 * Stats - Recherche : sélecteur de filière
 * Liste : le filtre par colonne ne fonctionne pas !
-* Liste : insérer les select en python ? (plus rapide) + "selected" sur l'ancienne valeur
 * Mettre un fond sur les cases éditables
 
 ### Extension EPS

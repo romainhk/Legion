@@ -3,15 +3,6 @@
  */
 
 /*
- * Donne les coordonnées de la cellule dans son tableau
- */
-function coordonnees(cell) {
-    x = cell.cellIndex;
-    y = cell.parentNode.rowIndex;
-    return {'x':x, 'y':y};
-}
-
-/*
  * Renvoie la liste triée inversée des clés du dictionnaire donné
  * - le booléen reversed permet de renverser le tri
  */
@@ -274,13 +265,12 @@ function exportTableToCSV($table, filename) {
  */
 function cell_to_select(e) {
     cell = $(this);
-    c = coordonnees(this);
     s = cell.find('select');
     t = cell.find('input');
-    // S'il n'y a pas encore de select, de input (tablesorter-filter), et si le click vient d'une cellule
-    if (s.length == 0 && t.length == 0 && c['x']) {
+    // S'il n'y a pas encore de select, et de input (tablesorter-filter)
+    if (s.length == 0 && t.length == 0) {
         valeurs = null;
-        col = cell.parentsUntil('table').parent().find('th:nth-child('+(c['x']+1)+') div').html();
+        col = cell.parentsUntil('table').parent().find('th').eq($(this).index()).find('div').html();
         var type_option = 1;
         if (col == "Niveau") { valeurs = niveaux; }
         else if (col == "Filière") { valeurs = filières; }
@@ -309,25 +299,27 @@ function cell_to_select(e) {
                 if (j == selected) { pardefaut = ' selected="selected"' ; }
                 sel.append('<option value="'+donnee+'"'+pardefaut+'>'+label+'</option>');
             });
-            sel.change( function(){
-                // Au changement de valeur, on l'enregistre dans la base
-                cell = $(this);
-                col = cell.parentsUntil('table').parent().find('th').eq($(this).parent().index()).find('div').html();
-                val = $(this).val();
-                txt = $('option:selected', this).text(); // option sélectionnée fils de l'élément this
-                ine = cell.closest('tr').attr('id');
-                if (ine == 'borntobewild') {
-                    // Cas de l'"Affectation à tous" de la page EPS
-                    $(this).parentsUntil('table').find('tr:not(".affecter_a_tous")').each(function(i,j) {
-                        id=$(j).attr('id');
-                        enregistrer_select(cell, col, val, txt, id);
-                    });
-                    charger_page('eps');
-                } else { enregistrer_select(cell, col, val, txt, ine); }
-            });
+            sel.change(ctos_change);
         }
     }
 }
+function ctos_change() {
+    // Au changement de valeur, on l'enregistre dans la base
+    cell = $(this);
+    col = cell.parentsUntil('table').parent().find('th').eq($(this).parent().index()).find('div').html();
+    val = $(this).find("option:selected").val();
+    txt = $('option:selected', this).text(); // option sélectionnée fils de l'élément this
+    ine = cell.closest('tr').attr('id');
+    if (ine == 'borntobewild') {
+        // Cas de l'"Affectation à tous" de la page EPS
+        $(this).parentsUntil('table').find('tr:not(".affecter_a_tous")').each(function(i,j) {
+            id=$(j).attr('id');
+            enregistrer_select(cell, col, val, txt, id);
+        });
+        charger_page('eps');
+    } else { enregistrer_select(cell, col, val, txt, ine); }
+}
+
 /*
  * Enregistre un élément sélectionné par liste déroulante (suite de cell_to_select)
  */

@@ -135,7 +135,8 @@ function maj_sortable(sens, col) {
                 filter_columnFilters: true
             }
         });
-        $("#liste-table td:nth-child(9)").each(cell_to_select);
+        // Prise en charge des select pour les situations
+        $("#liste-table td:nth-child(9) select").change(ctos_change);
         // Affichage du parcours
         parcours = data['parcours'];
         $("#liste-table tr").mouseenter(function(e) {

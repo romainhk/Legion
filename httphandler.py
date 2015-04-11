@@ -118,6 +118,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 if 'val' in query: # val peut être vide
                     if champ == 'Niveau':    les = self.server.niveaux
                     elif champ == 'Section': les = self.server.sections
+                    else: return False
                     val = query['val'].pop()
                     if val != '' and int(val) < len(les):
                         val = les[int(val)]
@@ -330,11 +331,19 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         '<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>\n'.format(
                             '{0}-{1}'.format(int(a), int(a)+1),
                             p['Classe'], p['Établissement'], p['Doublement'])
-            # Construction de la première ligne
+            # Construction de la ligne (année en cours)
             for h in self.server.header:
                 if h in ['Diplômé', 'Lieu']:
                     s = s + '<td contenteditable="true">{0}</td>'.format(d[h])
-                elif h == 'Situation N+1':  s = s + '<td>Situation</td>'
+                elif h == 'Situation N+1':
+                    # Génération du <select>
+                    t = '<option value="">...</option>'
+                    for i,b in enumerate(self.server.situations):
+                        selected = ""
+                        if b == d['Situation']: selected = ' selected="selected"'
+                        t = t + '<option value="{1}"{2}>{0}</option>'.format(
+                                b,     i,      selected)
+                    s = s + '<td><select class="cell_to_select">{0}</select></td>'.format(t)
                 else:
                     s = s + '<td>{0}</td>'.format(d[h])
             parite = 'paire' if parite == 'impaire' else 'impaire'

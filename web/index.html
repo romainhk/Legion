@@ -74,13 +74,20 @@
     <div id="stats">
         <h3>Statistiques</h3>
         <div id="stats-Avertissement"></div>
-        <table id="stats-recherche" class="stats">
+        <table id="stats-recherche" class="stats" border="1">
             <tr class="removeme">
                 <th>Statistique désirée</th>
                 <th>Année</th>
+                <th>Filière</th>
                 <th>Les niveaux à prendre en compte</th>
             </tr>
-            <tr id="stats-niveaux" class="removeme"><td></td><td></td></tr>
+            <tr id="stats-niveaux" class="removeme"><td></td><td></td>
+                <td rowspan="2" id="stats-filiere">
+                    <ul>
+                        <li><input type="checkbox" value="G" checked />Générale</li>
+                        <li><input type="checkbox" value="T" checked />Technologique</li>
+                        <li><input type="checkbox" value="P" checked />Professionnelle</li>
+                    </ul></td></tr>
             <tr id="stats-options" class="removeme">
                 <td><select id="stats-liste"></select></td>
                 <td><select id="stats-annee"></select></td>

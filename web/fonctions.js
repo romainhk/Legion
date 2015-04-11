@@ -56,15 +56,20 @@ function stats_recherche() {
     var stat = $('#stats-liste').val();
     var annee = $('#stats-annee').val();
     var niveaux = [];
+    var filiere = '';
     // Traduction des niveaux sélectionnés
     var les_niveaux = new Array();
-    $('#stats-niveaux td').not(":empty").each( function(i,j) {
+    $('#stats-niveaux td').not(":empty").not("#stats-filiere").each( function(i,j) {
         les_niveaux.push($(j).text());
     });
-    $('#stats-options td input:checked').each(function(i, j) {
+    $('#stats-options td input:checked').not("#stats-filiere").each( function(i,j) {
         niveaux.push(les_niveaux[$(j).val()]);
     }); // S'il te plaît, n'ajoute pas d'autres checkbox à stats-options
-    params = "stat="+stat+"&annee="+annee+"&niveaux="+niveaux;
+    // ... Désolé !
+    $('#stats-filiere input:checked').each( function(i,j) {
+        filiere = filiere + $(j).val();
+    });
+    params = "stat="+stat+"&annee="+annee+"&niveaux="+niveaux+"&filiere="+filiere;
     // On masque la recherche précédente
     $.each(les_stats, function( i, p ) {
         $("#stats-"+p.replace(/ |\(|\)/g, '')).hide();

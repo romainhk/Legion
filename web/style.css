@@ -187,6 +187,16 @@ td select {
     margin: 0 5ex;
     font-style:italic;
 }
+#stats-filiere {
+    text-align:left;
+}
+#stats-filiere ul {
+    margin:0;
+    padding:0;
+}
+#stats-filiere li {
+    list-style: none;
+}
 /* boutons d'action : copier -exporter */
 .action {
     background-color:rgba(153,191,230,0.3);

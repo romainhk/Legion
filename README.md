@@ -11,7 +11,9 @@ Legion est un logiciel de suivi de cohorte pour lycée.
 
 ## Exécution
 > python3 legion.py
-Pour utiliser en mode démon, > nohup python3 legion.py &
+
+Pour utiliser en mode démon,
+> nohup python3 legion.py &
 
 ## Utilisation
 Il suffit de se rendre à l'adresse http://localhost:54321 dans votre navigateur web.

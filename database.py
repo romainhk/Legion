@@ -520,18 +520,23 @@ class Database():
             logging.error("Erreur lors du listage '{0}' :\n{1}".format(info, e.args[0]))
         return [item[0] for item in self.curs.fetchall()]
 
-    def stats(self, info, annee, niveaux):
+    def stats(self, info, annee, niveaux, filiere):
         """
             Génère une liste avec les stats voulues
 
         :param info: la stat recherchée
         :param annee: son année de validité
         :param niveaux: les niveaux à prendre en compte
+        :param filiere: les filieres à prendre en compte
         :type info: str
         :type annee: int
         :type niveaux: array(str)
+        :type filiere: array(str)
         """
         les_niveaux = '('+' OR '.join(['CN.Niveau="'+s+'"' for s in niveaux])+')'
+        if len(filiere) > 0:
+            les_filiere = 'AND ('+' OR '.join(['CN.Filière="'+s+'"' for s in filiere])+')'
+        else: les_filiere = ''
         if info == "ouverture": # ouverture
             req = """SELECT 
             sum(CASE WHEN "Niveau" LIKE "" THEN 0 ELSE 1 END)+sum(CASE WHEN "Section" LIKE "" THEN 0 ELSE 1 END) AS n,
@@ -547,7 +552,7 @@ class Database():
             COALESCE(sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année=:an1 AND Établissement<>:etab) THEN 1 ELSE 0 END),0) nouveau, 
             IFNULL(sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END),0) "issue de pro" 
             FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe JOIN Élèves E ON A.INE=E.INE 
-            WHERE Établissement=:etab AND Année=:an1 AND {niv} """.format(niv=les_niveaux)
+            WHERE Établissement=:etab AND Année=:an1 AND {niv} {fil} """.format(niv=les_niveaux, fil=les_filiere)
             donnees = { 'an1':annee, 'etab':self.nom_etablissement }
         elif info == "par niveau": # par niveau
             req = """SELECT Niveau, count(A.INE) effectif, 
@@ -556,8 +561,8 @@ class Database():
             sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année=:an0 AND Établissement<>:etab) THEN 1 ELSE 0 END) nouveau, 
             sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END) "issue de pro" 
             FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe JOIN Élèves E ON A.INE=E.INE 
-            WHERE Établissement=:etab AND Année=:an1 AND {niv} 
-            GROUP BY Niveau""".format(niv=les_niveaux)
+            WHERE Établissement=:etab AND Année=:an1 AND {niv} {fil} 
+            GROUP BY Niveau""".format(niv=les_niveaux, fil=les_filiere)
             donnees = { 'an1':annee, 'an0':annee-1, 'etab':self.nom_etablissement }
         elif info == "par section": # par section
             req = """SELECT Section, count(A.INE) effectif, 
@@ -566,21 +571,21 @@ class Database():
             sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année=:an0 AND Établissement<>:etab) THEN 1 ELSE 0 END) nouveau, 
             sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END) "issue de pro" 
             FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe JOIN Élèves E ON A.INE=E.INE 
-            WHERE Établissement=:etab AND Année=:an1 AND {niv} 
-            GROUP BY Section""".format(niv=les_niveaux)
+            WHERE Établissement=:etab AND Année=:an1 AND {niv} {fil} 
+            GROUP BY Section""".format(niv=les_niveaux, fil=les_filiere)
             donnees = { 'an1':annee, 'an0':annee-1, 'etab':self.nom_etablissement }
         elif info == "par situation": # par situation
             req = """SELECT (CASE WHEN Situation="" THEN '?' ELSE Situation END) as "situation n+1",
             count(*) as effectif FROM Élèves E
             JOIN Affectations A ON E.INE=A.INE JOIN Classes CN ON A.Classe=CN.Classe 
-            WHERE A.Année=:an1 AND Établissement=:etab AND {niv} 
-            GROUP BY Situation""".format(niv=les_niveaux)
+            WHERE A.Année=:an1 AND Établissement=:etab AND {niv} {fil}
+            GROUP BY Situation""".format(niv=les_niveaux, fil=les_filiere)
             donnees = { 'an1':annee, 'etab':self.nom_etablissement }
         elif info == "annees scolarisation": # annees scolarisation
             req = """SELECT INE, count(*) Scolarisation 
             FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe 
-            WHERE Établissement=:etab AND {niv} 
-            GROUP BY INE""".format(niv=les_niveaux)
+            WHERE Établissement=:etab AND {niv} {fil}
+            GROUP BY INE""".format(niv=les_niveaux, fil=les_filiere)
             donnees = {'etab':self.nom_etablissement}
         elif info == "provenance": # provenance
             req = """SELECT A2.Établissement, count(*) total, 
@@ -591,8 +596,8 @@ class Database():
             FROM Affectations A LEFT JOIN Affectations A2 ON A.INE=A2.INE 
             LEFT JOIN Classes CN ON A.Classe = CN.Classe 
             JOIN Élèves E ON E.INE=A.INE
-            WHERE A.Année=:an1 AND A2.Année=:an0 AND {niv} 
-            GROUP BY A2.Établissement""".format(niv=les_niveaux)
+            WHERE A.Année=:an1 AND A2.Année=:an0 AND {niv} {fil}
+            GROUP BY A2.Établissement""".format(niv=les_niveaux, fil=les_filiere)
             donnees = { 'an1':annee, 'an0':annee-1, 'etab':self.nom_etablissement }
         elif info == "provenance classe": # provenance classe
             req = """SELECT CN.Classe classe, IFNULL(A2.Classe,'inconnue') AS provenance,
@@ -601,13 +606,13 @@ class Database():
             FROM Classes CN LEFT JOIN Affectations A ON CN.Classe=A.Classe 
             LEFT JOIN Affectations A2 ON A.INE=A2.INE AND A2.Année=?
             JOIN Élèves E ON E.INE=A.INE
-            WHERE A.Année=? AND {niv}  GROUP BY A2.Classe,A.Classe
-            ORDER BY CN.Classe,A2.Établissement,A2.Classe""".format(niv=les_niveaux)
+            WHERE A.Année=? AND {niv} {fil} GROUP BY A2.Classe,A.Classe
+            ORDER BY CN.Classe,A2.Établissement,A2.Classe""".format(niv=les_niveaux, fil=les_filiere)
             donnees = ( annee-1, annee )
         elif info == "taux de passage": # taux de passage
             req = """SELECT Section, Niveau, INE, Année 
             FROM Affectations A LEFT JOIN Classes CN ON A.Classe=CN.Classe 
-            WHERE Section<>'' AND {niv} ORDER BY Section,Niveau""".format(niv=les_niveaux)
+            WHERE Section<>'' AND {niv} {fil} ORDER BY Section,Niveau""".format(niv=les_niveaux, fil=les_filiere)
             donnees = ()
         elif info == "eps activite": # EPS: moyenne par activité
             les_niveaux = '('+' OR '.join(['EPS.Tier="'+s+'"' for s in niveaux])+')'
@@ -624,8 +629,8 @@ class Database():
             E.Genre, count(*) as nombre
             FROM EPS JOIN Affectations A, Classes CN ON A.INE=EPS.INE AND CN.Classe=A.Classe
             LEFT JOIN Élèves E ON E.INE=A.INE
-            WHERE A.Année=:annee AND Établissement=:etab AND {niv} 
-            GROUP BY E.Genre, "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5" """.format(niv=les_niveaux)
+            WHERE A.Année=:annee AND Établissement=:etab AND {niv} {fil}
+            GROUP BY E.Genre, "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5" """.format(niv=les_niveaux, fil=les_filiere)
             donnees = {'annee':annee, 'etab':self.nom_etablissement }
         else:
             logging.error('Information "{0}" non disponible'.format(info))

@@ -5,7 +5,7 @@
 * Taux de réussite au BAC, au BTS
 * Pour les élèves sorties : durée de scolarisation
 * Taux de passage : ne fonctionne qui si on coche 1er & Term ?
-* Taux de passage : Générale est l'antécédent de S, ES, ST2S, STMG
+* Taux de passage : GT est l'antécédent de S, ES, ST2S, STMG
 
 ### Python
 * Importation : sauvegarder le champ CODE_MOTIF_SORTIE ?
@@ -23,8 +23,6 @@
 * Stats EPS : mettre le même menu BEP/BAC
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
-* Différencier Général et Technologique
-* Stats - Recherche : sélecteur de filière
 * Liste : le filtre par colonne ne fonctionne pas !
 * Différencier les cases éditables ?
 

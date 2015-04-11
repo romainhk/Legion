@@ -268,9 +268,9 @@ header .quitter {
     text-shadow: none;
 }
 /* upload */
-#progress {
+.progress {
     margin-left:3ex;
-    vertical-align:middle;
+    vertical-align:top;
 }
 
 /* Formulaire de login */

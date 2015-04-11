@@ -271,7 +271,7 @@ function charger_page(nom) {
 }
 
 $(document).ready(function() {
-    $("#progress").hide();
+    $(".progress").hide();
 
     // Création du lien d'exportation
     $("#export").on('click', function (event) {
@@ -415,5 +415,10 @@ $(document).ready(function() {
     });
     // Chargement de la page accueil
     charger_page('accueil');
+
+    // Listener pour les boutons d'upload
+    $('input[type="file"]').bind('change', function(e) {
+        uploadFiles(e.target.id, this.files);
+    });
 });
 

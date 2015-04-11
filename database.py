@@ -306,6 +306,24 @@ class Database():
             logging.info(u"Erreur lors de la sauvegarde de l'option {0}:\n{1}".format(nom, e.args[0]))
         self.conn.commit()
 
+    def ecrire_diplome(self, nom, prénom, resultat):
+        """
+            Met à jour la donnée "Diplômé" dan la BDD
+            
+        :param nom: le nom d'un candidat
+        :param prénom: son prénom
+        :param resultat: la valeur [sic]
+        :type nom: str
+        :type prénom: str
+        :type resultat: str
+        """
+        req = 'UPDATE Élèves SET "Diplômé"=? WHERE Nom=? AND Prénom=?'
+        try:
+            self.curs.execute(req, (resultat, nom, prénom))
+        except sqlite3.Error as e:
+            logging.info(u"Erreur lors de l'insertion d'un résultat pour {0}-{1}:\n{2}".format(nom, prénom, e.args[0]))
+        self.conn.commit()
+
     def lire(self, annee, orderby, sens='ASC', niveau=''):
         """
             Lit le contenu de la base élève

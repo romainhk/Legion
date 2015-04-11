@@ -6,7 +6,6 @@
 * Pour les élèves sorties : durée de scolarisation
 * Taux de passage : ne fonctionne qui si on coche 1er & Term ?
 * Taux de passage : Générale est l'antécédent de S, ES, ST2S, STMG
-* Importation de la colonne "Diplômé" depuis Océan, ou depuis des xls générés
 
 ### Python
 * colonne Diplômé : importation automatisée depuis ...
@@ -32,6 +31,8 @@
 * Liste : le filtre par colonne ne fonctionne pas !
 * Liste : insérer les select en python ? (plus rapide) + "selected" sur l'ancienne valeur
 * Mettre un fond sur les cases éditables
+* /cache est lisible !
+* Option - Niveau : le select est cassé
 
 ### Extension EPS
 * Authentification à distance avec ssl

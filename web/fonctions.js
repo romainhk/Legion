@@ -32,28 +32,30 @@ function dict_key_sort(dict, reversered){
 /* 
  * Importation
  */
-function importation() {
-    // Lecture du fichier à importer
-    var file = document.getElementById('fichier').files[0];
-    if (file == undefined) {
-        alert("Veuillez selectionner un fichier pour lancer l'importation.");
-        return false;
+function uploadFiles(id, files) {
+    if (id == "fichier_siecle") {
+        url = "/importation";
+        progress = "progress_siecle";
+    } else if (id == "fichier_diplome") {
+        url = "/importation_diplome";
+        progress = "progress_diplome";
+    } else { return false; }
+    $("#"+progress).show();
+
+    var formData = new FormData();
+    for (var i = 0, file; file = files[i]; ++i) {
+        formData.append(file.name, file);
     }
-    var reader = new FileReader();
-    $("#progress").show();
-    reader.readAsText(file, 'ISO-8859-15');
-    reader.onload = envoie_du_fichier;
-}
-function envoie_du_fichier(event) {
-    // Envoie du fichier au serveur
-    var result = event.target.result;
-    var fileName = document.getElementById('fichier').files[0].name;
-    $.post('/importation', { data: result, name: fileName }, function(reponse) {
-        $("#progress").hide();
-        $( "#onglets li:first-child" ).trigger( "click" );
-        // Mise à jour générale
-        location.reload(true);
-    });
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', url, true);
+    xhr.onload = function(e) {
+        if (this.status == 200) {
+            $("#"+progress).hide();
+            if (id == "fichier_siecle") { location.reload(true); }
+        }
+    };
+    xhr.send(formData);  // multipart/form-data
 }
 
 /*

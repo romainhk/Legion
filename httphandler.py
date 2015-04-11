@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 import logging
+import xlrd
 #import statistics
 import numpy
 import collections # OrderedDict
@@ -214,10 +215,26 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 return False
         elif self.path == '/importation':
             data = form.getvalue('data')
-            logging.info('Importation du fichier...')
-            self.importer_xml(data)
+            logging.info('Importation de la base élève...')
+            fichier_tmp = 'cache/importation.xml'
+            for f in form.keys():
+                data = form[f].value
+                open(fichier_tmp, "wb").write(data)
+            self.importer_xml(fichier_tmp)
             rep['statut'] = 0
             rep['message'] = "L'importation s'est bien terminée."
+        elif self.path == '/importation_diplome':
+            data = form.getvalue('data')
+            logging.info('Importation de la liste des diplômés...')
+            fichier_tmp = 'cache/importation_diplome.xls'
+            for f in form.keys():
+                data = form[f].value
+                open(fichier_tmp, "wb").write(data)
+            tot_import = self.importer_diplome(fichier_tmp)
+            # TODO : remove file ?
+            rep['statut'] = 0
+            rep['message'] = "L'importation s'est bien terminée."
+            rep['tot_import'] = tot_import
         self.repondre(rep)
 
     def maj_cookie(self, ip):
@@ -644,18 +661,47 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         clf()
         return fichier
 
-    def importer_xml(self, data):
+    def importer_diplome(self, fichier_tmp):
+        """
+            Parse le xls à importer
+
+        :param data: le fichier à importer (passé en POST)
+        :type data: flux de fichier xls (binaire)
+        """
+        # Parsing du fichier
+        workbook = xlrd.open_workbook(fichier_tmp, encoding_override='cp1252')
+        sheet = workbook.sheet_by_index(0) # On sélectionne le premier classeur = "Extraction"
+        # Lecture des entêtes de colonnes
+        row = sheet.row(0)  # La première ligne
+        cols = { 'nom': None, 'prénom': None, 'g1': None, 'g2': None }
+        second_groupe = False
+        for idx, cell_obj in enumerate(row):
+            if cell_obj.value == 'Nom candidat': cols['nom'] = idx
+            elif cell_obj.value == 'Prénom candidat': cols['prénom'] = idx
+            elif cell_obj.value == 'Résultat 1er groupe': cols['g1'] = idx
+            elif cell_obj.value == 'Résultat 2eme groupe':
+                cols['g2'] = idx
+                second_groupe = True
+
+        # Extraction des données
+        num_cols = sheet.ncols   # Nombre total de colonnes
+        for row_idx in range(1, sheet.nrows):
+            nom = sheet.cell(row_idx, cols['nom']).value
+            prénom = sheet.cell(row_idx, cols['prénom']).value.capitalize()
+            if not second_groupe:
+                resultat = sheet.cell(row_idx, cols['g1']).value
+            else:
+                resultat = sheet.cell(row_idx, cols['g2']).value
+            self.server.db.ecrire_diplome(nom, prénom, resultat)
+        return sheet.nrows-1
+
+    def importer_xml(self, fichier_tmp):
         """
             Parse le xml à importer
 
         :param data: le fichier à importer (passé en POST)
         :type data: flux de fichier xml
         """
-        # Écriture de l'xml dans un fichier
-        fichier_tmp = 'cache/importation.xml'
-        f = open(fichier_tmp, 'w', encoding='ISO-8859-15')
-        f.write(data)
-        f.close()
         # Parsing du fichier
         tree = ET.parse(fichier_tmp)
         root = tree.getroot()

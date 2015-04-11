@@ -291,12 +291,13 @@
     </div>
     <div id="options" class="page_options">
         <h4>Importation</h4>
-        Sélectionner l'exportation xml de la base BEE de SIÈCLE (<i>ElevesSansAdresses.xml</i>)
-        <form id="importation" enctype="multipart/form-data">
-            <input type="file" id="fichier">
-            <input type="button" value="Importer" onClick="importation();" style="font-weight:bold;">
-            <img id="progress" src="img/loading.gif" alt="loading">
-        </form>
+        Sélectionner l'exportation xml de la base BEE de SIÈCLE (<i>ElevesSansAdresses.xml</i>) :
+        <input type="file" id="fichier_siecle">
+        <img class="progress" src="img/loading.gif" alt="loading" id="progress_siecle">
+        <br/>
+        Pour la colonne diplôme, on peut importe un fichier xls par niveau/filière :
+        <input type="file" id="fichier_diplome">
+        <img class="progress" src="img/loading.gif" alt="loading" id="progress_diplome">
         <h4>Affectations</h4>
         <table id="options-table">
             <caption>Veuillez affecter les classes à leur niveau et section</caption>

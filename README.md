@@ -4,8 +4,9 @@ Legion est un logiciel de suivi de cohorte pour lycée.
 
 ## Nécessite
 * une exportation xml des données élève de SIECLE ;
-* jquery / StupidTable (inclus) ;
+* js : jquery / StupidTable / tableSorter (inclus) ;
 * un interpréteur python 33 ;
+* xlrd (importation xls) ;
 * matplotlib, pylab, numpy... (pour la partie graphique).
 
 ## Exécution

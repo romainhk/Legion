@@ -94,6 +94,10 @@ table td[contenteditable=true]:focus {
     background: #eee !important;
     resize: none;
 }
+/*
+table td[contenteditable=true], td .cell_to_select {
+    background-color: #B8E6B8 !important;
+}*/
 /*.tablesorter-headerRow th {
     color:#fff !important;
     background-color:#272e27 !important;

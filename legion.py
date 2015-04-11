@@ -58,8 +58,12 @@ class Legion(http.server.HTTPServer):
             for a in sorted([x.strip(' ') for x in config.get('Établissement', 'sections_'+f).split('\n')]):
                 for b in a.split(','):
                     c = b.strip(' ')
-                    self.sections.append(c)
+                    if c not in self.sections:
+                        self.sections.append(c)
                     self.section_filière[c] = f
+        #print(self.sections)
+        #print(self.filières)
+        #print(self.section_filière)
 
         #modules = []
         #for a,b,c in pkgutil.iter_modules():

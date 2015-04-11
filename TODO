@@ -21,14 +21,12 @@
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * l'adresse en extranet.lycee-... ne fonctionne pas en interne
 * Stats EPS : mettre le même menu BEP/BAC
-* Liste : revoir le fonctionnement du parcours (toujours l'afficher ?), ajouter l'établissement précédent
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
-* Option : Renommer Générale -> GT
 * Différencier Général et Technologique
 * Stats - Recherche : sélecteur de filière
 * Liste : le filtre par colonne ne fonctionne pas !
-* Mettre un fond sur les cases éditables
+* Différencier les cases éditables ?
 
 ### Extension EPS
 * Authentification à distance avec ssl

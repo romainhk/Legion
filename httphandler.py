@@ -79,8 +79,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     filiere = []
                     for i in query.get('filiere', ['']).pop():
                         if   i == 'G': filiere.append('Générale')
-                        elif i == 'P': filiere.append('Technologique')
-                        elif i == 'T': filiere.append('Pro')
+                        elif i == 'P': filiere.append('Pro')
+                        elif i == 'T': filiere.append('Technologique')
                     if len(''.join(('niveaux'))) < 45 and len(filiere) < 4:
                         rep = self.generer_stats(stat, int(annee), niveaux, filiere)
             elif params.path == '/maj' and (user == 'admin' or user == 'eps'):
@@ -543,7 +543,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             passage = self.server.db.stats('taux de passage', annee, niveaux, filiere)
             for sect in self.server.sections:
                 # On filtre les éléments de data concernant la section voulue
-                e = [dictio for dictio in passage if dictio['Section'] == sect]
+                e = [dictio for dictio in passage if dictio['Section'] in [sect,'GT']]
+                # ie GT est toujours un antécédent possible
                 for i in range(1,len(self.server.niveaux)):
                     niv = self.server.niveaux[i]
                     niv_pre = self.server.niveaux[i-1]
@@ -551,10 +552,12 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     f = [dictio['INE'] for dictio in e if dictio['Niveau'] == niv and dictio['Année'] == annee]
                     # Élèves au niveau précédent de la même section pour l'année passée
                     g = [dictio['INE'] for dictio in e if dictio['Niveau'] == niv_pre and dictio['Année'] == annee-1]
+                    #print("========{0}========{1}/{2}\n{f}\n{g}".format(sect,niv_pre,niv,f=f,g=g))
                     if len(f) > 0 and len(g) > 0:
                         # On a des élèves dans deux années successives d'une même section !
                         communs = list (set(g) & set(f)) # l'intersection des deux années
-                        taux = en_pourcentage( float(len(communs)) / float(len(g)) )
+                        #print(communs)
+                        taux = en_pourcentage( float(len(communs)) / float(len(f)) )
                         v = { 'section': sect, 'passage': niv_pre+' > '+niv, 'taux': taux}
                         rep['data'].append(v)
         elif stat == 'EPS (activite)':

@@ -612,8 +612,10 @@ class Database():
         elif info == "taux de passage": # taux de passage
             req = """SELECT Section, Niveau, INE, Année 
             FROM Affectations A LEFT JOIN Classes CN ON A.Classe=CN.Classe 
-            WHERE Section<>'' AND {niv} {fil} ORDER BY Section,Niveau""".format(niv=les_niveaux, fil=les_filiere)
-            donnees = ()
+            WHERE Section<>'' AND Niveau<>'' AND INE IN
+            (SELECT INE FROM Affectations A LEFT JOIN Classes CN ON A.Classe = CN.Classe WHERE Année=? AND {niv} {fil})
+            ORDER BY Section,Niveau""".format(niv=les_niveaux, fil=les_filiere)
+            donnees = (annee,)
         elif info == "eps activite": # EPS: moyenne par activité
             les_niveaux = '('+' OR '.join(['EPS.Tier="'+s+'"' for s in niveaux])+')'
             req = """SELECT "Activité 1", sum(CASE WHEN "Note 1">0 THEN "Note 1" ELSE 0 END) as n1,

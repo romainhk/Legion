@@ -4,8 +4,6 @@
 * Absentéisme : ratio du nombre d'heures de cours non suivi / nombre total d'heures de la section (-> cpe ; recoupement avec pronote ?)
 * Taux de réussite au BAC, au BTS
 * Pour les élèves sorties : durée de scolarisation
-* Taux de passage : ne fonctionne qui si on coche 1er & Term ?
-* Taux de passage : GT est l'antécédent de S, ES, ST2S, STMG
 
 ### Python
 * Importation : sauvegarder le champ CODE_MOTIF_SORTIE ?

@@ -62,7 +62,6 @@ class Legion(http.server.HTTPServer):
                         self.sections.append(c)
                     self.section_filière[c] = f
         #print(self.sections)
-        #print(self.filières)
         #print(self.section_filière)
 
         #modules = []

@@ -41,7 +41,7 @@ var liste_data_placeholder = {
     'Classe': 'MUC',
     'Doublement': '',
     'Entrée': 'jj/mm/aaaa',
-    'Diplômé': 'O/N',
+    'Diplômé': 'Admis/Refuse/...',
     'Situation N+1': 'Activité',
     'Lieu': '' };
 
@@ -129,7 +129,7 @@ function maj_sortable(sens, col) {
         maj_total($('#liste-table'));
         // Initialisation des filtres de recherche, du tri
         $("#liste-table").tablesorter({
-            widgets: ["cssStickyHeaders", "filter"],
+            widgets: ["cssStickyHeaders", "filter", "zebra"],
             widgetOptions: {
                 filter_hideFilters : false,
                 filter_columnFilters: true
@@ -356,8 +356,9 @@ $(document).ready(function() {
         
         // Paramétrage général de tablesorter
         $.tablesorter.defaults.sortList = [ [0,0] ];
-        $.tablesorter.defaults.widgets = ["cssStickyHeaders"];
+        $.tablesorter.defaults.widgets = ["cssStickyHeaders", "zebra"];
         $.tablesorter.defaults.widgetOptions.cssStickyHeaders_offset = 4;
+        $.tablesorter.defaults.widgetOptions.zebra = [ "paire", "impaire" ];
         $.tablesorter.defaults.theme = 'blue';
         $.tablesorter.defaults.widthFixed = true;
         $.tablesorter.defaults.ignoreCase = true;

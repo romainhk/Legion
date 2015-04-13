@@ -351,8 +351,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     s = s + '<td><select class="cell_to_select">{0}</select></td>'.format(t)
                 else:
                     s = s + '<td>{0}</td>'.format(d[h])
-            parite = 'paire' if parite == 'impaire' else 'impaire'
-            r = r + '<tr id="{0}" class="{1}">{2}</tr>\n'.format(ine, parite, s)
+            r = r + '<tr id="{0}">{1}</tr>\n'.format(ine, s)
         return { 'annee': annee, 'html': r, 'parcours': tab_parcours, 'nb eleves': len(data) }
 
     def generer_stats(self, stat, annee, niveaux, filiere):

@@ -124,10 +124,10 @@ class Database():
 
         # Ajout de l'élève
         req = 'INSERT OR REPLACE INTO Élèves ' \
-            + '(ELEVE_ID, INE, Nom, Prénom, Naissance, Genre, Entrée, Diplômé, Situation, Lieu) ' \
+            + '(ELEVE_ID, INE, Nom, Prénom, Naissance, Sexe, Entrée, Diplômé, Situation, Lieu) ' \
             + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         donnees = ( enr['eid'],         ine,                enr['nom'],
-                    enr['prénom'],      enr['naissance'],   int(enr['genre']),
+                    enr['prénom'],      enr['naissance'],   int(enr['sexe']),
                     enr['entrée'],      enr['Diplômé'],     enr['Situation'],   enr['Lieu'])
         try:
             self.curs.execute(req, donnees)
@@ -277,10 +277,10 @@ class Database():
             r = self.curs.fetchone()
 
         req = 'INSERT OR REPLACE INTO Pending ' \
-                + '(INE, Nom, Prénom, Naissance, Genre, Entrée, Classe, Établissement, Doublement, Raison) ' \
+                + '(INE, Nom, Prénom, Naissance, Sexe, Entrée, Classe, Établissement, Doublement, Raison) ' \
                 + 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         donnees = ( enr['ine'],             enr['nom'],             enr['prénom'],
-                    enr['naissance'],       int(enr['genre']),      enr['entrée'],
+                    enr['naissance'],       int(enr['sexe']),      enr['entrée'],
                     enr['classe'],          enr['sad_établissement'],
                     int(enr['doublement']),     raison)
         try:
@@ -547,7 +547,7 @@ class Database():
             # Calcul des totaux :
             # Nombre d'élèves, d'hommes, doublants, nouveaux, issues de pro
             req = """SELECT count(*) total, 
-            COALESCE(sum(CASE WHEN Genre="1" THEN 1 ELSE 0 END),0) homme, 
+            COALESCE(sum(CASE WHEN Sexe="1" THEN 1 ELSE 0 END),0) homme, 
             IFNULL(sum(CASE WHEN Doublement="1" THEN 1 ELSE 0 END),0) doublant, 
             COALESCE(sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année=:an1 AND Établissement<>:etab) THEN 1 ELSE 0 END),0) nouveau, 
             IFNULL(sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END),0) "issue de pro" 
@@ -556,7 +556,7 @@ class Database():
             donnees = { 'an1':annee, 'etab':self.nom_etablissement }
         elif info == "par niveau": # par niveau
             req = """SELECT Niveau, count(A.INE) effectif, 
-            sum(CASE WHEN Genre="1" THEN 1 ELSE 0 END) homme, 
+            sum(CASE WHEN Sexe="1" THEN 1 ELSE 0 END) homme, 
             sum(CASE WHEN Doublement="1" THEN 1 ELSE 0 END) doublant, 
             sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année=:an0 AND Établissement<>:etab) THEN 1 ELSE 0 END) nouveau, 
             sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END) "issue de pro" 
@@ -566,7 +566,7 @@ class Database():
             donnees = { 'an1':annee, 'an0':annee-1, 'etab':self.nom_etablissement }
         elif info == "par section": # par section
             req = """SELECT Section, count(A.INE) effectif, 
-            sum(CASE WHEN Genre="1" THEN 1 ELSE 0 END) homme, 
+            sum(CASE WHEN Sexe="1" THEN 1 ELSE 0 END) homme, 
             sum(CASE WHEN Doublement="1" THEN 1 ELSE 0 END) doublant, 
             sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année=:an0 AND Établissement<>:etab) THEN 1 ELSE 0 END) nouveau, 
             sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END) "issue de pro" 
@@ -626,11 +626,11 @@ class Database():
             sum(CASE WHEN "Note 4"<0 THEN 1 ELSE 0 END) as a4,
             "Activité 5", sum(CASE WHEN "Note 5">0 THEN "Note 5" ELSE 0 END) as n5,
             sum(CASE WHEN "Note 5"<0 THEN 1 ELSE 0 END) as a5,
-            E.Genre, count(*) as nombre
+            E.Sexe, count(*) as nombre
             FROM EPS JOIN Affectations A, Classes CN ON A.INE=EPS.INE AND CN.Classe=A.Classe
             LEFT JOIN Élèves E ON E.INE=A.INE
             WHERE A.Année=:annee AND Établissement=:etab AND {niv} {fil}
-            GROUP BY E.Genre, "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5" """.format(niv=les_niveaux, fil=les_filiere)
+            GROUP BY E.Sexe, "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5" """.format(niv=les_niveaux, fil=les_filiere)
             donnees = {'annee':annee, 'etab':self.nom_etablissement }
         else:
             logging.error('Information "{0}" non disponible'.format(info))

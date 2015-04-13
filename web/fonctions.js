@@ -180,8 +180,8 @@ function list_to_tab_simple(liste, champs) {
         $.each( champs, function( i, j ) {
             v = value[j];
             if(v != undefined){
-                if (j == "Genre") { // Traduction de la colonne genre
-                    if (v == "1") { v = "Homme"; } else if (v == "2") { v = "Femme"; }
+                if (j == "Sexe") { // Traduction de la colonne sexe
+                    if (v == "1") { v = "♂"; } else if (v == "2") { v = "♀"; }
                 } else if (j == "Doublement") { // Traduction de la colonne doublement
                     if (v == "0") { v = "Non"; } else if (v == "1") { v = "Oui"; } else { v = "?"; }
                 }

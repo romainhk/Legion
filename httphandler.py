@@ -312,7 +312,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         parite = ''
         tab_parcours = {}
         for ine,d in data.items():
-            d['Genre'] = 'Homme' if d['Genre'] == 1 else 'Femme'
+            d['Sexe'] = '♂' if d['Sexe'] == 1 else '♀'
             d['Année'] = annee
             s = ''
             # Analyse du parcours
@@ -579,10 +579,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                             notes_comptantes = b['nombre'] - excl
                             if notes_comptantes > 0:
                                 note = b['n{0}'.format(c.split(' ')[1])]
-                                if b['Genre'] == 1:
+                                if b['Sexe'] == 1:
                                     somme_h = somme_h + note
                                     eff_h = eff_h + notes_comptantes
-                                elif b['Genre'] == 2:
+                                elif b['Sexe'] == 2:
                                     somme_f = somme_f + note
                                     eff_f = eff_f + notes_comptantes
                 moyenne = moyenne_h = moyenne_f = '?'
@@ -709,6 +709,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 resultat = sheet.cell(row_idx, cols['g1']).value
             else:
                 resultat = sheet.cell(row_idx, cols['g2']).value
+            resultat = resultat[0] + resultat[1:].lower()
             self.server.db.ecrire_diplome(nom, prénom, resultat)
         return sheet.nrows-1
 
@@ -746,7 +747,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             nom = eleve.findtext('NOM')
             prenom = eleve.findtext('PRENOM')
             naissance = eleve.findtext('DATE_NAISS')
-            genre = eleve.findtext('CODE_SEXE')
+            sexe = eleve.findtext('CODE_SEXE')
             mef = xstr(eleve.findtext('CODE_MEF'))
             doublement = eleve.findtext('DOUBLEMENT')
             entrée = eleve.findtext('DATE_ENTREE')
@@ -755,7 +756,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             sad_classe = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_STRUCTURE')).strip(' ')
             sad_mef = xstr(eleve.findtext('SCOLARITE_AN_DERNIER/CODE_MEF'))
             enr = { 'eid': eid, 'ine': ine, 'nom': nom, 'prénom': prenom, \
-                    'naissance': naissance, 'genre': genre, 'mef': mef, \
+                    'naissance': naissance, 'sexe': sexe, 'mef': mef, \
                     'doublement': doublement, 'classe': classe, 'entrée': entrée, \
                     'sad_établissement': sad_etab,   'sad_classe': sad_classe,  'sad_mef': sad_mef }
             self.server.db.ecrire(enr, annee, pending)

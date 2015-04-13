@@ -15,7 +15,7 @@ var les_pages = {
 // Total d'élèves dans la base
 var nb_eleves = 0;
 // Champs du pending (tous)
-var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Genre", "Entrée", "Classe", "Établissement", "Doublement", "Raison" ];
+var champs_pending = [ "INE", "Nom", "Prénom" , "Naissance", "Sexe", "Entrée", "Classe", "Établissement", "Doublement", "Raison" ];
 // Liste des situations possibles
 var situations = new Array();
 // Les niveaux, filières et sections reconnues
@@ -37,7 +37,7 @@ var liste_data_placeholder = {
     'Nom': 'ABC',
     'Prénom': 'Abc',
     'Âge': '>18',
-    'Genre': '',
+    'Sexe': '',
     'Classe': 'MUC',
     'Doublement': '',
     'Entrée': 'jj/mm/aaaa',
@@ -337,7 +337,7 @@ $(document).ready(function() {
         $.each(data['header'], function( i, j ) {
             champs_liste.push(j);
             classe = "";
-            if ($.inArray(j, ["Genre", "Doublement"]) != -1) {
+            if ($.inArray(j, ["Sexe", "Doublement"]) != -1) {
                 classe = "filter-select";
             }
             entete += '<th class="'+classe+'" data-placeholder="'+liste_data_placeholder[j]+'">'+j+"</th>\n";

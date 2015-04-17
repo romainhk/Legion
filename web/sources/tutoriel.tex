@@ -30,15 +30,16 @@
 % Installation
 \section{Installation et Usage}
 \subsection{Pré-requis}
-Legion nécessite python 3 ainsi que notamment les librairies sqlite3, urllib, json, numpy et matplotlib.
+Legion nécessite python 3 ainsi que notamment les librairies sqlite3, urllib, json, numpy, matplotlib, et xlrd.
 
-\subsection{Configuration}
-Il faut d'abord cloner le dépôt public de Legion :\\
+\subsection{Installation}
+Il suffit de cloner le dépôt public de Legion :\\
 \code{git clone https://github.com/romainhk/Legion.git}
 
-Ou récupérer l'archive à l'adresse :\\
+Ou de récupérer/décompresser l'archive à l'adresse :\\
 \url{https://github.com/romainhk/Legion/archive/master.zip}
 
+\subsection{Configuration}
 Il ne reste plus qu'à personnaliser le fichier \texttt{config.cfg} avec :
 \begin{itemize}
 \item le port de connexion ;
@@ -48,7 +49,7 @@ Il ne reste plus qu'à personnaliser le fichier \texttt{config.cfg} avec :
 \end{itemize}
 
 \subsubsection{Choix du port}
-N'importe quel numéro de port est assignable, tant que l'on vérifie qu'il n'est pas filtré par le par-feu.
+N'importe quel numéro de port (au dessus de 1024) est assignable, tant que l'on vérifie qu'il n'est pas filtré par le par-feu.
 
 À noter que sur le réseau académique, la plupart des ports sont bloqués en entrée et en sortie. Le BAIP peut faire remonter une demande d'ouverture de port au DAIP, comme par exemple le 49300 utilisé par pronote.
 
@@ -60,7 +61,7 @@ Ou pour une utilisation en mode démon (à préférer) :
 
 \code{nohup python3 legion.py \&}
 
-Alors, le fichier legion.log est remplacé par nohup.log
+Alors, le fichier legion.log est remplacé par nohup.out
 
 \subsection{Se connecter sur la base}
 Il suffit de rentrer l'adresse \url{http://IP_DU_SERVER:PORT} dans n'importe quel navigateur web (nécessite simplement javascript), puis de rentrer le mot de passe administrateur.
@@ -71,10 +72,50 @@ En mode démon, le PID du processus serveur est noté dans le fichier de log au 
 En mode interactif, il suffit de faire un \keystroke{Ctrl} + \keystroke{C}.
 
 \pagebreak
+% Présentation des fonctionnalités
+\section{Présentation des fonctionnalités}
+
+Tout d'abord, deux profils de connexion sont disponibles :
+\begin{itemize}
+\item admin : avec tous les droits ;
+\item eps : qui ne peut utiliser que la partie EPS et les stats concernant l'EPS.
+\end{itemize}
+
+\subsection{Onglets}
+
+\includegraphics[width=0.7\textwidth,natwidth=603,natheight=118]{onglets.png}
+
+\begin{itemize}
+\item La partie \bouton{Liste} présente une liste triable et filtrable des élèves de l'établissement ;
+\item La partie \bouton{Stats} offre différentes statistiques concernant la base élève ;
+\item La partie \bouton{EPS} permet à un prof d'eps de saisir les activités et les notes des élèves ;
+\item La partie \bouton{Attente} résume les importations qui se sont mal passées. Cela permet de détecter certains problèmes de déclaration dans la base SIECLE (pour correction en amont) ;
+\item La partie \bouton{Options} permet d'importer des données, et d'affecter les classes à leur niveau et filière ;
+\end{itemize}
+
+Le bouton bleu permet de se déconnecter.
+
+\subsection{Exportation}
+
+\includegraphics[width=0.4\textwidth,natwidth=296,natheight=57]{exportation_csv.png}
+
+Le bouton d'exportation, omniprésent, permet d'extraire les données présentées au format csv, exploitable par n'importe quel bon tableur.
+
+\pagebreak
 % Initialisation
 \section{Initialisation d'une année scolaire}
 \subsection{Récupération des données}
-...
+La base élève établissement (BEE) doit être récupéré dans SIECLE, accessible \href{http://pagriates.ac-lille.fr/}{sur le portail pagriates}.
+
+En utilisant un compte ayant suffisamment de privilèges, aller dans « Scolarité du 2nd degré $>$ Base élève établissement (BEE) $>$ Mise à jour » :
+
+\includegraphics[width=\textwidth,natwidth=995,natheight=608]{siecle1.png}
+
+Dans « Exportations $>$ En XML », cliquer sur « Élèves sans adresses » :
+
+\includegraphics[width=\textwidth,natwidth=995,natheight=710]{siecle2.png}
+
+Cela permet de télécharger un fichier xml zippé contenant la base.
 
 \subsection{Importation}
 Décompresser le fichier récupéré ; on obtient le fichier \texttt{ElevesSansAdresses.xml}.
@@ -88,8 +129,9 @@ Pour que la génération des statistiques soit plus précise, chaque classe doit
 
 Voilà ! Legion est prêt :)
 
-% Importation des notes
+\subsection{Importation des résultats de fin d'année}
+Le chef d'établissement peut obtenir en fin d'année scolaire les listes des élèves ayant passer un examen précisant leur résultat. Ils se présentent sous la forme de fichier xls ; un par filière et par groupe d'examen.
 
-% Présentation des fonctionnalités
+Ces fichiers sont importables directement dans Legion. Aller dans \bouton{Options} et ajouter successivement chaque fichier. La colonne « Diplômé » de la partie \bouton{Liste} sera automatiquement mise à jour.
 
 \end{document}

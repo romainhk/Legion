@@ -32,7 +32,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         # Analyse de l'url
         params = urlparse(self.path)
         query = parse_qs(params.query)
-        rep = "";
+        rep = ""
         # Fonctions autorisées
         if params.path == '/init':
             # ACTION : Initialisation de l'application (côté client)
@@ -63,13 +63,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             if params.path == '/liste' and user == 'admin':
                 # ACTION : Ouverture de la liste principale
                 annee = int(query.get('annee', ['{0}'.format(self.server.debut_AS.year)]).pop())
-                orderby = query.get('col', ['Nom,Prénom']).pop()
-                if orderby == '': orderby = 'Nom,Prénom'
-                if orderby == 'Âge': orderby = 'Naissance'
-                sens = query.get('sens', ['ASC']).pop().upper()
-                if sens == '': sens = 'ASC'
                 niveau = query.get('niveau', ['']).pop()
-                rep = self.generer_liste(annee, orderby, sens, niveau)
+                rep = self.generer_liste(annee, niveau)
             elif params.path == '/stats':
                 # ACTION : Ouverture de la page de statistiques
                 stat = query['stat'].pop()
@@ -151,8 +146,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 rep = { 'liste': eps, 'classes': classes, 'tier': tier }
             elif params.path == '/pending' and user == 'admin':
                 # ACTION : Ouverture de la page de pending
-                rep = self.server.db.lire_pending()
-                rep['date'] = date8601(self.server.date)
+                rep = { 'pending': self.server.db.lire_pending(),
+                        'date': date8601(self.server.date) }
             elif params.path == '/options' and user == 'admin':
                 # ACTION : Ouverture de la page des options
                 rep = { 'affectations': self.server.db.lire_classes(self.server.debut_AS.year), 
@@ -283,31 +278,18 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(bytes(json.dumps(reponse), 'UTF-8'))
         self.wfile.flush()
 
-    def generer_liste(self, annee, orderby, sens, niveau):
+    def generer_liste(self, annee, niveau):
         """
             Génère les données pour la liste (vue principale)
 
         :param annee: année de scolarisation
-        :param orderby: clé de tri
-        :param sens: ordre de tri (ASC ou DESC)
         :param niveau: groupe de classes
         :type annee: int
-        :type orderby: str
-        :type sens: str
         :type niveau: str
         :return: annee, tableau au format html, et nombre total d'élèves
         :rtype: dict
         """
-        if sens == 'ASC':
-            data = self.server.db.lire(annee, orderby, sens, niveau)
-            self.server.lire = data
-        elif sens == 'DESC':
-            # On inverse simplement la recherche précédente ; gain de temps de ~30 %
-            ordre = list(self.server.lire.keys())[::-1]
-            c = collections.OrderedDict.fromkeys(ordre)
-            for a in ordre:
-                c[a] = self.server.lire[a]
-            data = c
+        data = self.server.db.lire(annee, niveau)
         r = ''
         parite = ''
         tab_parcours = {}
@@ -319,10 +301,9 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             parcours = collections.OrderedDict()
             parcours_inverse = collections.OrderedDict(sorted(d['Parcours'].items(), key=lambda t: t[0], reverse=True))
             for an,p in parcours_inverse.items():
-                if sens == 'ASC':
-                    if p[2] == 0:   p[2] = 'Non'
-                    elif p[2] == 1: p[2] = 'Oui'
-                    else:           p[2] = '?'
+                if p[2] == 0:   p[2] = 'Non'
+                elif p[2] == 1: p[2] = 'Oui'
+                else:           p[2] = '?'
                 if an not in parcours.keys():
                     parcours[an] = { 'Année': an, 'Classe': p[0], 'Établissement': p[1], 'Doublement': p[2] }
             d['Classe'] = parcours[annee]['Classe']

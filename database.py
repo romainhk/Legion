@@ -324,17 +324,13 @@ class Database():
             logging.info(u"Erreur lors de l'insertion d'un résultat pour {0}-{1}:\n{2}".format(nom, prénom, e.args[0]))
         self.conn.commit()
 
-    def lire(self, annee, orderby, sens='ASC', niveau=''):
+    def lire(self, annee, niveau=''):
         """
             Lit le contenu de la base élève
         
         :param annee: année de scolarisation
-        :param orderby: clé de tri
-        :param sens: ordre de tri (ASC ou DESC)
         :param niveau: groupe de classes (Seconde, BTS...)
         :type annee: int
-        :type orderby: str
-        :type sens: str
         :type niveau: str
         :rtype: OrderedDict
         """
@@ -345,7 +341,7 @@ class Database():
         elif niveau == 'BTS':
             niv= 'AND (Niveau="1BTS" OR Niveau="2BTS")'
         # Listage des élèves
-        req = 'SELECT * FROM Élèves E NATURAL JOIN Affectations A JOIN Classes C ON A.Classe=C.Classe WHERE Année=? {niv} ORDER BY {0} {1}, Nom ASC'.format(orderby, sens, niv=niv)
+        req = 'SELECT * FROM Élèves E NATURAL JOIN Affectations A JOIN Classes C ON A.Classe=C.Classe WHERE Année=? {niv} ORDER BY Nom,Prénom ASC'.format(niv=niv)
         for row in self.curs.execute(req, (annee,)).fetchall():
             d = dict_from_row(row)
             ine = d['INE']

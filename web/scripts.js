@@ -114,11 +114,11 @@ function noauth() {
 /*
  * Mise à jour d'un tableau triable
  */
-function maj_sortable(sens, col) {
+function maj_sortable() {
     $('#liste-table').css('opacity', '0.3');
     var annee = $('#liste-annee option:selected').val();
     var niveau = $('#liste-niveau option:selected').val();
-    parametres = '?annee='+annee+'&sens='+sens+'&col='+col+'&niveau='+niveau;
+    parametres = '?annee='+annee+'&niveau='+niveau;
     $.get( "/liste"+parametres, function( data ) {
         annee = data['annee'];
         $('#liste-table > tbody').html( data['html'] );
@@ -178,7 +178,7 @@ function charger_page(nom) {
         });
     } else if (nom == 'liste') {
         page_active = 'liste';
-        maj_sortable('', '');
+        maj_sortable();
     } else if (nom == 'stats') {
         page_active = 'stats';
         $.get( "/stats?stat=ouverture", function( data ) {
@@ -244,7 +244,7 @@ function charger_page(nom) {
     } else if (nom == 'pending') {
         page_active = 'pending';
         $.get( "/pending", function( data ) {
-            $('#pending-table > tbody').html( list_to_tab_simple(data, champs_pending) );
+            $('#pending-table > tbody').html( list_to_tab_simple(data['pending'], champs_pending) );
             maj_total($('#pending'));
             $('#pending-dateExport').html(data['date']);
         }).fail(noauth);
@@ -345,12 +345,9 @@ $(document).ready(function() {
         $('#liste-table > thead').html( "<tr>"+entete+"</tr>\n" );
         entete = ""
         $.each(champs_pending, function( i, j ) {
-            entete += '<th>'+j+"</th>\n";
-            /*
             if (j == 'Naissance') { ds = "date"; }
             else { ds = "string"; }
             entete += '<th data-sort="'+ds+'">'+j+"</th>\n";
-            */
         });
         $('#pending-table > thead').html( "<tr>"+entete+"</tr>\n" );
         
@@ -402,7 +399,7 @@ $(document).ready(function() {
                     target.addClass('sorting-desc');
                 } else { return false; }
                 col = target.html();
-                maj_sortable(sens, col);
+                maj_sortable();
             } else { // Tri local
             }
         });

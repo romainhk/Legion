@@ -14,8 +14,6 @@
 * SQL - Options : nom_étab?, sections? => Pouvoir changer certaines options statiques
 
 ### HTML
-* Finir le tutoriel sur l'importation SIECLE
-* Tuto : ajouter une présentation des fonctionnalités
 * Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
 * l'adresse en extranet.lycee-... ne fonctionne pas en interne
 * Stats EPS : mettre le même menu BEP/BAC

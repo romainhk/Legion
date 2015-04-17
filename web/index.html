@@ -298,14 +298,20 @@
     </div>
     <div id="options" class="page_options">
         <h4>Importation</h4>
-        Sélectionner l'exportation xml de la base BEE de SIÈCLE (<i>ElevesSansAdresses.xml</i>) :
-        <input type="file" id="fichier_siecle">
-        <img class="progress" src="img/loading.gif" alt="loading" id="progress_siecle">
-        <br/>
-        Pour la colonne diplôme, on peut importe un fichier xls par niveau/filière :
-        <input type="file" id="fichier_diplome">
-        <img class="progress" src="img/loading.gif" alt="loading" id="progress_diplome">
+        <ul>
+            <li>De la base BEE de SIÈCLE (<i>ElevesSansAdresses.xml</i>) :
+            <input type="file" id="fichier_siecle">
+            <img class="progress" src="img/loading.gif" alt="loading" id="progress_siecle">
+            </li>
+            <li>De la colonne « Diplômé » (un fichier <i>xls</i> par niveau/filière) :
+            <input type="file" id="fichier_diplome">
+            <img class="progress" src="img/loading.gif" alt="loading" id="progress_diplome">
+            </li>
+        </ul>
         <h4>Affectations</h4>
+        <span style="margin-left:2ex">Classes de l'année scolaire :
+            <select id="options-annee"></select>
+        </span>
         <table id="options-table">
             <caption>Veuillez affecter les classes à leur niveau et section</caption>
             <thead>

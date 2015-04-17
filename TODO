@@ -12,15 +12,17 @@
 * Analyse des dépendances (au démarrage, vérification qu'elles sont disponibles)
 * affectation auto des niveau / section par classe en utilisant le code MEF
 * SQL - Options : nom_étab?, sections? => Pouvoir changer certaines options statiques
+* Le nom des classes devrait dépendre de l'année scolaire pour l'affectation à un niveau/filière/section !
 
 ### HTML
-* Options : pouvoir affecter toutes les classes (hors etab, et autres années => filtres de recherche)
+* Options : pouvoir affecter toutes les classes (hors etab => filtres de recherche)
 * l'adresse en extranet.lycee-... ne fonctionne pas en interne
 * Stats EPS : mettre le même menu BEP/BAC
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
 * Liste : le filtre par colonne ne fonctionne pas !  ???
 * Différencier les cases éditables ?
+* Popup pour indiquer la réussite/échec des requête maj & maj_classe
 
 ### Extension EPS
 * Authentification à distance avec ssl

@@ -69,6 +69,8 @@ function stats_listes(les_stats, niveaux) {
         $('#stats-annee option:last').attr("selected","selected");
         $('#liste-annee').html( options );
         $('#liste-annee option:last').attr("selected","selected");
+        $('#options-annee').html( options );
+        $('#options-annee option:last').attr("selected","selected");
     });
     // Liste des niveaux
     $('#stats-recherche th').css({'text-transform':'none'});
@@ -250,7 +252,8 @@ function charger_page(nom) {
         }).fail(noauth);
     } else if (nom == 'options') {
         page_active = 'options';
-        $.get( "/options", function( data ) {
+        var annee = $('#options-annee option:selected').val();
+        $.get( "/options?annee="+annee, function( data ) {
             niveaux = data['niveaux']; // global
             filières = data['filières']; // global
             sections = data['sections']; // global
@@ -262,6 +265,7 @@ function charger_page(nom) {
                 var s = j['Section'];
                 if (parite == 'impaire') {parite='paire';} else {parite='impaire';}
                 tab += '<tr class="'+parite+'"><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
+                tab += '<tr><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
             });
             $('#options-table > tbody').html(tab);
             $("#options-table").tablesorter();
@@ -408,9 +412,12 @@ $(document).ready(function() {
         // Test d'authentification
         authentification();
     });
+    // Changement dans une liste déroulante générale
     $('#liste-annee, #liste-niveau').on('change', function(i,j) {
-        $('#liste table th').removeClass('sorting-desc').removeClass('sorting-asc');
         charger_page('Liste');
+    });
+    $('#options-annee').on('change', function(i,j) {
+        charger_page('Options');
     });
     // Chargement de la page accueil
     charger_page('accueil');

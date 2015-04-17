@@ -109,7 +109,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     self.repondre('Non')
                     return
-                rep = self.server.db.maj_champ(table, ine, champ, donnee, tier)
+                rep = self.server.db.maj_champ(table, ine, champ, donnee, tier=tier)
             elif params.path == '/maj_classe' and user == 'admin':
                 # ACTION : Changement d'affectation pour une classe
                 classe = query['classe'].pop()
@@ -150,9 +150,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         'date': date8601(self.server.date) }
             elif params.path == '/options' and user == 'admin':
                 # ACTION : Ouverture de la page des options
-                rep = { 'affectations': self.server.db.lire_classes(self.server.debut_AS.year), 
+                annee = query.get('annee', [self.server.debut_AS.year]).pop()
+                rep = { 'affectations': self.server.db.lire_classes(annee), 
                     'niveaux': self.server.niveaux,
-                    'sections': self.server.sections }
+                    'sections': self.server.sections,
+                    'annee': annee }
             elif params.path == '/quitter':
                 # ACTION : Fermeture de l'application
                 logging.info('Déconnection du client {0}'.format(ip))

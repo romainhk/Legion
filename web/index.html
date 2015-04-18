@@ -78,7 +78,7 @@
             <tr class="removeme">
                 <th>Statistique désirée</th>
                 <th>Année</th>
-                <th>Filière</th>
+                <th>Filières</th>
                 <th>Les niveaux à prendre en compte</th>
             </tr>
             <tr id="stats-niveaux" class="removeme"><td></td><td></td>
@@ -87,6 +87,7 @@
                         <li><input type="checkbox" value="G" checked />Générale</li>
                         <li><input type="checkbox" value="T" checked />Technologique</li>
                         <li><input type="checkbox" value="P" checked />Professionnelle</li>
+                        <li><input type="checkbox" value="S" />Enseignement Supérieur</li>
                     </ul></td></tr>
             <tr id="stats-options" class="removeme">
                 <td><select id="stats-liste"></select></td>
@@ -220,9 +221,9 @@
                     <dt>Section</dt>
                     <dd>la section [sic]</dd>
                     <dt>Passage</dt>
-                    <dd>la transition de niveau (niveau d'origine > niveau actuel)</dd>
+                    <dd>la transition de niveau (niveau d'origine > niveau suivant)</dd>
                     <dt>Taux</dt>
-                    <dd>le nombre d'élèves présents sur deux années de suite dans une même section par rapport au nombre d'élèves dans la section (le plus récemment)</dd>
+                    <dd>le nombre d'élèves présents sur deux années de suite dans une même section par rapport au nombre total d'élèves dans la section en N-1</dd>
                 </dl>
             </div>
         </div>

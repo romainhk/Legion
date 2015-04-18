@@ -76,7 +76,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         if   i == 'G': filiere.append('Générale')
                         elif i == 'P': filiere.append('Pro')
                         elif i == 'T': filiere.append('Technologique')
-                    if len(''.join(('niveaux'))) < 45 and len(filiere) < 4:
+                        elif i == 'S': filiere.append('Enseignement supérieur')
+                    if len(''.join(('niveaux'))) < 45 and len(filiere) < 5:
                         rep = self.generer_stats(stat, int(annee), niveaux, filiere)
             elif params.path == '/maj' and (user == 'admin' or user == 'eps'):
                 # ACTION : Mise à jour d'un champ
@@ -521,13 +522,16 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         elif stat == 'Taux de passage':
             rep['ordre'] = [('section','string'),
                             ('passage','string'),
+                            ('effectif N-1','int'),
                             ('taux','float')]
             rep['data'] = []
             passage = self.server.db.stats('taux de passage', annee, niveaux, filiere)
             for sect in self.server.sections:
                 # On filtre les éléments de data concernant la section voulue
-                e = [dictio for dictio in passage if dictio['Section'] in [sect,'GT']]
-                # ie GT est toujours un antécédent possible
+                antecedents = [sect]
+                if 'Première' in niveaux: antecedents.append('GT')
+                # ie GT est aussi un antécédent possible si l'on regarde les premières
+                e = [dictio for dictio in passage if dictio['Section'] in antecedents]
                 for i in range(1,len(self.server.niveaux)):
                     niv = self.server.niveaux[i]
                     niv_pre = self.server.niveaux[i-1]
@@ -540,8 +544,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         # On a des élèves dans deux années successives d'une même section !
                         communs = list (set(g) & set(f)) # l'intersection des deux années
                         #print(communs)
-                        taux = en_pourcentage( float(len(communs)) / float(len(f)) )
-                        v = { 'section': sect, 'passage': niv_pre+' > '+niv, 'taux': taux}
+                        taux = en_pourcentage( float(len(communs)) / float(len(g)) )
+                        v = { 'section': sect, 'passage': niv_pre+' > '+niv, 'effectif N-1':len(g), 'taux': taux}
                         rep['data'].append(v)
         elif stat == 'EPS (activite)':
             rep['ordre'] = [('activité','string'),

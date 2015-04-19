@@ -37,12 +37,14 @@ function uploadFiles(id, files) {
     for (var i = 0, file; file = files[i]; ++i) {
         formData.append(file.name, file);
     }
+    var filename = files[0].name;
 
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
     xhr.onload = function(e) {
         if (this.status == 200) {
             $("#"+progress).hide();
+            notifier("Importation de « "+filename+" » réussie !");
             if (id == "fichier_siecle") { location.reload(true); }
         }
     };
@@ -147,8 +149,7 @@ function maj_cellule(event) {
             }
             $.get( "/maj?"+params, function( data ) {
                 if (data == 'Oui') {
-                    cell.removeClass("maj_non");
-                    cell.addClass("maj_oui");
+                    //notifier("Valeur « "+val+" » enregistrée");
                     // On passe à la cellule suivante
                     tr = cell.closest('tr').next();
                     // Sauf si c'est la dernière ligne
@@ -158,7 +159,7 @@ function maj_cellule(event) {
                     }
                 }
                 else if (data == 'Non') {
-                    cell.addClass("maj_non");
+                    notifier("Échec de l'enregistrement de « "+val+" »");
                     // On reste sur la même cellule
                     el.focus();
                 }
@@ -348,8 +349,9 @@ function enregistrer_select(cell, col, val, txt, ine) {
     // Envoie des données
     $.get( url, function( data ) {
         c = cell.parents('td');
-        if (data == 'Oui') { c.addClass("maj_oui"); }
-        else if (data == 'Non') { c.addClass("maj_non"); }
+        if (data == 'Non') { 
+            notifier("Échec de l'enregistrement de « "+val+" »");
+        }
     });
 }
 
@@ -436,15 +438,22 @@ function ajouter_datetimepicker(cell) {
                 url = "/maj?ine="+ine+"&champ="+indice+"&d="+date+"&tier="+tier;
                 $.get( url, function( data ) {
                     if (data == 'Oui') {
-                        $input.removeClass("maj_non");
-                        $input.addClass("maj_oui");
                         liste_eps[ine][indice] = date;
                     } else {
-                        $input.addClass("maj_non");
-                        $input.removeClass("maj_oui");
+                        notifier("Échec de l'enregistrement de la date « "+date+" »");
                     }
                 });
             }
         });
     }
 }
+
+/*
+ * Affiche une notification
+ */
+function notifier(message) {
+    if (window.Notification && Notification.permission === "granted") {
+        var notif = new Notification('Legion', {body: message, tag: 'legion', icon: 'img/favicon.png'});
+    }
+}
+

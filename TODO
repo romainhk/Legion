@@ -21,7 +21,6 @@
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
 * Différencier les cases éditables ?
-* Popup pour indiquer la réussite/échec des requête maj & maj_classe
 
 ### Extension EPS
 * Authentification à distance avec ssl

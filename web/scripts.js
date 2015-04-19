@@ -428,5 +428,13 @@ $(document).ready(function() {
     $('input[type="file"]').bind('change', function(e) {
         uploadFiles(e.target.id, this.files);
     });
+    // Notification: autorisation par l'usager
+    if (window.Notification && Notification.permission !== "granted") {
+        Notification.requestPermission(function (status) {
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+        });
+    }
 });
 

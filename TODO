@@ -1,8 +1,7 @@
 ### Statistiques
 * Absentéisme : ratio du nombre d'heures de cours non suivi / nombre total d'heures de la section (-> cpe ; recoupement avec pronote ?)
-* Taux de réussite au BAC, au BTS (100*admis/présents)
-* Taux d'accès au BAC (100*admis/ (inscrits-doublants) )
-* Taux de sortants BAC (bacheliers/sortants *100)
+* Taux d'accès au BAC (100*admis/ (inscrits-doublants) ) ?
+* Taux de sortants BAC (bacheliers/sortants *100) ?
 #http://www.education.gouv.fr/cid51125/indicateurs-resultats-des-lycees-glossaire.html#Le_taux%20de%20r%C3%A9ussite%20au%20baccalaur%C3%A9at
 * Pour les élèves sorties : durée de scolarisation
 
@@ -27,5 +26,4 @@
 ### Extension EPS
 * Authentification à distance avec ssl
 * Gestion de l'appel et mail des absents pour la vie scolaire
-* contenteditable : input="number" ?
 * Pouvoir verrouiller 1 note par élève

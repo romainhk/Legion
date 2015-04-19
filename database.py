@@ -546,7 +546,9 @@ class Database():
             COALESCE(sum(CASE WHEN Sexe="1" THEN 1 ELSE 0 END),0) homme, 
             IFNULL(sum(CASE WHEN Doublement="1" THEN 1 ELSE 0 END),0) doublant, 
             COALESCE(sum(CASE WHEN A.INE IN (SELECT INE FROM Affectations WHERE Année=:an1 AND Établissement<>:etab) THEN 1 ELSE 0 END),0) nouveau, 
-            IFNULL(sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END),0) "issue de pro" 
+            IFNULL(sum(CASE WHEN A.Classe IN (SELECT Classe FROM Classes C2 WHERE Filière="Pro") THEN 1 ELSE 0 END),0) "issue de pro",
+            IFNULL(sum(CASE WHEN Diplômé<>"" THEN 1 ELSE 0 END),0) "bac présent",
+            IFNULL(sum(CASE WHEN Diplômé LIKE "Admis%" THEN 1 ELSE 0 END),0) "bac admis"
             FROM Affectations A JOIN Classes CN ON A.Classe=CN.Classe JOIN Élèves E ON A.INE=E.INE 
             WHERE Établissement=:etab AND Année=:an1 AND {niv} {fil} """.format(niv=les_niveaux, fil=les_filiere)
             donnees = { 'an1':annee, 'etab':self.nom_etablissement }

@@ -29,4 +29,3 @@
 * Gestion de l'appel et mail des absents pour la vie scolaire
 * contenteditable : input="number" ?
 * Pouvoir verrouiller 1 note par élève
-* contenteditable : ne passe pas à la ligne suivante après validation

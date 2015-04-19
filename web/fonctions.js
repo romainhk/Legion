@@ -136,7 +136,7 @@ function maj_cellule(event) {
             var val = cell.text();
             var ine = cell.parent().attr('id');
             if (page_active == 'eps') {
-                var champ = $('#eps-table').find('th').eq(cell.index()).html();
+                var champ = $('#eps-table').find('th div').eq(cell.index()).html();
             } else {
                 var champ = champs_liste[cell.index()];
             }
@@ -428,8 +428,10 @@ function ajouter_datetimepicker(cell) {
             onChangeDateTime:function(dp,$input){
                 ine = $input.closest('tr').attr('id');
                 indice = 'Date '+( ($input.parent().index()+1)/2 );
-                a = $input.val().split('/');
-                date = a[2]+'-'+a[1]+'-'+a[0];
+                if ($input.val() != '') {
+                    a = $input.val().split('/');
+                    date = a[2]+'-'+a[1]+'-'+a[0];
+                } else { data = ''; }
                 var tier = $('#eps-tier option:selected').val();
                 url = "/maj?ine="+ine+"&champ="+indice+"&d="+date+"&tier="+tier;
                 $.get( url, function( data ) {

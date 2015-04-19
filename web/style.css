@@ -116,6 +116,9 @@ table td[contenteditable=true], td .cell_to_select {
 .tablesorter-blue td {
     background-color: transparent !important;
 }
+#eps-table {
+    background-color: transparent !important;
+}
 /* tableau triable */
 table.sortable tr:hover, #liste-table tr:not([id]) td:not([colspan]) {
     background-color: #dce8dc !important;

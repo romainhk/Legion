@@ -29,5 +29,4 @@
 * Gestion de l'appel et mail des absents pour la vie scolaire
 * contenteditable : input="number" ?
 * Pouvoir verrouiller 1 note par élève
-* La ligne "Affecter à tous" devrait être non affecté par le tri et en haut
-* La ligne "Affecter à tous" ne fonctionne plus
+* contenteditable : ne passe pas à la ligne suivante après validation

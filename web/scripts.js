@@ -191,6 +191,8 @@ function charger_page(nom) {
         }).fail(noauth);
     } else if (nom == 'eps') {
         page_active = 'eps';
+        $("#eps-table thead th").data("sorter", false);
+        $("#eps-table").tablesorter();
         var eps_classe = $('#eps-classes option:selected').val();
         if (eps_classe == undefined) { eps_classe = ''; }
         var eps_tier = $('#eps-tier option:selected').val();
@@ -210,14 +212,16 @@ function charger_page(nom) {
             // Liste des notes
             if (liste_eps != '') {
                 $('#eps-table > tbody').html( list_to_tab_simple(liste_eps, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','x̄','Protocole','Notes']) );
-                // Ajout des dates
+
+                $("#eps-table").tablesorter();
+                // Ligne pour affecter une activité à toute une classe
+                $('#eps-table > tbody').append('<tr id="borntobewild" class="affecter_a_tous"><td><i>Affecter à tous</i></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td></td><td></td></tr>');
+                // Sélection des activités
+                $("#eps-table > tbody td:nth-child(2),#eps-table td:nth-child(4),#eps-table td:nth-child(6),#eps-table td:nth-child(8),#eps-table td:nth-child(10)").each(cell_to_select);
+                // Sélection des dates
                 $("#eps-table td:nth-child(2),#eps-table td:nth-child(4),#eps-table td:nth-child(6),#eps-table td:nth-child(8),#eps-table td:nth-child(10)").each(function(a,b){
                     ajouter_datetimepicker($(b));
                 });
-                // Ligne pour affecter une activité à toute une classe
-                $('#eps-table > tbody').append('<tr id="borntobewild" class="affecter_a_tous"><td><i>Affecter à tous</i></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td></td><td></td></tr>');
-
-                $("#eps-table > tbody td").each(cell_to_select);
                 // Coloration des notes utilisées pour le calcul de la moyenne
                 offset = 1; // Position de la colonne "Activité 1"
                 $.each(data['liste'], function(i, j) {
@@ -263,8 +267,6 @@ function charger_page(nom) {
                 var c = j['Classe'];
                 var n = j['Niveau'];
                 var s = j['Section'];
-                if (parite == 'impaire') {parite='paire';} else {parite='impaire';}
-                tab += '<tr class="'+parite+'"><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
                 tab += '<tr><td>'+c+'</td><td>'+n+'</td><td>'+s+'</td></tr>\n';
             });
             $('#options-table > tbody').html(tab);

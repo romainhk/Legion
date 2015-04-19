@@ -84,7 +84,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 ine = query['ine'].pop()
                 champ = query['champ'].pop()
                 d = query.get('d', ['']).pop()
-                tier = query.get('tier', ['BAC']).pop()
+                tier = query.get('tier', ['2']).pop()
+                tier = 'BAC' if tier == '2' else 'BEP' 
                 table = 'Élèves'
                 champ_can = champ.split(' ')[0] # Champ canonique = que la première partie
                 if champ_can == 'Situation':

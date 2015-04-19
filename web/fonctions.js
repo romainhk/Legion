@@ -296,12 +296,14 @@ function cell_to_select(e) {
                 if (type_option == 1) {
                     donnee = i
                     label = j;
+                    intitule = j;
                 } else {
                     donnee = ordinal;
                     ordinal = ordinal + 1;
                     label = valeurs[i]+') '+i;
+                    intitule = i;
                 }
-                if (j == selected) { pardefaut = ' selected="selected"' ; }
+                if (intitule == selected) { pardefaut = ' selected="selected"' ; }
                 sel.append('<option value="'+donnee+'"'+pardefaut+'>'+label+'</option>');
             });
             sel.change(ctos_change);
@@ -348,9 +350,6 @@ function enregistrer_select(cell, col, val, txt, ine) {
         c = cell.parents('td');
         if (data == 'Oui') { c.addClass("maj_oui"); }
         else if (data == 'Non') { c.addClass("maj_non"); }
-        if (tier != undefined) { // EPS : selection d'une activité
-            ajouter_datetimepicker(c);
-        }
     });
 }
 
@@ -431,7 +430,8 @@ function ajouter_datetimepicker(cell) {
                 indice = 'Date '+( ($input.parent().index()+1)/2 );
                 a = $input.val().split('/');
                 date = a[2]+'-'+a[1]+'-'+a[0];
-                url = "/maj?ine="+ine+"&champ="+indice+"&d="+date;
+                var tier = $('#eps-tier option:selected').val();
+                url = "/maj?ine="+ine+"&champ="+indice+"&d="+date+"&tier="+tier;
                 $.get( url, function( data ) {
                     if (data == 'Oui') {
                         $input.removeClass("maj_non");

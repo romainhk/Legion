@@ -389,26 +389,6 @@ $(document).ready(function() {
             }
             charger_page('EPS');
         });
-        // Tri des colonnes
-        $(".sortable th").click(function(event) {
-            target = $(event.target);
-            table = target.parentsUntil('div').last();
-            if (table.attr('id') == 'liste-table') {
-                // Tri par le serveur
-                classe = target.attr('class');
-                target.removeClass('sorting-desc').removeClass('sorting-asc');
-                if (classe == 'sorting-desc') {
-                    sens = 'DESC';
-                    target.addClass('sorting-asc');
-                } else if (classe == 'sorting-asc' || classe == undefined) {
-                    sens = 'ASC';
-                    target.addClass('sorting-desc');
-                } else { return false; }
-                col = target.html();
-                maj_sortable();
-            } else { // Tri local
-            }
-        });
         // Fonction de filtrage de la liste
         $('.sortable').stupidtable();
         // Test d'authentification

@@ -108,10 +108,10 @@ table td[contenteditable=true], td .cell_to_select {
 }
 /* tableau : zebra */
 .paire, #pending-table tr:nth-child(even), #stats > div tr:nth-child(even), #eps-table tr:nth-child(even) {
-    background-color: #fafcfa;
+    background-color: #FAFBFC;
 }
 .impaire, #pending-table tr:nth-child(odd), #stats > div tr:nth-child(odd), #eps-table tr:nth-child(odd) {
-    background-color: #edf5ed;
+    background-color: #EDF1F5;
 }
 .tablesorter-blue td {
     background-color: transparent !important;

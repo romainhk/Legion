@@ -407,7 +407,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 #a = statistics.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, niveaux, filiere)])
                 a = numpy.mean([x['Scolarisation'] for x in self.server.db.stats('annees scolarisation', annee, niveaux, filiere)])
                 rep['data']['Nb moyen d\'années de scolarisation par élève'] = str(round( a, 2 )) + ' ans'
-                rep['data']['Taux de réussite au BAC'] = en_pourcentage(bac_admis / bac_present)
+                if bac_present > 0:
+                    rep['data']['Taux de réussite au BAC'] = en_pourcentage(bac_admis / bac_present)
                 prop_homme = round(100*total_homme/eff_total,1)
                 rep['graph'].append( self.generer_tarte(
                     { 'Homme': prop_homme, 'Femme': 100-prop_homme }, 'Parité' ) )

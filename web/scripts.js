@@ -232,9 +232,6 @@ function charger_page(nom) {
                         });
                     }
                 });
-                // Affichage du tier
-                var tier = $("#eps-tier option[value='"+data['tier']+"']").html();
-                $("#eps-table th:contains(x̄)").html('x̄ '+tier);
             }
             // Les colonnes "Notes x"
             $('#eps-table > tbody td:nth-child(3), #eps-table > tbody td:nth-child(5)').attr('contenteditable','true');

@@ -192,7 +192,6 @@ function charger_page(nom) {
     } else if (nom == 'eps') {
         page_active = 'eps';
         $("#eps-table thead th").data("sorter", false);
-        $("#eps-table").tablesorter();
         var eps_classe = $('#eps-classes option:selected').val();
         if (eps_classe == undefined) { eps_classe = ''; }
         var eps_tier = $('#eps-tier option:selected').val();
@@ -214,6 +213,8 @@ function charger_page(nom) {
                 $('#eps-table > tbody').html( list_to_tab_simple(liste_eps, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','x̄','Protocole','Notes']) );
 
                 $("#eps-table").tablesorter();
+                // et pour que le zebra revienne après un changement de page :
+                $.tablesorter.refreshWidgets( $('#eps-table')[0], true, false );
                 // Ligne pour affecter une activité à toute une classe
                 $('#eps-table > tbody').append('<tr id="borntobewild" class="affecter_a_tous"><td><i>Affecter à tous</i></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td></td><td></td></tr>');
                 // Sélection des activités

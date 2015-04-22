@@ -14,10 +14,10 @@
 * SQL - Options : nom_étab?, sections? => Pouvoir changer certaines options statiques
 * Le nom des classes devrait dépendre de l'année scolaire pour l'affectation à un niveau/filière/section !
 * Graph Camembert : remplacer la limite basse de 4 éléments par une proportion (25% ?)
+* Produire une machine virtuelle prête à l'emploi
 
 ### HTML
 * Options : pouvoir affecter toutes les classes (hors etab => filtres de recherche)
-* l'adresse en extranet.lycee-... ne fonctionne pas en interne
 * Stats EPS : mettre le même menu BEP/BAC
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
@@ -30,3 +30,4 @@
 * Toujours sélectionner 3 notes (Disp, puis Abs) ; calculer la moyenne dans tous les cas sur le 2 ou 1 note
 * pouvoir affecter une date en masse (voir avec le suivant)
 * possibilité des création de protocole (= ensemble de trois activités associés à trois dates)
+* Masquer la liste pendant chargement (comme liste)

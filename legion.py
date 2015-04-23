@@ -24,6 +24,11 @@ class Legion(http.server.HTTPServer):
         # Création du server
         super().__init__(address, handler)
 
+        # Écriture du pid dans un fichier
+        pid = str(os.getpid())
+        self.pidfile = "legion.pid"
+        open(self.pidfile, 'w').write(pid)
+
         global root, config
         os.chdir(root + os.sep + 'web') # la partie html est dans le dossier web
         if not os.path.isdir("cache"): os.makedirs('cache')
@@ -91,6 +96,8 @@ class Legion(http.server.HTTPServer):
         for root, dirs, filenames in os.walk('cache'):
             for f in filenames:
                 os.remove(os.path.join(root, f))
+
+        os.remove('..'+os.sep+self.pidfile)
         # Coupure du serveur web
         time.sleep(0.5)
         logging.info('Extinction du serveur')
@@ -127,6 +134,7 @@ if __name__ == "__main__":
     thread = threading.Thread(target = server.serve_forever)
     thread.deamon = True
     logging.info('Démarrage du serveur (PID {1}) sur le port {0}'.format(port, os.getpid()))
+
     time.sleep(0.2)
     thread.start()
     # Interception des signaux d'extinction (2 et 15)

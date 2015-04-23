@@ -15,7 +15,6 @@
 * Le nom des classes devrait dépendre de l'année scolaire pour l'affectation à un niveau/filière/section !
 * Graph Camembert : remplacer la limite basse de 4 éléments par une proportion (25% ?)
 * Produire une machine virtuelle prête à l'emploi
-* Écrire le PID dans un fichier .pid
 
 ### HTML
 * Options : pouvoir affecter toutes les classes (hors etab => filtres de recherche)

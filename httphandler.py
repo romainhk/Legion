@@ -561,9 +561,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             rep['ordre'] = [('activité','string'),
                             ('cp','int'),
                             ('moyenne','float'),
+                            ('effectif','int'),
                             ('moyenne ♂','float'),
+                            ('effectif ♂','int'),
                             ('moyenne ♀','float'),
-                            ('effectif','int')]
+                            ('effectif ♀','int')]
             rep['data'] = []
             act = self.server.db.stats('eps activite', annee, niveaux, filiere)
             cp = self.server.db.lire_eps_activites()
@@ -593,6 +595,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     moyenne_f = round(somme_f/eff_f,2)
                 v = {   'activité': a, 'cp': cp[a], 'moyenne': moyenne,
                         'moyenne ♂': moyenne_h, 'moyenne ♀': moyenne_f,
+                        'effectif ♂': eff_h, 'effectif ♀': eff_f,
                         'effectif': (eff_h + eff_f) }
                 rep['data'].append(v)
         else:

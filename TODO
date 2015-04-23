@@ -23,8 +23,7 @@
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
 * Différencier les cases éditables ?
-* Filtre "Doublement" non fonctionnel
-* Au chargement et au filtrage, éviter le centrage de la fenêtre sur le tableau
+* Message de chargement pour les gros tableaux
 
 ### Extension EPS
 * Authentification à distance avec ssl

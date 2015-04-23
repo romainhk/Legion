@@ -363,6 +363,8 @@ $(document).ready(function() {
         $.tablesorter.defaults.theme = 'blue';
         $.tablesorter.defaults.widthFixed = true;
         $.tablesorter.defaults.ignoreCase = true;
+        $.tablesorter.defaults.dateFormat = "jjmmaaa";
+        $.tablesorter.defaults.stickyHeaders_filteredToTop = false;
         // add French support
         $.extend($.tablesorter.language, {
             to: 'à',  or: 'ou', and: 'et'

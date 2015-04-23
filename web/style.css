@@ -107,7 +107,7 @@ table td[contenteditable=true]:focus {
     background-color: transparent !important;
 }
 /* tableau triable */
-tr:hover,
+table.tablesorter tr:hover,
 table.sortable tr:hover,
 #liste-table tr:not([id]) td:not([colspan]) {
     background-color: #dce8dc !important;

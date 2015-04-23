@@ -15,6 +15,7 @@
 * Le nom des classes devrait dépendre de l'année scolaire pour l'affectation à un niveau/filière/section !
 * Graph Camembert : remplacer la limite basse de 4 éléments par une proportion (25% ?)
 * Produire une machine virtuelle prête à l'emploi
+* Écrire le PID dans un fichier .pid
 
 ### HTML
 * Options : pouvoir affecter toutes les classes (hors etab => filtres de recherche)
@@ -22,6 +23,8 @@
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
 * Différencier les cases éditables ?
+* Filtre "Doublement" non fonctionnel
+* Au chargement et au filtrage, éviter le centrage de la fenêtre sur le tableau
 
 ### Extension EPS
 * Authentification à distance avec ssl
@@ -31,3 +34,4 @@
 * pouvoir affecter une date en masse (voir avec le suivant)
 * possibilité des création de protocole (= ensemble de trois activités associés à trois dates)
 * Masquer la liste pendant chargement (comme liste)
+* Stats : ajouter l'effectif garçon et l'effectif fille

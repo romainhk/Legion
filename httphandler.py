@@ -77,6 +77,11 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                         elif i == 'P': filiere.append('Pro')
                         elif i == 'T': filiere.append('Technologique')
                         elif i == 'S': filiere.append('Enseignement supérieur')
+                    if stat == "EPS (activite)": # Pour l'EPS, le découpage est en tier
+                        n = []
+                        if "Seconde" in niveaux: n.append('BEP')
+                        if "Terminale" in niveaux: n.append('BAC')
+                        niveaux = n
                     if len(''.join(('niveaux'))) < 45 and len(filiere) < 5:
                         rep = self.generer_stats(stat, int(annee), niveaux, filiere)
             elif params.path == '/maj' and (user == 'admin' or user == 'eps'):

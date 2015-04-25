@@ -4,6 +4,7 @@
 * Taux de sortants BAC (bacheliers/sortants *100) ?
 #http://www.education.gouv.fr/cid51125/indicateurs-resultats-des-lycees-glossaire.html#Le_taux%20de%20r%C3%A9ussite%20au%20baccalaur%C3%A9at
 * Pour les élèves sorties : durée de scolarisation
+* Préciser les dates pour les importations
 
 ### Python
 * Importation : sauvegarder le champ CODE_MOTIF_SORTIE ?
@@ -15,6 +16,7 @@
 * Le nom des classes devrait dépendre de l'année scolaire pour l'affectation à un niveau/filière/section !
 * Graph Camembert : remplacer la limite basse de 4 éléments par une proportion (25% ?)
 * Produire une machine virtuelle prête à l'emploi
+* Faire remonter les crash d'import ; empêcher les multiple import
 
 ### HTML
 * Options : pouvoir affecter toutes les classes (hors etab => filtres de recherche)
@@ -23,6 +25,9 @@
 * Stats : Provenance par nationalité ?
 * Différencier les cases éditables ?
 * Message de chargement pour les gros tableaux
+* Résultat : n'indique pas le nombre de lignes filtrées
+* Liste: les filtres / tri ne fonctionnent pas toujours (pb d'init ?)
+* Optimisation / Message pendant un chargement
 
 ### Extension EPS
 * Authentification à distance avec ssl

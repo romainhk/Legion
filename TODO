@@ -28,7 +28,6 @@
 * Authentification à distance avec ssl
 * Gestion de l'appel et mail des absents pour la vie scolaire
 * Pouvoir verrouiller 1 note par élève
-* Toujours sélectionner 3 notes (Disp, puis Abs) ; calculer la moyenne dans tous les cas sur le 2 ou 1 note
 * pouvoir affecter une date en masse (voir avec le suivant)
 * possibilité des création de protocole (= ensemble de trois activités associés à trois dates)
 * Masquer la liste pendant chargement (comme liste)

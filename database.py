@@ -408,53 +408,53 @@ class Database():
         AND E."Activité 3" IS NOT NULL AND E."Activité 5" IS NOT NULL
         AND E."Activité 5" IS NOT NULL AND Classe=? AND A.Année=? AND Tier=?
         ORDER BY Nom,Prénom ASC """
+        #logging.debug('> {0}\n>> {1}'.format(req, (classe,annee,tier)))
         for row in self.curs.execute(req, (classe, annee, tier) ).fetchall():
             d = dict_from_row(row)
             d['Élèves'] = d['Nom'] + ' ' + d['Prénom']
-            d['x̄'] = 'Pas assez de notes'
             # Calcul de la note du BAC : 
-            notes = []
+            notes = [] # Format : ( Note , Compétence propre, ordinal de la note )
             for i in range(1,6): # Récupération des notes
                 note = d['Note {0}'.format(i)]
                 cp = d['CP{0}'.format(i)]
                 if note is None or cp is None: note = -1
-                if note == -2: note = 0 # Abs => 0.0
-                notes.append( (note, cp) )
-            selection = [] # Notes sélectionnées
-            indices = [] # L'indice correspondant
-            cp = [] # Les Compétences Propres correspondantes
-            # sum(x >= 0 for x,y in notes) <=> Nombre d'éléments positifs sur les notes
-            if   tier == 'BAC' and sum(x >= 0 for x,y in notes[2:]) < 2: d['x̄'] = 'Manque note Term'
-            elif tier == 'BEP' and sum(x >= 0 for x,y in notes[3:]) < 1: d['x̄'] = 'Manque note 1er'
+                # On préfèrera sélectionner une dispense à une absence
+                if note == -2.0: note = -9.0 # Abs => 0.0
+                notes.append( (note, cp, i) )
+
+            # On tri les notes par ordre décroissant
+            notes = sorted(notes, key=lambda n: n[0], reverse=True)
+            sel = [] # les notes sélectionnées
+            for n in notes:
+                if len(sel) < 3 and n[0] != -1.0:
+                    sel_cp = [x[1] for x in sel]
+                    # On vérifie que la CP n'est pas déjà sélectionnée
+                    if n[1] not in sel_cp:
+                        sel_ord = [x[2] for x in sel]
+                        # On vérifie la contrainte de niveau :
+                        # * En BEP, deux notes de seconde maxi
+                        # * En BAC, un note de première maxi
+                        if tier=='BEP': limite = 3
+                        else:           limite = 2
+                        if n[2] <= limite:
+                            if sum(z <= limite for z in sel_ord) < limite-1:
+                                sel.append(n)
+                        else: sel.append(n)
+                else: break
+
+            # Calcul de la moyenne
+            d['Notes'] = []
+            if len(sel) < 3:
+                d['x̄'] = '??'
             else:
-                for k in reversed(range(1,4)):
-                    if   tier == 'BAC' and k > 1:
-                        # Sélection des deux premières notes en terminale
-                        select_range = range(2,len(notes))
-                    elif tier == 'BEP' and k > 2:
-                        select_range = range(3,len(notes))
-                    else:
-                        select_range = range(0,len(notes))
-                    maximum = -1
-                    indice = -1
-                    for l in select_range:
-                        note = notes[l][0]
-                        competence = notes[l][1]
-                        if note > maximum and l not in indices and competence not in cp:
-                            maximum = note
-                            indice = l
-                    if maximum > -1 and indice > -1:
-                        selection.append(maximum)
-                        indices.append(indice)
-                        cp.append(notes[indice][1])
-                # Calcul de la moyenne
-                d['Notes'] = []
-                if len(selection) == 3:
-                    if selection[0] == selection[1] == selection[2] == 0: # Note éliminatoire
-                        d['x̄'] = 'Abs'
-                    else:
-                        d['x̄'] = round(sum(selection) / 3.0, 2)
-                        d['Notes'] = [a+1 for a in indices] # les gens normaux comptent à partir de 1
+                # On ne somme que les notes positives
+                somme = sum([x[0] if x[0]>=0 else 0.0 for x in sel])
+                nb_note_positive = sum(x >= 0 for x,y,z in sel)
+                if nb_note_positive > 0:
+                    d['x̄'] = round(somme / float(nb_note_positive), 2)
+                else: # Aucunes notes positives => élève absent
+                    d['x̄'] = 'Abs'
+                d['Notes'] = [x[2] for x in sel]
 
             data[d['INE']] = d
         return data
@@ -523,7 +523,7 @@ class Database():
         :param info: la stat recherchée
         :param annee: son année de validité
         :param niveaux: les niveaux à prendre en compte
-        :param filiere: les filieres à prendre en compte
+        :param filiere: les filières à prendre en compte
         :type info: str
         :type annee: int
         :type niveaux: array(str)

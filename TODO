@@ -14,7 +14,6 @@
 * affectation auto des niveau / section par classe en utilisant le code MEF
 * SQL - Options : nom_étab?, sections? => Pouvoir changer certaines options statiques
 * Le nom des classes devrait dépendre de l'année scolaire pour l'affectation à un niveau/filière/section !
-* Graph Camembert : remplacer la limite basse de 4 éléments par une proportion (25% ?)
 * Produire une machine virtuelle prête à l'emploi
 * Faire remonter les crash d'import ; empêcher les multiple import
 
@@ -36,3 +35,4 @@
 * pouvoir affecter une date en masse (voir avec le suivant)
 * possibilité des création de protocole (= ensemble de trois activités associés à trois dates)
 * Masquer la liste pendant chargement (comme liste)
+* À la sélection de classe, si 2nd => BEP, si Term => BAC

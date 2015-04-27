@@ -632,7 +632,8 @@ class Database():
             FROM EPS JOIN Affectations A, Classes CN ON A.INE=EPS.INE AND CN.Classe=A.Classe
             LEFT JOIN Élèves E ON E.INE=A.INE
             WHERE A.Année=:annee AND Établissement=:etab AND {niv} {fil}
-            GROUP BY E.Sexe, "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5" """.format(niv=les_niveaux, fil=les_filiere)
+            GROUP BY E.Sexe, "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5"
+            ORDER BY total DESC""".format(niv=les_niveaux, fil=les_filiere)
             donnees = {'annee':annee, 'etab':self.nom_etablissement }
         else:
             logging.error('Information "{0}" non disponible'.format(info))

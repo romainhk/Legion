@@ -512,16 +512,18 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             # Graphique sur les établissement de provenance
             tarte = collections.OrderedDict.fromkeys([])
             autres = 0
+            total_hors_etab = sum(
+                    [x['total'] for x in rep['data'] if x['Établissement']!=self.server.nom_etablissement])
             for d in rep['data']:
                 total = d['total']
                 etab = d['Établissement']
                 if etab != self.server.nom_etablissement:
-                    if total > 5:
+                    if (total / total_hors_etab) >= 0.03: # la contribution minimale est de 3%
                         tarte[d['Établissement']] = total
                     else:
                         autres = autres + total
             tarte = collections.OrderedDict(sorted(tarte.items(), key=lambda x: x[1], reverse=True))
-            tarte['« Autres »'] = autres
+            if autres > 0: tarte['« Autres »'] = autres
             rep['graph'].append(self.generer_tarte( tarte, "Arrivants par établissement de provenance" ))
         elif stat == 'Provenance (classe)':
             rep['ordre'] = [('classe', 'string'),

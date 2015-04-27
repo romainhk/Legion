@@ -64,13 +64,14 @@ class Database():
         :param table: le nom de la table visée
         :param ident: l'identifiant (clé primaire) visé
         :param champ: le champ à modifier
-        :param donnee: la nouvelle valoir
+        :param donnee: la nouvelle valeur
         :param tier: (OPT - EPS) le tier voulu
         :type table: str
         :type ident: str
         :type champ: str
         :type donnee: str
         :type tier: str
+        :rtype: str
         """
         if table == 'Élèves':
             req = 'UPDATE {tab} SET "{champ}"=:d WHERE INE=:ident'.format(tab=table, champ=champ)
@@ -82,7 +83,7 @@ class Database():
         try:
             self.curs.execute(req, donnees)
         except sqlite3.Error as e:
-            logging.error(u"Mise à jour d'un champ : {0}\n{1}".format(e.args[0], req))
+            logging.error("Mise à jour d'un champ : {0}\n{1}".format(e.args[0], req))
             return 'Non'
         self.conn.commit()
         return 'Oui'
@@ -97,7 +98,7 @@ class Database():
         :type enr: dict
         :type annee: int
         :type mise_en_pending: booléen
-        :return: define du type d'importation effectuée
+        :return: DEFINE du type d'importation effectuée
         :rtype: int
         """
         ine = enr['ine']
@@ -133,7 +134,7 @@ class Database():
             self.curs.execute(req, donnees)
         except sqlite3.Error as e:
             # Pour toute autre erreur, on laisse tomber
-            logging.error(u"Insertion d'un élève : {0}\n{1}".format(e.args[0], req))
+            logging.error("Insertion d'un élève : {0}\n{1}".format(e.args[0], req))
             inc_list(self.importations, self.FAILED)
             return self.FAILED
 
@@ -156,7 +157,7 @@ class Database():
             raison.append('Pb affectation année en cours')
         if y == self.FAILED:
             #raison.append('Pb affectation année précédente')
-            #logging.info(u"{0}".format(enr))
+            #logging.info("{0}".format(enr))
             pass
         if len(raison) > 0:
             self.conn.rollback()
@@ -189,6 +190,7 @@ class Database():
         :type mef: str
         :type etab: str
         :type doublement: int - 0 ou 1
+        :rtype: int
         """
         if classe == "" or etab == "":
             #logging.info("Erreur lors de l'affectation : classe ou établissement en défaut")
@@ -200,7 +202,7 @@ class Database():
         try:
             self.curs.execute(req, donnees)
         except sqlite3.Error as e:
-            logging.error(u"Insertion d'une affectation : {0}\n{1}".format(e.args[0], req))
+            logging.error("Insertion d'une affectation : {0}\n{1}".format(e.args[0], req))
             return self.FAILED
         return self.INSERT
 
@@ -237,7 +239,7 @@ class Database():
             try:
                 self.curs.execute(req, donnees)
             except sqlite3.Error as e:
-                logging.info(u"Erreur lors de l'ajout de la classe {0}:\n{1}".format(cla, e.args[0]))
+                logging.info("Erreur lors de l'ajout de la classe {0}:\n{1}".format(cla, e.args[0]))
         self.conn.commit()
 
     def ecrire_en_pending(self, enr, raison=""):
@@ -272,7 +274,7 @@ class Database():
             try:
                  self.curs.execute(req)
             except sqlite3.Error as e:
-                logging.error(u"Test de duplicata en pending : {0}\n{1}".format(e.args[0], req))
+                logging.error("Test de duplicata en pending : {0}\n{1}".format(e.args[0], req))
                 return False
             r = self.curs.fetchone()
 
@@ -286,7 +288,7 @@ class Database():
         try:
             self.curs.execute(req, donnees)
         except sqlite3.Error as e:
-            logging.error(u"Insertion en pending : {0}\n{1}".format(e.args[0], req))
+            logging.error("Insertion en pending : {0}\n{1}".format(e.args[0], req))
             return False
         return True
 
@@ -303,7 +305,7 @@ class Database():
         try:
             self.curs.execute(req, (nom, valeur))
         except sqlite3.Error as e:
-            logging.info(u"Erreur lors de la sauvegarde de l'option {0}:\n{1}".format(nom, e.args[0]))
+            logging.info("Erreur lors de la sauvegarde de l'option {0}:\n{1}".format(nom, e.args[0]))
         self.conn.commit()
 
     def ecrire_diplome(self, nom, prénom, resultat):
@@ -321,7 +323,7 @@ class Database():
         try:
             self.curs.execute(req, (resultat, nom, prénom))
         except sqlite3.Error as e:
-            logging.info(u"Erreur lors de l'insertion d'un résultat pour {0}-{1}:\n{2}".format(nom, prénom, e.args[0]))
+            logging.info("Erreur lors de l'insertion d'un résultat pour {0}-{1}:\n{2}".format(nom, prénom, e.args[0]))
         self.conn.commit()
 
     def lire(self, annee, niveau=''):
@@ -654,6 +656,6 @@ class Database():
         try:
             self.curs.execute(req)
         except sqlite3.Error as e:
-            logging.error(u"Delete du pending : {0}\n{1}".format(e.args[0], req))
+            logging.error("Delete du pending : {0}\n{1}".format(e.args[0], req))
             return False
         return True

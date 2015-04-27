@@ -266,6 +266,8 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         :type user: str
         :type ip: str
         :type rep: dict
+        :return: rep
+        :rtype: dict
         """
         self.server.cookie[ip] = user
         self.maj_cookie(ip)
@@ -685,7 +687,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             Parse le xls à importer
 
         :param data: le fichier à importer (passé en POST)
-        :type data: flux de fichier xls (binaire)
+        :type data: fichier xls (binaire)
         """
         # Parsing du fichier
         workbook = xlrd.open_workbook(fichier_tmp, encoding_override='cp1252')
@@ -720,7 +722,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             Parse le xml à importer
 
         :param data: le fichier à importer (passé en POST)
-        :type data: flux de fichier xml
+        :type data: fichier xml
         """
         # Parsing du fichier
         tree = ET.parse(fichier_tmp)

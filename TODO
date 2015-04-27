@@ -23,7 +23,6 @@
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
 * Différencier les cases éditables ?
-* Résultat : n'indique pas le nombre de lignes filtrées
 * Liste: les filtres / tri ne fonctionnent pas toujours (pb d'init ?)
 * Message de chargement : mise en forme graphique
 

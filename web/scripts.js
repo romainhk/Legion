@@ -119,8 +119,8 @@ function noauth() {
 function maj_sortable() {
     var annee = $('#liste-annee option:selected').val();
     var niveau = $('#liste-niveau option:selected').val();
-    parametres = '?annee='+annee+'&niveau='+niveau;
     toggle_chargement('#liste-table');
+    parametres = '?annee='+annee+'&niveau='+niveau;
     $.get( "/liste"+parametres, function( data ) {
         annee = data['annee'];
         $('#liste-table > tbody').html( data['html'] );
@@ -128,7 +128,6 @@ function maj_sortable() {
         // Colonnes éditables
         $('#liste-table td[contenteditable]').on('keydown', maj_cellule);
 
-        maj_total($('#liste-table'));
         // Initialisation des filtres de recherche, du tri
         $("#liste-table").tablesorter({
             widgets: ["cssStickyHeaders", "filter", "zebra"],
@@ -137,7 +136,11 @@ function maj_sortable() {
                 filter_columnFilters: true,
                 cssStickyHeaders_filteredToTop: false
             }
+        }).bind('filterEnd', function() {
+            maj_total($('#liste-table'));
         });
+        // On met à jour le total une première fois
+        $("#liste-table").trigger("filterend");
         // Prise en charge des select pour les situations
         $("#liste-table td:nth-child(9) select").change(ctos_change);
         // Affichage du parcours

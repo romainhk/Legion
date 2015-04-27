@@ -23,7 +23,6 @@
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
 * Différencier les cases éditables ?
-* Message de chargement pour les gros tableaux
 * Résultat : n'indique pas le nombre de lignes filtrées
 * Liste: les filtres / tri ne fonctionnent pas toujours (pb d'init ?)
 * Optimisation / Message pendant un chargement
@@ -35,4 +34,3 @@
 * pouvoir affecter une date en masse (voir avec le suivant)
 * possibilité des création de protocole (= ensemble de trois activités associés à trois dates)
 * Masquer la liste pendant chargement (comme liste)
-* À la sélection de classe, si 2nd => BEP, si Term => BAC

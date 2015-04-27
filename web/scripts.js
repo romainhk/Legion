@@ -117,24 +117,25 @@ function noauth() {
  * Mise à jour d'un tableau triable
  */
 function maj_sortable() {
-    $('#liste-table').css('opacity', '0.3');
     var annee = $('#liste-annee option:selected').val();
     var niveau = $('#liste-niveau option:selected').val();
     parametres = '?annee='+annee+'&niveau='+niveau;
+    toggle_chargement('#liste-table');
     $.get( "/liste"+parametres, function( data ) {
         annee = data['annee'];
         $('#liste-table > tbody').html( data['html'] );
         nb_eleves = data['nb eleves'];
         // Colonnes éditables
         $('#liste-table td[contenteditable]').on('keydown', maj_cellule);
-        $('#liste-table').css('opacity', '1');
+
         maj_total($('#liste-table'));
         // Initialisation des filtres de recherche, du tri
         $("#liste-table").tablesorter({
             widgets: ["cssStickyHeaders", "filter", "zebra"],
             widgetOptions: {
                 filter_hideFilters : false,
-                filter_columnFilters: true
+                filter_columnFilters: true,
+                cssStickyHeaders_filteredToTop: false
             }
         });
         // Prise en charge des select pour les situations
@@ -155,6 +156,9 @@ function maj_sortable() {
         }).mouseleave(function() {
             $("#tooltip").hide();
         });
+        // pour que le zebra revienne après un changement de page :
+        $.tablesorter.refreshWidgets( $('#liste-table'), true, false );
+        toggle_chargement('#liste-table');
     }).fail(noauth);
 }
 
@@ -191,7 +195,13 @@ function charger_page(nom) {
         }).fail(noauth);
     } else if (nom == 'eps') {
         page_active = 'eps';
+        first_load = !$('#eps-table').hasClass('tablesorter');
+        if (!first_load) {
+            toggle_chargement('#eps-table');
+        } else { $('#eps-table').toggle(); }
+        // On désactive le tri
         $("#eps-table thead th").data("sorter", false);
+
         var eps_classe = $('#eps-classes option:selected').val();
         if (eps_classe == undefined) { eps_classe = ''; }
         var eps_tier = $('#eps-tier option:selected').val();
@@ -213,8 +223,6 @@ function charger_page(nom) {
                 $('#eps-table > tbody').html( list_to_tab_simple(liste_eps, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','x̄','Protocole','Notes']) );
 
                 $("#eps-table").tablesorter();
-                // et pour que le zebra revienne après un changement de page :
-                $.tablesorter.refreshWidgets( $('#eps-table')[0], true, false );
                 // Ligne pour affecter une activité à toute une classe
                 $('#eps-table > tbody').append('<tr id="borntobewild" class="affecter_a_tous"><td><i>Affecter à tous</i></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td></td><td></td></tr>');
                 // Sélection des activités
@@ -234,6 +242,11 @@ function charger_page(nom) {
                     }
                 });
             }
+            if (!first_load) {
+                toggle_chargement('#eps-table');
+                $.tablesorter.refreshWidgets( $('#eps-table'), true, false );
+            }
+
             // Les colonnes "Notes x"
             $('#eps-table > tbody td:nth-child(3), #eps-table > tbody td:nth-child(5)').attr('contenteditable','true');
             $('#eps-table > tbody td:nth-child(7), #eps-table > tbody td:nth-child(9)').attr('contenteditable','true');
@@ -364,7 +377,7 @@ $(document).ready(function() {
         $.tablesorter.defaults.widthFixed = true;
         $.tablesorter.defaults.ignoreCase = true;
         $.tablesorter.defaults.dateFormat = "jjmmaaa";
-        $.tablesorter.defaults.stickyHeaders_filteredToTop = false;
+        $.tablesorter.defaults.cssStickyHeaders_filteredToTop = false;
         // add French support
         $.extend($.tablesorter.language, {
             to: 'à',  or: 'ou', and: 'et'
@@ -382,9 +395,9 @@ $(document).ready(function() {
                 classe = $('#eps-classes option:selected').val();
                 niveau = infos_classes[classe]['Niveau'];
                 if (niveau == niveaux[0]) {         // Seconde
-                    $("#eps-tier option[value='BEP']").prop('selected', true);
+                    $("#eps-tier option[value='1']").prop('selected', true);
                 } else if (niveau == niveaux[2]) {  // Terminale
-                    $("#eps-tier option[value='BAC']").prop('selected', true);
+                    $("#eps-tier option[value='2']").prop('selected', true);
                 }
             }
             charger_page('EPS');

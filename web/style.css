@@ -273,6 +273,11 @@ header .quitter {
     margin-left:3ex;
     vertical-align:top;
 }
+#chargement {
+    text-align:center;
+    font-weight:bold;
+    margin:2ex;
+}
 
 /* Formulaire de login */
 #login-message {
@@ -297,7 +302,8 @@ header .quitter {
 /*
  * Graceful degradation (pas de js)
  */
-#liste, #stats, #eps, #pending, #options, .action, .quitter {
+#liste, #stats, #eps, #pending, #options,
+#chargement, .action, .quitter {
     display: none;
 }
 #noauth:after{

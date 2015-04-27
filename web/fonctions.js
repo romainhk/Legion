@@ -39,6 +39,7 @@ function uploadFiles(id, files) {
     }
     var filename = files[0].name;
 
+    notifier("L'importation de « "+filename+" » est en cours...");
     var xhr = new XMLHttpRequest();
     xhr.open('POST', url, true);
     xhr.onload = function(e) {
@@ -457,3 +458,10 @@ function notifier(message) {
     }
 }
 
+/*
+ * Affiche/masque l'écran de chargement
+ */
+function toggle_chargement(noeud) {
+    $('#chargement').toggle();
+    $(noeud).toggle();
+}

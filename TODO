@@ -25,7 +25,7 @@
 * Différencier les cases éditables ?
 * Résultat : n'indique pas le nombre de lignes filtrées
 * Liste: les filtres / tri ne fonctionnent pas toujours (pb d'init ?)
-* Optimisation / Message pendant un chargement
+* Message de chargement : mise en forme graphique
 
 ### Extension EPS
 * Authentification à distance avec ssl
@@ -33,4 +33,3 @@
 * Pouvoir verrouiller 1 note par élève
 * pouvoir affecter une date en masse (voir avec le suivant)
 * possibilité des création de protocole (= ensemble de trois activités associés à trois dates)
-* Masquer la liste pendant chargement (comme liste)

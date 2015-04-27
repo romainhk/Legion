@@ -293,6 +293,7 @@ function cell_to_select(e) {
             var sel = $('<select>').appendTo(cell).addClass("cell_to_select");
             sel.append('<option value="">...</option>'); // Option vide
             var ordinal = 0;
+            options = '';
             $.each(valeurs, function(i, j) {
                 pardefaut = "";
                 if (type_option == 1) {
@@ -306,8 +307,9 @@ function cell_to_select(e) {
                     intitule = i;
                 }
                 if (intitule == selected) { pardefaut = ' selected="selected"' ; }
-                sel.append('<option value="'+donnee+'"'+pardefaut+'>'+label+'</option>');
+                options = options + '<option value="'+donnee+'"'+pardefaut+'>'+label+'</option>\n';
             });
+            sel.append(options);
             sel.change(ctos_change);
         }
     }

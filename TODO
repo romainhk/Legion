@@ -25,7 +25,6 @@
 * Différencier les cases éditables ?
 * Liste: les filtres / tri ne fonctionnent pas toujours (pb d'init ?)
 * Message de chargement : mise en forme graphique
-* Afficher l'icon de chargement lors d'un tri
 * Chrome : le tri tablesorter ne fonctionne pas
 
 ### Extension EPS

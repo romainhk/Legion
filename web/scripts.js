@@ -382,6 +382,7 @@ $(document).ready(function() {
         $.tablesorter.defaults.ignoreCase = true;
         $.tablesorter.defaults.dateFormat = "jjmmaaa";
         $.tablesorter.defaults.cssStickyHeaders_filteredToTop = false;
+        $.tablesorter.defaults.showProcessing = true;
         // add French support
         $.extend($.tablesorter.language, {
             to: 'à',  or: 'ou', and: 'et'

@@ -633,7 +633,7 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
         # Préparation des couleurs
         couleurs = self.server.colors
         if len(proportions) == len(couleurs)+1:
-            # La première et la dernière couleurs vont être les même !
+            # La première et la dernière couleur vont être les même !
             # alors on change la cardinalité de l'espace des couleurs en ajoutant du jaune
             couleurs = couleurs + ('#FFFF80',)
         # Génération de la tarte

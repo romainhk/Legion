@@ -16,7 +16,6 @@
 * Le nom des classes devrait dépendre de l'année scolaire pour l'affectation à un niveau/filière/section !
 * Produire une machine virtuelle prête à l'emploi
 * Faire remonter les crash d'import ; empêcher les multiple import
-* Graph: tester la modularité pour le choix des couleurs (le bleu peut être à coté du bleu!)
 
 ### HTML
 * Options : pouvoir affecter toutes les classes (hors etab => filtres de recherche)

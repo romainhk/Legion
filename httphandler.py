@@ -630,9 +630,15 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             if proportions[k] is not None: # L'orderedDict créer automatiquement des cases vides
                 x.append(proportions[k])
                 labels.append(k)
+        # Préparation des couleurs
+        couleurs = self.server.colors
+        if len(proportions) == len(couleurs)+1:
+            # La première et la dernière couleurs vont être les même !
+            # alors on change la cardinalité de l'espace des couleurs en ajoutant du jaune
+            couleurs = couleurs + ('#FFFF80',)
         # Génération de la tarte
         pie(x,  labels=labels,
-                colors=self.server.colors,
+                colors=couleurs,
                 autopct='%1.1f%%', # texte dans les parts
                 pctdistance=0.8, # distance au centre des textes dans les parts
                 shadow=True, startangle=90)

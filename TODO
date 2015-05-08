@@ -16,6 +16,7 @@
 * Le nom des classes devrait dépendre de l'année scolaire pour l'affectation à un niveau/filière/section !
 * Produire une machine virtuelle prête à l'emploi
 * Faire remonter les crash d'import ; empêcher les multiple import
+* Graph: tester la modularité pour le choix des couleurs (le bleu peut être à coté du bleu!)
 
 ### HTML
 * Options : pouvoir affecter toutes les classes (hors etab => filtres de recherche)
@@ -25,6 +26,8 @@
 * Différencier les cases éditables ?
 * Liste: les filtres / tri ne fonctionnent pas toujours (pb d'init ?)
 * Message de chargement : mise en forme graphique
+* Afficher l'icon de chargement lors d'un tri
+* Chrome : le tri tablesorter ne fonctionne pas
 
 ### Extension EPS
 * Authentification à distance avec ssl

@@ -260,6 +260,7 @@ function charger_page(nom) {
             // Ligne de démarcation selon le niveau
             if (eps_tier == "1") { col = '7'; } else { col = '5'; }
             $('#eps-table > tbody td:nth-child('+ col +')').css({'border-right':'2px dashed #5b6b5b'});
+            $('#eps-table > tbody td:nth-child(11)').css({'border-right':'2px dotted #5b6b5b'});
         }).fail(noauth);
     } else if (nom == 'pending') {
         page_active = 'pending';

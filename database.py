@@ -134,7 +134,7 @@ class Database():
             self.curs.execute(req, donnees)
         except sqlite3.Error as e:
             # Pour toute autre erreur, on laisse tomber
-            logging.error("Insertion d'un élève : {0}\n{1}".format(e.args[0], req))
+            logging.error("Insertion d'un élève ({ine}) : {0}\n{1}".format(e.args[0], req, ine=ine))
             inc_list(self.importations, self.FAILED)
             return self.FAILED
 

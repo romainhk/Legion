@@ -34,6 +34,7 @@ class Legion(http.server.HTTPServer):
         if not os.path.isdir("cache"): os.makedirs('cache')
         self.cookie = http.cookies.SimpleCookie()
         self.auth_tries = {} # Timestamp des tentatives d'authentification récentes par IP
+        self.importation_en_cours = False # mutex pour l'imporation
         # Lecture de la configuration
         self.nom_etablissement=config.get('Établissement', 'nom de l\'etablissement')
         self.mdp_admin=config.get('Général', 'mdp_admin')
@@ -66,8 +67,6 @@ class Legion(http.server.HTTPServer):
                     if c not in self.sections:
                         self.sections.append(c)
                     self.section_filière[c] = f
-        #print(self.sections)
-        #print(self.section_filière)
 
         #modules = []
         #for a,b,c in pkgutil.iter_modules():

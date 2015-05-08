@@ -231,9 +231,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             for f in form.keys():
                 data = form[f].value
                 open(fichier_tmp, "wb").write(data)
-            self.importer_xml(fichier_tmp)
-            rep['statut'] = 0
-            rep['message'] = "L'importation s'est bien terminée."
+            statut, message, tot_import = self.importer_xml(fichier_tmp)
+            rep['statut'] = statut
+            rep['message'] = message
+            rep['tot_import'] = tot_import
         elif self.path == '/importation_diplome':
             data = form.getvalue('data')
             logging.info('Importation de la liste des diplômés...')
@@ -241,10 +242,10 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             for f in form.keys():
                 data = form[f].value
                 open(fichier_tmp, "wb").write(data)
-            tot_import = self.importer_diplome(fichier_tmp)
+            statut, message, tot_import = self.importer_diplome(fichier_tmp)
             os.remove(fichier_tmp)
-            rep['statut'] = 0
-            rep['message'] = "L'importation s'est bien terminée."
+            rep['statut'] = statut
+            rep['message'] = message
             rep['tot_import'] = tot_import
         self.repondre(rep)
 
@@ -696,7 +697,14 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
 
         :param data: le fichier à importer (passé en POST)
         :type data: fichier xls (binaire)
+        :returns: infos sur le statut de l'importation (statut, message à afficher, nb d'import effectués)
+        :rtype: int, str, int
         """
+        if not self.server.importation_en_cours:
+            self.server.importation_en_cours = True
+        else:
+            return 1, "Erreur : Importation en cours", 0
+
         # Parsing du fichier
         workbook = xlrd.open_workbook(fichier_tmp, encoding_override='cp1252')
         sheet = workbook.sheet_by_index(0) # On sélectionne le premier classeur = "Extraction"
@@ -722,8 +730,14 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             else:
                 resultat = sheet.cell(row_idx, cols['g2']).value
             resultat = resultat[0] + resultat[1:].lower()
-            self.server.db.ecrire_diplome(nom, prénom, resultat)
-        return sheet.nrows-1
+            try:
+                self.server.db.ecrire_diplome(nom, prénom, resultat)
+            except Exception as e:
+                self.server.importation_en_cours = False
+                logging.error("Importation xls : {0}".format(e))
+                return 1, "L'importation a échouée :\n{0}".format(e), 0
+        self.server.importation_en_cours = False
+        return 0, "L'importation s'est bien terminée.", sheet.nrows-1
 
     def importer_xml(self, fichier_tmp):
         """
@@ -731,7 +745,15 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
 
         :param data: le fichier à importer (passé en POST)
         :type data: fichier xml
+        :returns: infos sur le statut de l'importation (statut, message à afficher, nb d'import effectués)
+        :rtype: int, str, int
         """
+        if not self.server.importation_en_cours:
+            self.server.importation_en_cours = True
+        else:
+            return 1, "Erreur : Importation en cours", 0
+
+        nb_avant_import = self.server.db.importations[self.server.db.INSERT]
         # Parsing du fichier
         tree = ET.parse(fichier_tmp)
         root = tree.getroot()
@@ -771,8 +793,19 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                     'naissance': naissance, 'sexe': sexe, 'mef': mef, \
                     'doublement': doublement, 'classe': classe, 'entrée': entrée, \
                     'sad_établissement': sad_etab,   'sad_classe': sad_classe,  'sad_mef': sad_mef }
-            self.server.db.ecrire(enr, annee, pending)
+            try:
+                self.server.db.ecrire(enr, annee, pending)
+            except Exception as e:
+                self.server.importation_en_cours = False
+                nb_apres_import = self.server.db.importations[self.server.db.INSERT]
+                logging.error("Importation xml : {0}".format(e))
+                return 1, "L'importation a échouée.\n{0}".format(e), nb_apres_import-nb_avant_import
             if not (classe in les_classes or classe in classes_a_ajouter or classe is None) :
                 classes_a_ajouter.append(classe)
         # Ici, les données élèves ont été importé ; il ne reste qu'à ajouter les classes inconnues
         self.server.db.ecrire_classes(classes_a_ajouter, self.server)
+
+        nb_apres_import = self.server.db.importations[self.server.db.INSERT]
+        print(nb_apres_import)
+        self.server.importation_en_cours = False
+        return 0, "L'importation s'est bien terminée.", nb_apres_import-nb_avant_import

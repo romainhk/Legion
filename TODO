@@ -15,7 +15,6 @@
 * SQL - Options : nom_étab?, sections? => Pouvoir changer certaines options statiques
 * Le nom des classes devrait dépendre de l'année scolaire pour l'affectation à un niveau/filière/section !
 * Produire une machine virtuelle prête à l'emploi
-* Faire remonter les crash d'import ; empêcher les multiple import
 
 ### HTML
 * Options : pouvoir affecter toutes les classes (hors etab => filtres de recherche)
@@ -25,11 +24,10 @@
 * Différencier les cases éditables ?
 * Liste: les filtres / tri ne fonctionnent pas toujours (pb d'init ?)
 * Message de chargement : mise en forme graphique
-* Chrome : le tri tablesorter ne fonctionne pas
 
 ### Extension EPS
 * Authentification à distance avec ssl
 * Gestion de l'appel et mail des absents pour la vie scolaire
 * Pouvoir verrouiller 1 note par élève
-* pouvoir affecter une date en masse (voir avec le suivant)
-* possibilité des création de protocole (= ensemble de trois activités associés à trois dates)
+* pouvoir affecter une date en masse (voir avec la création de protocole)
+* possibilité de création de protocole (= ensemble de trois activités associés à trois dates)

@@ -45,8 +45,11 @@ function uploadFiles(id, files) {
     xhr.onload = function(e) {
         if (this.status == 200) {
             $("#"+progress).hide();
-            notifier("Importation de « "+filename+" » réussie !");
-            if (id == "fichier_siecle") { location.reload(true); }
+            rep = JSON.parse(this.response);
+            notifier(rep['message']+'\n'+rep['tot_import']+" étudiants importé(s).");
+            if (id == "fichier_siecle" && rep['statut'] == 0) { 
+                window.setTimeout("location.reload(true)", 1000);
+            }
         }
     };
     xhr.send(formData);  // multipart/form-data

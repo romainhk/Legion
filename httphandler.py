@@ -574,12 +574,12 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
             rep['data'] = []
             act = self.server.db.stats('eps activite', annee, niveaux, filiere)
             cp = self.server.db.lire_eps_activites()
-            for a in self.server.eps_activites.keys():
+            for a in self.server.eps_activites.keys():# pour chaque activité
                 somme_h = somme_f = 0
                 eff_h = eff_f= 0
-                for b in act: # pour chaque ligne
-                    for c in b: # pour chaque activité
-                        if b[c] == a: # si on trouve l'activité
+                for b in act: # pour chaque ligne de la requête
+                    for c in b: # par colonne => par activité (1, 2 ... 5)
+                        if b[c] == a: # si c'est l'activité recherchée
                             excl = b['a{0}'.format(c.split(' ')[1])]
                             # Seul compte les notes positives dans le calcul de la moyenne
                             notes_comptantes = b['nombre'] - excl
@@ -592,16 +592,16 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                                     somme_f = somme_f + note
                                     eff_f = eff_f + notes_comptantes
                 moyenne = moyenne_h = moyenne_f = '?'
-                if eff_h + eff_f != 0:
-                    moyenne = round( (somme_h+somme_f)/ (eff_h+eff_f),2)
                 if eff_h != 0:
                     moyenne_h = round(somme_h/eff_h,2)
                 if eff_f != 0:
                     moyenne_f = round(somme_f/eff_f,2)
+                if eff_h + eff_f != 0:
+                    moyenne = round( (somme_h+somme_f)/(eff_h+eff_f) ,2 )
                 v = {   'activité': a, 'cp': cp[a], 'moyenne': moyenne,
                         'moyenne ♂': moyenne_h, 'moyenne ♀': moyenne_f,
-                        'effectif ♂': eff_h, 'effectif ♀': eff_f,
-                        'effectif': (eff_h + eff_f) }
+                        'effectif': (eff_h + eff_f),
+                        'effectif ♂': eff_h, 'effectif ♀': eff_f }
                 rep['data'].append(v)
         else:
             logging.error('Statistique {0} inconnue'.format(stat))

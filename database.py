@@ -629,11 +629,11 @@ class Database():
             "Activité 5", sum(CASE WHEN "Note 5">0 THEN "Note 5" ELSE 0 END) as n5,
             sum(CASE WHEN "Note 5"<0 THEN 1 ELSE 0 END) as a5,
             E.Sexe, count(*) as nombre
-            FROM EPS JOIN Affectations A, Classes CN ON A.INE=EPS.INE AND CN.Classe=A.Classe
-            LEFT JOIN Élèves E ON E.INE=A.INE
+            FROM EPS JOIN Affectations A, Classes CN, Élèves E ON A.INE=EPS.INE 
+            AND CN.Classe=A.Classe AND E.INE=EPS.INE            
             WHERE A.Année=:annee AND Établissement=:etab AND {niv} {fil}
             GROUP BY E.Sexe, "Activité 1","Activité 2","Activité 3","Activité 4","Activité 5"
-            ORDER BY total DESC""".format(niv=les_niveaux, fil=les_filiere)
+            ORDER BY nombre DESC""".format(niv=les_niveaux, fil=les_filiere)
             donnees = {'annee':annee, 'etab':self.nom_etablissement }
         else:
             logging.error('Information "{0}" non disponible'.format(info))

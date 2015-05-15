@@ -100,10 +100,7 @@ table td[contenteditable=true]:focus {
 #stats > div tr:nth-child(odd) {
     background-color: #EDF1F5;
 }
-.tablesorter-blue td {
-    background-color: transparent !important;
-}
-#eps-table {
+.tablesorter-blue td, #eps-table td {
     background-color: transparent !important;
 }
 /* tableau triable */
@@ -217,8 +214,6 @@ td select {
 }
 /* La ligne qui indique le nombre total d'élèves affichés (onglets Liste et Pending) */
 .total {
-    float: right;
-    margin:2ex 3ex 0 0;
 }
 /* graphique (onglet Statistiques) */
 .graph {
@@ -277,6 +272,18 @@ header .quitter {
     text-align:center;
     font-weight:bold;
     margin:2ex;
+}
+#chargement div {
+    padding:2ex;
+    border:4px double #99BFE6;
+    border-radius:2ex;
+    width:35%;
+    background-color:rgba(255,255,255,0.85);
+    margin:0 auto;
+}
+#chargement div img {
+    margin-left:1ex;
+    vertical-align:middle;"
 }
 
 /* Formulaire de login */

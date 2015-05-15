@@ -51,11 +51,14 @@
     <div id="accueil"></div>
     <div id="noauth">L'authentification est nécessaire pour accéder à cette fonction.</div>
     <div id="quitter" class="msg_quitter"></div>
-    <div id="chargement">Le chargement de vos données est en cours ...</div>
+    <div id="chargement">
+        <div>Le chargement de vos données est en cours
+            <img src="img/loading.gif" alt="...">
+        </div>
+    </div>
     <div id="liste">
         <div style="width:100%;">
             <h3 style="display: inline-block;">Base des élèves</h3>
-            <span id="totalListe" class="total"></span>
             <br/>
             Année scolaire : <select id="liste-annee"></select>
             <span style="margin:0 1ex 0;">—</span>
@@ -66,6 +69,7 @@
                 <option value="Terminale">Les terminales</option>
                 <option value="BTS">Les BTS</option>
             </select>
+            <span id="totalListe" class="total" style="float:right;"></span>
         </div>
         <table id="liste-table">
             <thead></thead>
@@ -294,10 +298,10 @@
     <div id="pending">
         <div style="width:100%;">
             <h3 style="display: inline-block;">Importations incomplètes</h3>
-            <span id="totalPending" class="total"></span>
         </div>
         <p>Cette liste répertorie les élèves qui n'ont pas été incorporés à la base suite à la dernière importation par manque d'informations vitales.</p><p>Ces élèves nécessitent certainement une modification dans la BEE ; connecter vous sur le portail PAGRIATES pour pouvoir les mettre à jour. Ils disparaitront à la prochaine importation.</p>
         <p>Date d'exportation des données (données les plus récentes) : <span id="pending-dateExport"></span>.</p>
+        <div id="totalPending" class="total" style="text-align:right;margin-right:2ex;"></div>
         <table id="pending-table" class="sortable">
             <thead></thead>
             <tbody></tbody>

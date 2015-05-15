@@ -129,6 +129,7 @@ function maj_sortable() {
         $('#liste-table td[contenteditable]').on('keydown', maj_cellule);
 
         // Initialisation des filtres de recherche, du tri
+        $("#liste-table").off("filterEnd");
         $("#liste-table").tablesorter({
             widgets: ["cssStickyHeaders", "filter", "zebra"],
             widgetOptions: {
@@ -139,8 +140,6 @@ function maj_sortable() {
         }).bind('filterEnd', function() {
             maj_total($('#liste-table'));
         });
-        // On met à jour le total une première fois
-        $("#liste-table").trigger("filterend");
         // Prise en charge des select pour les situations
         $("#liste-table td:nth-child(9) select").change(ctos_change);
         // Affichage du parcours
@@ -160,8 +159,16 @@ function maj_sortable() {
             $("#tooltip").hide();
         });
         // pour que le zebra revienne après un changement de page :
-        $.tablesorter.refreshWidgets( $('#liste-table'), true, false );
-        toggle_chargement('#liste-table');
+        $("#liste-table").on('updateComplete', function(){
+            $("#liste-table").trigger('refreshWidgets');
+        });
+        $("#liste-table").on('refreshComplete', function() {
+            $("#liste-table").off('refreshComplete');
+            // On met à jour le total une première fois
+            $("#liste-table").trigger("filterEnd");
+            toggle_chargement('#liste-table');
+        });
+        $("#liste-table").trigger('update');
     }).fail(noauth);
 }
 
@@ -198,10 +205,7 @@ function charger_page(nom) {
         }).fail(noauth);
     } else if (nom == 'eps') {
         page_active = 'eps';
-        first_load = !$('#eps-table').hasClass('tablesorter');
-        if (!first_load) {
-            toggle_chargement('#eps-table');
-        } else { $('#eps-table').toggle(); }
+        $('#eps-table').hide();
         // On désactive le tri
         $("#eps-table thead th").data("sorter", false);
 
@@ -226,6 +230,10 @@ function charger_page(nom) {
                 $('#eps-table > tbody').html( list_to_tab_simple(liste_eps, ['Élèves','Activité 1','Note 1','Activité 2','Note 2','Activité 3','Note 3','Activité 4','Note 4','Activité 5','Note 5','x̄','Protocole','Notes']) );
 
                 $("#eps-table").tablesorter();
+                $("#eps-table").on('updateComplete', function() {
+                    $('#eps-table').show();
+                });
+                $("#eps-table").trigger('update').trigger('refreshWidgets');
                 // Ligne pour affecter une activité à toute une classe
                 $('#eps-table > tbody').append('<tr id="borntobewild" class="affecter_a_tous"><td><i>Affecter à tous</i></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td>?</td><td></td><td></td><td></td></tr>');
                 // Sélection des activités
@@ -244,10 +252,6 @@ function charger_page(nom) {
                         });
                     }
                 });
-            }
-            if (!first_load) {
-                toggle_chargement('#eps-table');
-                $.tablesorter.refreshWidgets( $('#eps-table'), true, false );
             }
 
             // Les colonnes "Notes x"
@@ -382,7 +386,7 @@ $(document).ready(function() {
         $.tablesorter.defaults.ignoreCase = true;
         $.tablesorter.defaults.dateFormat = "jjmmaaa";
         $.tablesorter.defaults.cssStickyHeaders_filteredToTop = false;
-        $.tablesorter.defaults.showProcessing = true;
+        //$.tablesorter.defaults.showProcessing = true;
         // add French support
         $.extend($.tablesorter.language, {
             to: 'à',  or: 'ou', and: 'et'

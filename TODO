@@ -21,7 +21,6 @@
 * Stats EPS : mettre le même menu BEP/BAC
 * Stats Provenance : ajouter une colonne "En 1er", "En Terminale" selon le contexte ?
 * Stats : Provenance par nationalité ?
-* Différencier les cases éditables ?
 * Liste: les filtres / tri ne fonctionnent pas toujours (pb d'init ?)
 
 ### Extension EPS

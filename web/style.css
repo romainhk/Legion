@@ -80,6 +80,9 @@ th {
     color:#fef2e9;
     background-color:#272e27;
 }
+table td[contenteditable=true] {
+    background: linear-gradient(to bottom, rgba(30,153,20,0) 90%,rgba(144,221,127,0.5) 100%);
+}
 table td[contenteditable=true]:focus {
     outline: #08f 1px solid;
     background: #eee !important;

@@ -579,19 +579,21 @@ class HttpHandler(http.server.SimpleHTTPRequestHandler):
                 somme_h = somme_f = 0
                 eff_h = eff_f= 0
                 for b in act: # pour chaque ligne de la requête
-                    for c in b: # par colonne => par activité (1, 2 ... 5)
-                        if b[c] == a: # si c'est l'activité recherchée
-                            excl = b['a{0}'.format(c.split(' ')[1])]
-                            # Seul compte les notes positives dans le calcul de la moyenne
-                            notes_comptantes = b['nombre'] - excl
-                            if notes_comptantes > 0:
-                                note = b['n{0}'.format(c.split(' ')[1])]
-                                if b['Sexe'] == 1:
-                                    somme_h = somme_h + note
-                                    eff_h = eff_h + notes_comptantes
-                                elif b['Sexe'] == 2:
-                                    somme_f = somme_f + note
-                                    eff_f = eff_f + notes_comptantes
+                    if b['Activité 1'] != "" and b['Activité 2'] != "" \
+                            and b['Activité 3'] != "" and b['Activité 4'] != "" and b['Activité 5'] != "": 
+                        for c in b: # par colonne => par activité (1, 2 ... 5)
+                            if b[c] == a: # si c'est l'activité recherchée
+                                excl = b['a{0}'.format(c.split(' ')[1])]
+                                # Seul compte les notes positives dans le calcul de la moyenne
+                                notes_comptantes = b['nombre'] - excl
+                                if notes_comptantes > 0:
+                                    note = b['n{0}'.format(c.split(' ')[1])]
+                                    if b['Sexe'] == 1:
+                                        somme_h = somme_h + note
+                                        eff_h = eff_h + notes_comptantes
+                                    elif b['Sexe'] == 2:
+                                        somme_f = somme_f + note
+                                        eff_f = eff_f + notes_comptantes
                 moyenne = moyenne_h = moyenne_f = '?'
                 if eff_h != 0:
                     moyenne_h = round(somme_h/eff_h,2)
